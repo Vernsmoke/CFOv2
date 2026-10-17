@@ -1281,7 +1281,7 @@ async function submitRecoveryDecision(form, id, decision) {
     });
 
     function setLiveStatus(value){const node=$('#live-status');if(node){node.textContent=value;node.classList.toggle('live',value==='Live');}}
-    let adminEventSource=null,adminPollTimer=null,adminVersions=null,adminRefreshBusy=false;
+    let adminEventSource=null,adminPollTimer=null,adminVersions=null,adminRefreshBusy=false,adminPollBusy=false;
     const pendingLiveResources=new Set();
     const isAdminEditing=()=>batchSaveBusy||dialog.open||Boolean(mySchedulesController?.isModalOpen())||Boolean(document.activeElement?.matches?.('input,textarea,select'))||Boolean(document.querySelector('#page form[data-dirty="true"]'))||Boolean(document.querySelector('.cfo-search-results:not([hidden])'));
     for(const type of ['input','change'])document.addEventListener(type,event=>{const form=event.target.closest?.('#page form');if(form)form.dataset.dirty='true';});
@@ -1300,7 +1300,13 @@ async function submitRecoveryDecision(form, id, decision) {
       try{await renderConnectedAdmin(resources);}catch(error){resources.forEach(resource=>pendingLiveResources.add(resource));setLiveStatus('Reconnecting');}
       finally{adminRefreshBusy=false;if(pendingLiveResources.size)setTimeout(refreshAdminWhenSafe,2000);}
     }
-    async function pollAdminVersions(){try{await applyLiveVersions(await readLiveVersions());setLiveStatus('Live');}catch{setLiveStatus('Reconnecting');}}
+    async function pollAdminVersions(){
+      if(adminPollBusy||document.hidden)return;
+      adminPollBusy=true;
+      try{await applyLiveVersions(await readLiveVersions());setLiveStatus('Live');}
+      catch{setLiveStatus('Reconnecting');}
+      finally{adminPollBusy=false;}
+    }
     function startAdminPolling(){if(!adminPollTimer)adminPollTimer=setInterval(pollAdminVersions,2000);}
     function stopAdminPolling(){if(adminPollTimer){clearInterval(adminPollTimer);adminPollTimer=null;}}
     function connectAdminEvents(){

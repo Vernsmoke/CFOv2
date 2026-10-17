@@ -6719,7 +6719,8 @@ const pendingStudentResources=new Set();
 const isStudentEditing=()=>Boolean(document.activeElement?.matches?.('input,textarea,select'))||[...document.querySelectorAll('dialog')].some(dialog=>dialog.open)||Boolean(document.querySelector('form[data-dirty="true"]'))||Boolean(document.querySelector('#student-notification-panel:not([hidden])'))||Boolean(document.querySelector('.cfo-search-results:not([hidden])'));
 for(const type of ['input','change'])document.addEventListener(type,event=>{const form=event.target.closest?.('form');if(form)form.dataset.dirty='true';});
 async function pollStudentVersions(){
-  if(document.hidden||!window.CFO_BACKEND?.user)return;
+  if(window.CFO_STUDENT_LIVE_POLL_BUSY||document.hidden||!window.CFO_BACKEND?.user)return;
+  window.CFO_STUDENT_LIVE_POLL_BUSY=true;
   try{
     const next=await cfoRequest('/api/live/versions');
     if(!studentLiveVersions){
