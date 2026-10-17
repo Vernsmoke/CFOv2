@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="cfo-design" data-cfo-surface="student">
 <head>
 <meta name="cfo-backend" content="{{ json_encode($cfoBackend) }}">
   <meta charset="UTF-8">
@@ -4466,12 +4466,11 @@ html:has(> body.dashboard-mode) {
   <link rel="stylesheet" href="{{ asset('assets/student/student-certificates.css') }}?v={{ filemtime(public_path('assets/student/student-certificates.css')) }}">
   <link rel="stylesheet" href="{{ asset('assets/student/student-pages.css') }}?v={{ filemtime(public_path('assets/student/student-pages.css')) }}">
 @include('partials.cfo-usability')
-  <link rel="stylesheet" href="{{ asset('assets/student/student-dashboard.css') }}?v={{ filemtime(public_path('assets/student/student-dashboard.css')) }}">
   <link rel="stylesheet" media="screen" href="{{ asset('admin-typography.css') }}?v={{ filemtime(public_path('admin-typography.css')) }}">
-  <link rel="stylesheet" href="{{ asset('assets/student/student-theme.css') }}?v={{ filemtime(public_path('assets/student/student-theme.css')) }}">
   <link rel="stylesheet" media="screen" href="{{ asset('cfo-search-inputs.css') }}?v={{ filemtime(public_path('cfo-search-inputs.css')) }}">
 <link rel="stylesheet" media="screen" href="{{ asset('admin-filter-dropdowns.css') }}?v={{ filemtime(public_path('admin-filter-dropdowns.css')) }}">
 <script src="{{ asset('admin-filter-dropdowns.js') }}?v={{ filemtime(public_path('admin-filter-dropdowns.js')) }}" defer></script>
+@include('partials.design-system')
 </head>
 <body>
   <!-- ==================== 7.1 HTML / STRUCTURE ==================== -->
@@ -6737,6 +6736,7 @@ async function pollStudentVersions(){
     studentLiveVersions=next;
     await refreshStudentWhenSafe();
   }catch(error){/* The next short poll reconnects automatically. */}
+  finally{window.CFO_STUDENT_LIVE_POLL_BUSY=false;}
 }
 async function refreshStudentWhenSafe(){
   if(studentRefreshBusy||document.hidden||!pendingStudentResources.size)return;
