@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="cfo-design" data-cfo-surface="password">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +9,7 @@
     :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#173b35;background:#f2f6f3}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px}.card{width:min(100%,520px);padding:32px;background:#fff;border:1px solid #dce7e1;border-radius:16px;box-shadow:0 16px 40px #063b2514}h1{margin:0 0 10px;font-size:27px}p{line-height:1.6;color:#58716a}.field{display:grid;gap:7px;margin:18px 0}.field input{min-height:46px;width:100%;padding:10px 12px;border:1px solid #bdcec5;border-radius:8px;font:inherit}.btn{min-height:44px;padding:10px 17px;border:0;border-radius:8px;background:#07543f;color:#fff;font:inherit;font-weight:650;cursor:pointer}.btn:disabled{opacity:.6;cursor:wait}.muted{font-size:13px}.error{color:#a12626;min-height:24px}.expired{padding:14px;border-radius:9px;background:#fff2dc;color:#70480e}dialog{width:min(420px,calc(100% - 32px));padding:24px;border:1px solid #dce7e1;border-radius:14px;color:#173b35}dialog::backdrop{background:#062f3699}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}.secondary{background:#fff;color:#173b35;border:1px solid #bdcec5}
   </style>
 @include('partials.cfo-usability')
+@include('partials.design-system')
 </head>
 <body>
   <main class="card">
