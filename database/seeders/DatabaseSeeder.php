@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        if (config('cfo.demo_accounts.enabled')) {
+            $this->call(DemoAccountSeeder::class);
+
+            return;
+        }
+
         $email = strtolower(trim((string) config('cfo.admin.email')));
         if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new \RuntimeException('Set CFO_DEFAULT_ADMIN_EMAIL to a valid administrator email before seeding.');
@@ -35,7 +41,9 @@ class DatabaseSeeder extends Seeder
             throw new \RuntimeException('CFO_DEFAULT_ADMIN_EMAIL conflicts with a student login. Choose a different administrator email.');
         }
 
-        if ($existing) return;
+        if ($existing) {
+            return;
+        }
 
         $password = (string) config('cfo.admin.password');
         if ($password === '') {

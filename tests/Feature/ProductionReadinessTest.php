@@ -78,4 +78,25 @@ class ProductionReadinessTest extends TestCase
         $this->assertDatabaseCount('users', 1);
         $this->assertSame($admin->password, $admin->fresh()->password);
     }
+
+    public function test_demo_seed_creates_the_documented_local_accounts(): void
+    {
+        config([
+            'cfo.demo_accounts.enabled' => true,
+            'cfo.demo_accounts.password' => 'ChangeMe123!',
+        ]);
+
+        $this->seed(DatabaseSeeder::class);
+
+        $admin = User::where('email', 'interface.admin@cfo.office.com')->firstOrFail();
+        $student = User::where('login_email', 'interface.student@cfo.office.com')->firstOrFail();
+
+        $this->assertSame('Admin', $admin->role);
+        $this->assertSame('Approved', $admin->status);
+        $this->assertTrue(Hash::check('ChangeMe123!', $admin->password));
+        $this->assertSame('Student', $student->role);
+        $this->assertSame('Approved', $student->status);
+        $this->assertTrue(Hash::check('ChangeMe123!', $student->password));
+        $this->assertDatabaseCount('users', 2);
+    }
 }

@@ -43,8 +43,8 @@ DB_DATABASE=cfov2
 DB_USERNAME=root
 DB_PASSWORD=
 
-CFO_DEFAULT_ADMIN_EMAIL=admin@example.com
-CFO_DEFAULT_ADMIN_PASSWORD=Choose-A-Secure-Password
+CFO_DEMO_ACCOUNTS_ENABLED=true
+CFO_DEMO_ACCOUNTS_PASSWORD=ChangeMe123!
 ```
 
 Generate a unique application key and initialize the application:
@@ -60,11 +60,27 @@ php artisan serve
 
 Open `http://127.0.0.1:8000`.
 
+## Demo accounts
+
+When `CFO_DEMO_ACCOUNTS_ENABLED=true`, `php artisan migrate --seed` creates these local accounts:
+
+### Administrator
+
+- Email: `interface.admin@cfo.office.com`
+- Password: `ChangeMe123!`
+
+### Student
+
+- Email: `interface.student@cfo.office.com`
+- Password: `ChangeMe123!`
+
+Demo accounts are restricted to `local` and `testing` environments. For a production installation, set `CFO_DEMO_ACCOUNTS_ENABLED=false` and configure a unique administrator with `CFO_DEFAULT_ADMIN_EMAIL` and `CFO_DEFAULT_ADMIN_PASSWORD`.
+
 ## Important security notes
 
 - Never commit the `.env` file.
 - Every computer must generate its own `APP_KEY`.
-- Replace the example administrator credentials before seeding.
+- Never enable the shared demo accounts in production.
 - The repository contains database migrations, not real user data.
 - Do not publish production database exports.
 
