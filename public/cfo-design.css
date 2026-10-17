@@ -1,0 +1,258 @@
+/* CFO visual system, adapted from the CFO reference project.
+ * Screen-only: certificate, receipt and print templates keep their own typography.
+ * Legacy component variables are mapped here so both workspaces share one palette. */
+@font-face{font-family:Cabinet;src:url('fonts/cfo/cabinet-regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:Cabinet;src:url('fonts/cfo/cabinet-bold.woff2') format('woff2');font-weight:600 900;font-style:normal;font-display:swap}
+@font-face{font-family:'CFO Inter';src:url('fonts/cfo/inter-variable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+@media screen {
+  html.cfo-design {
+    --brand-night:#113163;--brand-ink:#142b4a;--brand-blue:#0056b3;--brand-royal:#1c1c84;
+    --brand-gold:#fec000;--brand-canvas:#f4f7fb;--brand-surface:#fff;--brand-soft:#e8eff7;
+    --brand-line:#c7d5e5;--brand-muted:#607087;--brand-success:#27634a;--brand-danger:#a13c5f;
+    --brand-body:'CFO Inter',sans-serif;--brand-heading:Cabinet,'CFO Inter',sans-serif;
+    background:var(--brand-canvas);color-scheme:light;
+  }
+  html.cfo-design body {
+    --cfo-text:var(--brand-ink);--cfo-text-on-bright:var(--brand-ink);--cfo-navy:var(--brand-night);
+    --cfo-panel:var(--brand-surface);--cfo-navy-hover:var(--brand-soft);--cfo-page-bg:var(--brand-canvas);
+    --cfo-yellow:var(--brand-gold);--cfo-error-text:var(--brand-danger);--cfo-danger:var(--brand-danger);
+    --cfo-border:var(--brand-line);--cfo-text-muted:var(--brand-muted);--cfo-success:var(--brand-success);
+    --cfo-info:var(--brand-blue);--cfo-input:#fff;--cfo-input-border:var(--brand-line);--cfo-options:#fff;
+    --cfo-button:var(--brand-blue);--cfo-action:var(--brand-blue);--cfo-dialog:#fff;--cfo-container-border:var(--brand-line);
+    --cfo-danger-surface:#fff0f3;--ink:var(--brand-ink);--text:var(--brand-ink);--muted:var(--brand-muted);
+    --primary:var(--brand-blue);--primary-hover:var(--brand-night);--navy:var(--brand-night);--green:var(--brand-blue);
+    --green-dark:var(--brand-night);--line:var(--brand-line);--canvas:var(--brand-canvas);--surface:#fff;
+    --soft:var(--brand-soft);--danger:var(--brand-danger);--radius:12px;
+    margin:0;background:var(--brand-canvas);color:var(--brand-ink);font:14px/1.55 var(--brand-body);
+  }
+  html.cfo-design :is(button,input,select,textarea){font-family:var(--brand-body)}
+  html.cfo-design :is(h1,h2,h3,.page-title,.login-title,.register-heading,.nav-link,.dash-nav a,.dash-nav button):not(.certificate *,.ce-stage *,.cert-stage *,.print-area *) {
+    font-family:var(--brand-heading)!important;letter-spacing:-.025em;
+  }
+  html.cfo-design :is(h1,h2,h3):not(.certificate *,.ce-stage *,.cert-stage *,.print-area *){color:var(--brand-ink)}
+  html.cfo-design :is(button,a,input,select,textarea):focus-visible{outline:3px solid #5da7ef!important;outline-offset:3px}
+  html.cfo-design :is(button,a){transition:background-color .16s,color .16s,border-color .16s}
+  html.cfo-design button:disabled{cursor:not-allowed;opacity:.55}
+  html.cfo-design :is(.btn,.button,.primary,.outline):not(.certificate *,.ce-stage *,.print-area *){border-radius:8px;font-weight:600;box-shadow:none}
+  html.cfo-design :is(.primary,.btn.primary,.button.primary):not(.certificate *,.ce-stage *,.print-area *){background:var(--brand-blue);border-color:var(--brand-blue);color:#fff}
+  html.cfo-design :is(.primary,.btn.primary,.button.primary):not(:disabled):hover{background:var(--brand-night);border-color:var(--brand-night)}
+  html.cfo-design :is(input,select,textarea):not([type=checkbox],[type=radio],[type=file],[type=range],[type=color],.certificate *,.ce-stage *,.cert-stage *){
+    background-color:#fff;color:var(--brand-ink);border-color:var(--brand-line);border-radius:8px;
+  }
+  html.cfo-design :is(input,textarea)::placeholder{color:var(--brand-muted);opacity:1}
+  html.cfo-design input:is([type=checkbox],[type=radio]){accent-color:var(--brand-blue)}
+  html.cfo-design :is(.muted,.help,.hint,.cfo-form-note,.cfo-filter-help){color:var(--brand-muted)}
+  html.cfo-design :is(.metric-value,.metric-number,td,time){font-variant-numeric:tabular-nums}
+  html.cfo-design dialog {background:#fff;color:var(--brand-ink);border:1px solid var(--brand-line);border-radius:18px;box-shadow:0 24px 80px #11316330} /* taste-skill-ignore: elevation belongs to a real modal overlay. */
+  html.cfo-design dialog::backdrop{background:#11316380;backdrop-filter:blur(3px)}
+  html.cfo-design :is(.dialog-header,.dialog-heading,.dialog-footer,.modal-head,.modal-foot){border-color:var(--brand-line)}
+  html.cfo-design .cfo-search{background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-ink);font-family:var(--brand-body);box-shadow:none}
+  html.cfo-design .cfo-search :is(button,select){color:var(--brand-ink);border-color:var(--brand-line)}
+  html.cfo-design :is(.cfo-search-help,.cfo-search-scope,.cfo-search-status){color:var(--brand-muted)}
+  html.cfo-design .cfo-filter-menu{background:#fff;color:var(--brand-ink);border-color:var(--brand-line)}
+  html.cfo-design .campus{display:none}
+  html.cfo-design .toast{background:var(--brand-night);color:#fff;border-radius:12px}
+
+  /* Administrator shell: retain existing collapse, mobile and scroll behavior. */
+  html.cfo-design body.admin-background {
+    --sidebar:278px;--sidebar-panel-gap:16px;--sidebar-panel-radius:26px;
+    --sidebar-bg-color:var(--brand-night);--sidebar-text:#fff;--sidebar-muted:#c5d3e3;
+    --sidebar-border:transparent;--sidebar-divider:#ffffff24;--sidebar-hover-bg:#ffffff12;
+    --sidebar-active-bg:var(--brand-gold);--sidebar-active-text:var(--brand-night);--sidebar-active-icon:var(--brand-night);
+    --sidebar-accent:var(--brand-gold);--sidebar-accent-text:var(--brand-night);--sidebar-avatar-bg:#ffffff18;
+    --sidebar-inset-bg:transparent;--sidebar-shadow:transparent;--sidebar-collapse-bg:var(--brand-night);
+    --sidebar-collapse-border:#ffffff40;--sidebar-collapse-text:#fff;
+    --admin-sidebar:var(--brand-night);--admin-topbar:#fff;--admin-topbar-hover:var(--brand-soft);
+    --admin-content:var(--brand-canvas);--admin-content-text:var(--brand-ink);--admin-surface:#fff;
+    --admin-surface-raised:var(--brand-soft);--admin-text:var(--brand-ink);--admin-muted:var(--brand-muted);
+    --admin-focus:var(--brand-blue);--admin-container-border:var(--brand-line);--admin-container-radius:14px;
+    --admin-card-radius:12px;--admin-container-shadow:none;--admin-container-gap:20px;--admin-border-width:1px;
+    --admin-card-background:#fff;--admin-toolbar-background:var(--brand-soft);--admin-background-panel:#fff;
+    --admin-font-family:var(--brand-body);--admin-title-size:34px;--admin-panel-title-size:20px;
+    --admin-body-size:14px;--admin-button-size:13px;--admin-input-size:14px;--admin-phone-input-size:16px;
+    --admin-sidebar-menu-size:15px;--admin-sidebar-group-size:11px;--admin-hint-size:12px;
+    --admin-metric-label-size:13px;--admin-metric-value-size:30px;--admin-badge-size:12px;
+    --admin-font-weight-semibold:600;--admin-font-weight-bold:700;
+    /* Legacy registration-detail controls use these names for both themes. */
+    --admin-dashboard-dark-solid:#fff;--admin-dashboard-dark-background:var(--brand-canvas);
+    --admin-dashboard-dark-card:#fff;--admin-dashboard-dark-border:var(--brand-line);
+    --admin-dashboard-dark-text:var(--brand-ink);--admin-dashboard-dark-secondary:var(--brand-muted);
+    --admin-dashboard-dark-accent:var(--brand-blue);--admin-dashboard-dark-accent-hover:var(--brand-night);
+    --admin-dashboard-dark-icon-box:var(--brand-soft);--admin-dashboard-dark-control:#fff;
+    --admin-dashboard-dark-control-border:var(--brand-line);--admin-dashboard-dark-control-hover-border:var(--brand-blue);
+    --admin-dashboard-dark-control-hover:var(--brand-soft);--admin-dashboard-dark-placeholder:var(--brand-muted);
+    --admin-dashboard-dark-focus:var(--brand-blue);--admin-dashboard-dark-primary:var(--brand-blue);
+    --admin-dashboard-dark-primary-hover:var(--brand-night);--admin-dashboard-dark-table-header:var(--brand-soft);
+    --admin-dashboard-dark-table-hover:var(--brand-canvas);--admin-dashboard-dark-shadow:0 24px 80px #11316330;
+    --admin-stat-blue:var(--brand-blue);--admin-stat-green:var(--brand-success);--admin-stat-orange:#976900;--admin-stat-red:var(--brand-danger);
+  }
+  html.cfo-design body.admin-background::before{content:none}
+  html.cfo-design body.admin-background .sidebar{box-shadow:none;display:flex;flex-direction:column}
+  html.cfo-design body.admin-background.nav-collapsed .sidebar{display:none}
+  html.cfo-design body.admin-background .sidebar .brand{display:flex;align-items:center;padding:26px 18px;gap:12px}
+  html.cfo-design body.admin-background .sidebar .brand .sidebar-school-name{font:700 19px/1.1 var(--brand-heading);color:#fff;letter-spacing:-.025em}
+  html.cfo-design body.admin-background .sidebar .sidebar-logo img{width:44px;height:44px;border-radius:50%;background:#fff}
+  html.cfo-design body.admin-background .sidebar .nav-link{min-height:46px;padding:11px 12px;border-radius:10px;font-weight:600}
+  html.cfo-design body.admin-background .sidebar .nav-group{color:var(--sidebar-muted);letter-spacing:.08em}
+  html.cfo-design body.admin-background .sidebar .sidebar-footer{margin-top:auto;background:transparent}
+  html.cfo-design body.admin-background .sidebar .nav-close:hover{background:var(--brand-blue)}
+  html.cfo-design body.admin-background .shell > .admin-header{min-height:72px;border-color:var(--brand-line);box-shadow:none}
+  html.cfo-design body.admin-background .admin-header .admin-header-control{border-color:var(--brand-line)}
+  html.cfo-design body.admin-background .admin-header #live-status{border-color:#d5e8de;background:#edf6f0;color:var(--brand-success)}
+  html.cfo-design body.admin-background #main-content{width:100%!important;max-width:1600px;margin:0 auto!important;padding:30px clamp(20px,3vw,44px) 64px;background:transparent!important;min-width:0;border:0!important;border-radius:0;box-shadow:none!important}
+  html.cfo-design body.admin-background #main-content>.page-heading{border:0;padding:0;margin-bottom:26px}
+  html.cfo-design body.admin-background .cfo-action-bar-background{background:#fff;border-color:var(--brand-line)}
+  html.cfo-design body.admin-background :is(dialog,.ms-modal) :is(.dialog-footer,.ms-modal-foot,.registration-dialog-footer,.sb-dialog-actions){background:var(--brand-canvas)!important;border-color:var(--brand-line)}
+  html.cfo-design .page-heading{margin-bottom:26px;gap:20px}
+  html.cfo-design #page-title{line-height:1.12}
+  html.cfo-design .eyebrow{color:var(--brand-blue);font-size:11px;letter-spacing:.12em;font-weight:600} /* taste-skill-ignore: existing workspace category label, not marketing decoration. */
+  html.cfo-design :is(.panel,.metric-card,.metric,.stat-card){border-color:var(--brand-line);box-shadow:none;background:#fff}
+  html.cfo-design :is(.panel-head,.panel-body){padding:20px 22px}
+  html.cfo-design :is(.panel-head,.table-toolbar,.filters,.filter-bar){border-color:var(--brand-line)}
+  html.cfo-design :is(.data-table,.registrations-table,.sp table) th{background:var(--brand-soft);color:var(--brand-muted);font-weight:600}
+  html.cfo-design :is(.data-table,.registrations-table,.sp table) td{border-color:#e4ebf3}
+  html.cfo-design :is(.data-table,.registrations-table,.sp table) tbody tr:hover{background:#f7faff}
+  html.cfo-design .schedule-builder,html.cfo-design .schedule-course-dialog{--sb-text:var(--brand-ink);--sb-muted:var(--brand-muted);--sb-line:var(--brand-line);--sb-input:#fff;--sb-input-text:var(--brand-ink);--sb-input-border:var(--brand-line)}
+  html.cfo-design .sb-banner{background:var(--brand-soft);color:var(--brand-ink)}
+  html.cfo-design body.admin-background #main-content #page.my-schedules{--ms-navy:var(--brand-soft);--ms-navy2:#f4f7fb;--ms-panel2:#fff;--ms-white:var(--brand-ink);--ms-shadow:0 12px 32px #11316318}
+  html.cfo-design body.admin-background #main-content #page.my-schedules .ms-page-head{background:none;padding:0 0 12px;border-radius:0}
+  html.cfo-design body.admin-background #main-content #page.my-schedules .ms-primary{background:var(--brand-blue);border-color:var(--brand-blue);color:#fff}
+  html.cfo-design body.admin-background #main-content #page.my-schedules :is(input,select,textarea){background:#fff;color:var(--brand-ink)}
+  html.cfo-design .my-schedules :is(.ms-search-panel,.ms-filter-panel,.ms-table-panel,.ms-calendar-panel){box-shadow:none;border-radius:14px}
+  html.cfo-design .my-schedules :is(.ms-view-switch button,.ms-attention-badge,.ms-draft){color:var(--brand-ink)}
+  html.cfo-design .my-schedules .ms-view-switch .ms-active{background:var(--brand-blue);color:#fff}
+  html.cfo-design .my-schedules :is(.ms-modal,.ms-detail){background:#fff;border-color:var(--brand-line);box-shadow:none}
+  html.cfo-design .my-schedules .ms-detail>span{color:var(--brand-muted)}
+  html.cfo-design :is(.my-schedules,.dashboard-schedule-summary) :is(.ms-section-chip,.ms-course-chip){background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-blue)}
+  html.cfo-design .my-schedules .ms-danger{background:var(--brand-danger)!important;border-color:var(--brand-danger)!important;color:#fff}
+  html.cfo-design .my-schedules .ms-day.ms-today .ms-day-num{color:var(--brand-blue)}
+  html.cfo-design body.admin-background #main-content #page.my-schedules .ms-open-event{color:#fff}
+  html.cfo-design body.admin-background #main-content #page.my-schedules .ms-draft-event{color:var(--brand-ink)}
+  html.cfo-design body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) .admin-header{background:#fff!important;box-shadow:none!important}
+  html.cfo-design body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) .admin-header :is(.admin-header-control,#live-status){background:var(--brand-soft)!important}
+  html.cfo-design body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) #main-content .page-heading{background:none!important}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]){--sb-text:var(--brand-ink);--sb-muted:var(--brand-muted);--sb-input:#fff;--sb-input-text:var(--brand-ink);--sb-input-muted:var(--brand-muted);--sb-input-border:var(--brand-line);--sb-box:var(--brand-soft);--sb-box-text:var(--brand-ink)}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-banner,.sb-options,.sb-groups,.sb-group,.sb-add-group,.sb-group-count){background:var(--brand-soft)!important;color:var(--brand-ink);border-color:var(--brand-line)!important}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-card,.sb-course-group,.sb-conflict,.schedule-course-dialog){background:#fff!important;border-color:var(--brand-line)!important;box-shadow:none}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(input,select,textarea){--sb-input:#fff;--sb-input-text:var(--brand-ink);--sb-input-border:var(--brand-line);background:#fff!important;color:var(--brand-ink)!important}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-btn{background:#fff;color:var(--brand-ink)!important;border-color:var(--brand-line)}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-btn-blue,.sb-add-course,.sb-add-section,[data-sb-draft],.sb-btn-green){background:var(--brand-blue);border-color:var(--brand-blue);color:#fff!important}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-btn-red,.sb-remove-group){background:#fff0f3;border-color:#e8bbca;color:var(--brand-danger)!important}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-step,.sb-summary-icon,.sb-summary-section,.sb-tag){background:var(--brand-soft);color:var(--brand-blue)}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-actions{background:#fff!important;border-color:var(--brand-line)}
+  html.cfo-design .cert-info{background:var(--brand-soft);color:var(--brand-ink);border-color:var(--brand-line)}
+  html.cfo-design body.admin-background #registration-dialog .button.primary{color:#fff}
+  html.cfo-design body.admin-background #main-content .btn.cert-print{color:var(--brand-blue);border-color:var(--brand-line)}
+  html.cfo-design body.admin-background #main-content .btn.cert-download{color:var(--brand-success);border-color:var(--brand-line)}
+  html.cfo-design :is(.admin-profile-avatar,.admin-profile-summary .avatar){background:var(--brand-night);color:#fff}
+
+  /* Student workspace uses the same shell, with its existing navigation controls. */
+  html.cfo-design body.dashboard-mode .dash-shell{--sidebar-width:278px;background:var(--brand-canvas);color:var(--brand-ink);font-family:var(--brand-body)}
+  html.cfo-design body.dashboard-mode .dash-sidebar{inset:16px auto 16px 16px;width:246px;height:calc(100dvh - 32px);border-radius:26px;background:var(--brand-night);color:#fff;border:0;box-shadow:none;overflow-y:auto}
+  html.cfo-design body.dashboard-mode .dash-sidebar::before{content:none}
+  html.cfo-design body.dashboard-mode .dash-shell.dash-nav-hidden .dash-sidebar{transform:translateX(calc(-100% - 32px))}
+  html.cfo-design body.dashboard-mode .dash-brand{display:flex;flex-direction:row;align-items:center;gap:12px;padding:28px 18px;text-align:left;color:#fff}
+  html.cfo-design body.dashboard-mode .dash-seal{width:44px;height:44px;flex:0 0 44px;margin:0;border:0;box-shadow:none;background:#fff url('images/cfo/cfo-logo.png') center/contain no-repeat;border-radius:50%}
+  html.cfo-design body.dashboard-mode .dash-university{font:700 19px/1.1 var(--brand-heading);color:#fff;letter-spacing:-.025em}
+  html.cfo-design body.dashboard-mode .dash-university strong{font:inherit}
+  html.cfo-design body.dashboard-mode .dash-brand-subtitle{display:none}
+  html.cfo-design body.dashboard-mode .dash-nav{gap:6px;padding:0 14px}
+  html.cfo-design body.dashboard-mode .dash-nav :is(a,button){min-height:46px;padding:11px 12px;gap:12px;border:0;border-radius:10px;color:#e9f0fa;background:transparent;font-size:15px;font-weight:600}
+  html.cfo-design body.dashboard-mode .dash-nav :is(a,button):hover{background:#ffffff12}
+  html.cfo-design body.dashboard-mode .dash-nav .is-active{background:var(--brand-gold);color:var(--brand-night)}
+  html.cfo-design body.dashboard-mode .dash-nav .icon{width:20px;height:20px}
+  html.cfo-design body.dashboard-mode .dash-logout{margin:24px 18px 0;padding:14px 8px;color:#fff;border-color:#ffffff24;font-size:14px}
+  html.cfo-design body.dashboard-mode .dash-sidebar-quote{margin:auto 22px 24px;padding-top:32px;color:#c5d3e3;font:14px/1.6 var(--brand-heading)}
+  html.cfo-design body.dashboard-mode .dash-sidebar-close{color:#fff;background:var(--brand-night)}
+  html.cfo-design body.dashboard-mode .dash-topbar{height:auto;min-height:72px;margin:16px 16px 0;padding:12px 20px;border:1px solid var(--brand-line);border-radius:16px;background:#fff;box-shadow:none;color:var(--brand-ink)}
+  html.cfo-design body.dashboard-mode :is(.dash-icon-button,.dash-profile-button){color:var(--brand-ink)}
+  html.cfo-design body.dashboard-mode .dash-sidebar .dash-sidebar-close{color:#fff;border-color:#ffffff40}
+  html.cfo-design body.dashboard-mode :is(.dash-avatar,.profile-avatar){background:var(--brand-night);color:#fff}
+  html.cfo-design body.dashboard-mode .dash-content{max-width:1544px;padding:30px clamp(20px,3vw,44px) 64px;margin:auto}
+  html.cfo-design body.dashboard-mode .dash-welcome{background:none;border:0;padding:0 0 26px;box-shadow:none;color:var(--brand-ink)}
+  html.cfo-design body.dashboard-mode .dash-welcome h1{font:700 clamp(28px,3vw,38px)/1.12 var(--brand-heading);color:var(--brand-ink);margin:8px 0 12px}
+  html.cfo-design body.dashboard-mode .dash-greeting{color:var(--brand-blue);font:600 11px var(--brand-body);letter-spacing:.12em}
+  html.cfo-design body.dashboard-mode :is(.dash-subtitle,.dash-welcome blockquote,.dash-welcome cite){color:var(--brand-muted);font-family:var(--brand-body)}
+  html.cfo-design body.dashboard-mode :is(.dash-status,.dash-panel){background:#fff;border:1px solid var(--brand-line);border-radius:14px;box-shadow:none}
+  html.cfo-design body.dashboard-mode .dash-status{padding:20px}
+  html.cfo-design body.dashboard-mode .dash-status h2{font:500 13px var(--brand-body)!important;color:var(--brand-muted)}
+  html.cfo-design body.dashboard-mode .dash-status p{font:700 24px/1.2 var(--brand-heading);color:var(--brand-ink)}
+  html.cfo-design body.dashboard-mode .dash-status-grid{gap:16px;margin-bottom:24px}
+  html.cfo-design body.dashboard-mode .dash-panel{padding:22px}
+  html.cfo-design body.dashboard-mode .dash-panel h2{font-size:21px;color:var(--brand-ink)}
+  html.cfo-design body.dashboard-mode :is(.dash-panel h2>.icon,.dash-status-icon){color:var(--brand-blue);background:var(--brand-soft)}
+  html.cfo-design body.dashboard-mode :is(.dash-view-schedule,.dash-quick-grid button){background:var(--brand-blue);color:#fff;border:1px solid var(--brand-blue);border-radius:8px;box-shadow:none}
+  html.cfo-design body.dashboard-mode :is(.dash-view-schedule,.dash-quick-grid button):hover{background:var(--brand-night)}
+  html.cfo-design .sp{--green:var(--brand-blue);--green-dark:var(--brand-night);--green-mid:var(--brand-blue);--green-soft:var(--brand-soft);--ink:var(--brand-ink);--muted:var(--brand-muted);--line:var(--brand-line);--page:var(--brand-canvas);font-family:var(--brand-body)}
+  html.cfo-design .sp :is(h1,.metric-number,.main-text){color:var(--brand-ink)}
+  html.cfo-design .sp :is(.metric-icon,.announce-icon,.btn.soft){background:var(--brand-soft);color:var(--brand-blue);border-color:var(--brand-line)}
+  html.cfo-design .sp .announcement-item.selected{background:var(--brand-soft);box-shadow:none;border-left:3px solid var(--brand-blue)}
+  html.cfo-design .sp :is(.metric,.panel,.announcement-list-panel,.announcement-detail){box-shadow:none;border-color:var(--brand-line)}
+
+  /* Public entry: the reference's editorial blue field, real chapel photo and login. */
+  html.cfo-design[data-cfo-surface=auth] body{background:var(--brand-night);min-height:100dvh}
+  html.cfo-design[data-cfo-surface=auth] .login-page{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,460px);grid-template-rows:auto auto 1fr;gap:28px 7%;width:calc(100% - 80px);max-width:1240px;margin:0 auto;padding:32px 0 52px;min-height:100dvh}
+  html.cfo-design[data-cfo-surface=auth] .login-brand{grid-column:1/-1;display:flex;align-items:center;gap:12px;margin-bottom:30px;color:#fff;font:700 21px/1.1 var(--brand-heading);text-decoration:none}
+  html.cfo-design[data-cfo-surface=auth] .login-brand img{width:48px;height:48px;border-radius:50%;background:#fff}
+  html.cfo-design[data-cfo-surface=auth] .login-brand small{display:block;font:400 12px/1.5 var(--brand-body);color:#c5d3e3;margin-top:5px}
+  html.cfo-design[data-cfo-surface=auth] .login-heading{grid-column:1;grid-row:2;margin:0;padding:30px 0 0;text-align:left;align-self:start}
+  html.cfo-design[data-cfo-surface=auth] .login-heading h1{max-width:650px;margin:0 0 24px;color:#fff;font:700 clamp(46px,5.5vw,76px)/.98 var(--brand-heading)!important;letter-spacing:-.045em;text-wrap:balance}
+  html.cfo-design[data-cfo-surface=auth] .login-heading h1 em{font-style:normal;color:var(--brand-gold)}
+  html.cfo-design[data-cfo-surface=auth] .login-heading p{max-width:440px;color:#c5d3e3;font-size:17px;line-height:1.7;margin:0}
+  html.cfo-design[data-cfo-surface=auth] .quick-actions{grid-column:1;grid-row:3;display:flex;flex-direction:column;gap:12px;align-self:start;max-width:460px;margin:8px 0 0}
+  html.cfo-design[data-cfo-surface=auth] .quick-card{display:flex;align-items:center;gap:16px;min-height:78px;padding:16px 0;border:0;border-radius:0;background:none;color:#fff;box-shadow:none;text-decoration:none}
+  html.cfo-design[data-cfo-surface=auth] .quick-card:hover{background:#ffffff08;transform:none}
+  html.cfo-design[data-cfo-surface=auth] .quick-card strong{color:#fff;font:700 21px var(--brand-heading)}
+  html.cfo-design[data-cfo-surface=auth] .quick-card span{color:#c5d3e3;font-size:13px}
+  html.cfo-design[data-cfo-surface=auth] .quick-card>.icon{color:var(--brand-gold);background:none}
+  html.cfo-design[data-cfo-surface=auth] .quick-card .chevron{margin-left:auto;width:18px}
+  html.cfo-design[data-cfo-surface=auth] .login-card{grid-column:2;grid-row:2/4;align-self:start;width:100%;margin:0;padding:0 32px 32px;overflow:hidden;border:0;border-radius:18px;background:#fff;color:var(--brand-ink);box-shadow:none}
+  html.cfo-design[data-cfo-surface=auth] .login-photo{display:block;width:calc(100% + 64px);max-width:none;height:150px;margin:0 -32px 26px;object-fit:cover;object-position:center 48%}
+  html.cfo-design[data-cfo-surface=auth] .login-title{display:block;margin:0 0 8px;color:var(--brand-ink);font-size:32px}
+  html.cfo-design[data-cfo-surface=auth] .title-icon{display:none}
+  html.cfo-design[data-cfo-surface=auth] .login-description{margin:0 0 22px;color:var(--brand-muted);font-size:13px;text-align:left}
+  html.cfo-design[data-cfo-surface=auth] .login-card .field{margin-bottom:18px}
+  html.cfo-design[data-cfo-surface=auth] .login-card :is(label,.remember){color:var(--brand-ink);font-size:13px}
+  html.cfo-design[data-cfo-surface=auth] .login-card :is(input:not([type=checkbox]),select){height:46px;font-size:14px}
+  html.cfo-design[data-cfo-surface=auth] .login-card .input-wrap>.icon{color:var(--brand-muted)}
+  html.cfo-design[data-cfo-surface=auth] .login-card .remember{margin:4px 0 20px}
+  html.cfo-design[data-cfo-surface=auth] .login-card .primary{min-height:48px;font-size:15px}
+  html.cfo-design[data-cfo-surface=auth] .login-card :is(.divider,.google){display:none}
+  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell{background:#fff;color:var(--brand-ink);border:0;box-shadow:none;border-radius:20px}
+  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .brand-panel.auth-brand-panel{background:var(--brand-blue);color:#fff;border:0;padding:48px 28px}
+  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .brand-panel :is(p,h1,h2,.auth-university,.auth-product,.auth-quote,.auth-motto){color:#fff}
+  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .brand-panel{font-family:var(--brand-heading)}
+  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .auth-seal{width:100px;height:100px;box-shadow:none;border-radius:50%;background:#fff}
+  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .registration-main{background:#fff;color:var(--brand-ink);padding:36px}
+  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .steps :is(.active,.completed) .step-number{background:var(--brand-blue);border-color:var(--brand-blue);color:#fff}
+  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .reminder{background:#fff7da;color:#654b00;border-color:#eddb9e}
+  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .outline{background:#fff;color:var(--brand-ink);border-color:var(--brand-line)}
+  html.cfo-design[data-cfo-surface=password] .btn:not(.secondary){background:var(--brand-blue)}
+  html.cfo-design[data-cfo-surface=password] .card{border-color:var(--brand-line);box-shadow:none}
+  @media(max-width:1100px){
+    html.cfo-design body.dashboard-mode .dash-sidebar{transform:translateX(calc(-100% - 32px))}
+    html.cfo-design body.dashboard-mode .dash-shell.dash-nav-open .dash-sidebar{transform:translateX(0)}
+    html.cfo-design body.dashboard-mode .dash-main-pane{margin-left:0}
+  }
+  @media(max-width:1000px){html.cfo-design body.admin-background.nav-open .sidebar{transform:translateX(0)}}
+  @media(max-width:800px){
+    html.cfo-design[data-cfo-surface=auth] .login-page{width:calc(100% - 40px);max-width:540px;grid-template-columns:minmax(0,1fr);gap:28px;padding-top:24px}
+    html.cfo-design[data-cfo-surface=auth] .login-brand{margin:0;font-size:19px}
+    html.cfo-design[data-cfo-surface=auth] .login-heading{grid-row:2;padding:0}
+    html.cfo-design[data-cfo-surface=auth] .login-heading h1{font-size:48px!important;margin-bottom:16px}
+    html.cfo-design[data-cfo-surface=auth] .login-heading p{font-size:15px}
+    html.cfo-design[data-cfo-surface=auth] .login-card{grid-column:1;grid-row:3}
+    html.cfo-design[data-cfo-surface=auth] .quick-actions{grid-row:4;margin:0;max-width:none}
+  }
+  @media(max-width:600px){
+    html.cfo-design body.admin-background #main-content,html.cfo-design body.dashboard-mode .dash-content{padding:24px 16px 48px}
+    html.cfo-design body.admin-background{--admin-title-size:28px;--admin-metric-value-size:25px}
+    html.cfo-design body.dashboard-mode .dash-topbar{margin:10px 10px 0;padding:10px 12px}
+    html.cfo-design body.dashboard-mode .dash-panel{padding:18px}
+    html.cfo-design :is(.panel-head,.panel-body){padding:18px 16px}
+    html.cfo-design[data-cfo-surface=auth] #app>.registration-shell{width:calc(100% - 24px);margin:12px auto;grid-template-columns:1fr}
+    html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .registration-main{padding:24px 20px}
+    html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .brand-panel.auth-brand-panel{padding:24px}
+  }
+  @media(prefers-reduced-motion:reduce){html.cfo-design *,html.cfo-design *::before,html.cfo-design *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+}
