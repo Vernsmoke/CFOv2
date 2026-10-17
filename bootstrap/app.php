@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO
         );
         $middleware->alias(['cfo' => \App\Http\Middleware\EnsureCfoAccess::class]);
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->redirectGuestsTo('/login');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
