@@ -266,16 +266,25 @@
       } else closeDialog();
     }
     actions['close-dialog']=cancelConnectedSave;
+    const backendTimeoutMs = 15000;
     async function backend(url, method = 'GET', body) {
-      const multipart=body instanceof FormData; const response = await fetch(url, {method, credentials:'same-origin', headers:{Accept:'application/json',...(!multipart?{'Content-Type':'application/json'}:{}),'X-CSRF-TOKEN':window.CFO_BACKEND.csrf_token}, ...(body?{body:multipart?body:JSON.stringify(body)}:{})});
-      const result = await response.json().catch(()=>({}));
-      if (!response.ok) {
-        if (response.status===401) location.href='/#login';
-        const error=Error(response.status===419?'Your session expired. Reload the page.':Object.values(result.errors||{}).flat().join('\n')||result.message||'The request failed.');
-        error.fields=result.errors;throw error;
-      }
-      if (result.csrf_token) Object.assign(window.CFO_BACKEND,result);
-      return result;
+      const multipart=body instanceof FormData;
+      const request=new AbortController();
+      const timeout=setTimeout(()=>request.abort(),backendTimeoutMs);
+      try {
+        const response = await fetch(url, {method, credentials:'same-origin', signal:request.signal, headers:{Accept:'application/json',...(!multipart?{'Content-Type':'application/json'}:{}),'X-CSRF-TOKEN':window.CFO_BACKEND.csrf_token}, ...(body?{body:multipart?body:JSON.stringify(body)}:{})});
+        const result = await response.json().catch(()=>({}));
+        if (!response.ok) {
+          if (response.status===401) location.href='/#login';
+          const error=Error(response.status===419?'Your session expired. Reload the page.':Object.values(result.errors||{}).flat().join('\n')||result.message||'The request failed.');
+          error.fields=result.errors;throw error;
+        }
+        if (result.csrf_token) Object.assign(window.CFO_BACKEND,result);
+        return result;
+      } catch(error) {
+        if(error?.name==='AbortError')throw Error('The server took too long to respond. Check that the database is running, then try again.');
+        throw error;
+      } finally { clearTimeout(timeout); }
     }
     async function saveConnected(url, method, values, confirmed = false, onSaved = null) {
       if(connectedSaveBusy)return;
