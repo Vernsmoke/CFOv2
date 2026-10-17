@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="admin-background-root">
+<html lang="en" class="admin-background-root cfo-design" data-cfo-surface="admin">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,6 @@
     <title>Recollection Registrations · CFO</title>
     <link rel="stylesheet" href="{{ asset('recollection-registrations.css') }}?v={{ filemtime(public_path('recollection-registrations.css')) }}">
     <link rel="stylesheet" href="{{ asset('admin-sidebar.css') }}?v={{ filemtime(public_path('admin-sidebar.css')) }}">
-    <link rel="stylesheet" href="{{ asset('admin-background.css') }}?v={{ filemtime(public_path('admin-background.css')) }}">
     <link rel="stylesheet" media="screen" href="{{ asset('admin-typography.css') }}?v={{ filemtime(public_path('admin-typography.css')) }}">
     <link rel="stylesheet" media="screen" href="{{ asset('admin-header.css') }}?v={{ filemtime(public_path('admin-header.css')) }}">
     <link rel="stylesheet" media="screen" href="{{ asset('admin-scrollbar.css') }}?v={{ filemtime(public_path('admin-scrollbar.css')) }}">
@@ -17,12 +16,12 @@
     <script src="{{ asset('recollection-registrations.js') }}?v={{ filemtime(public_path('recollection-registrations.js')) }}" defer></script>
     <script id="registration-live-versions" type="application/json">@json($liveVersions)</script>
     <script src="{{ asset('registration-live.js') }}?v={{ filemtime(public_path('registration-live.js')) }}" defer></script>
-    <link rel="stylesheet" media="screen" href="{{ asset('admin-theme.css') }}?v={{ filemtime(public_path('admin-theme.css')) }}">
     <link rel="stylesheet" media="screen" href="{{ asset('cfo-search-inputs.css') }}?v={{ filemtime(public_path('cfo-search-inputs.css')) }}">
 <link rel="stylesheet" media="screen" href="{{ asset('admin-filter-dropdowns.css') }}?v={{ filemtime(public_path('admin-filter-dropdowns.css')) }}">
 <script src="{{ asset('admin-filter-dropdowns.js') }}?v={{ filemtime(public_path('admin-filter-dropdowns.js')) }}" defer></script>
     <link rel="stylesheet" media="screen" href="{{ asset('admin-action-bars.css') }}?v={{ filemtime(public_path('admin-action-bars.css')) }}">
     <script src="{{ asset('admin-action-bars.js') }}?v={{ filemtime(public_path('admin-action-bars.js')) }}" defer></script>
+@include('partials.design-system')
 </head>
 <body class="registrations-page admin-background">
     <a class="skip-link" href="#main-content">Skip to content</a>

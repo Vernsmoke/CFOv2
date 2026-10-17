@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="admin-background-root">
+<html lang="en" class="admin-background-root cfo-design" data-cfo-surface="admin">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +13,6 @@
 <script src="{{ asset('cfo-search.js') }}?v={{ filemtime(public_path('cfo-search.js')) }}" defer></script>
 @endif
 <link rel="stylesheet" href="{{ asset('admin-sidebar.css') }}?v={{ filemtime(public_path('admin-sidebar.css')) }}">
-<link rel="stylesheet" href="{{ asset('admin-background.css') }}?v={{ filemtime(public_path('admin-background.css')) }}">
 <link rel="stylesheet" href="{{ asset('admin-attendance.css') }}?v={{ filemtime(public_path('admin-attendance.css')) }}">
 <link rel="stylesheet" href="{{ asset('admin-certificates.css') }}?v={{ filemtime(public_path('admin-certificates.css')) }}">
 <link rel="stylesheet" media="screen" href="{{ asset('admin-typography.css') }}?v={{ filemtime(public_path('admin-typography.css')) }}">
@@ -30,8 +29,6 @@
   <link rel="stylesheet" media="screen" href="{{ asset('admin-change-requests.css') }}?v={{ filemtime(public_path('admin-change-requests.css')) }}">
   <script src="{{ asset('admin-change-requests.js') }}?v={{ filemtime(public_path('admin-change-requests.js')) }}" defer></script>
   <script src="{{ asset('admin-announcements.js') }}?v={{ filemtime(public_path('admin-announcements.js')) }}" defer></script>
-<link rel="stylesheet" media="screen" href="{{ asset('admin-dashboard.css') }}?v={{ filemtime(public_path('admin-dashboard.css')) }}">
-    <link rel="stylesheet" media="screen" href="{{ asset('admin-theme.css') }}?v={{ filemtime(public_path('admin-theme.css')) }}">
     <link rel="stylesheet" media="screen" href="{{ asset('cfo-search-inputs.css') }}?v={{ filemtime(public_path('cfo-search-inputs.css')) }}">
 <link rel="stylesheet" media="screen" href="{{ asset('admin-filter-dropdowns.css') }}?v={{ filemtime(public_path('admin-filter-dropdowns.css')) }}">
 <script src="{{ asset('admin-filter-dropdowns.js') }}?v={{ filemtime(public_path('admin-filter-dropdowns.js')) }}" defer></script>
@@ -44,6 +41,7 @@
   <script src="{{ asset('admin-settings-navigation.js') }}?v={{ filemtime(public_path('admin-settings-navigation.js')) }}" defer></script>
   <script src="{{ asset('admin-history-documents.js') }}?v={{ filemtime(public_path('admin-history-documents.js')) }}" defer></script>
   <script src="{{ asset('admin-dashboard.js') }}?v={{ filemtime(public_path('admin-dashboard.js')) }}" defer></script>
+@include('partials.design-system')
 </head>
 <body class="admin-background">
   <!-- Authenticated administrator workspace. -->
@@ -51,7 +49,7 @@
   <aside class="sidebar" id="sidebar" aria-label="Admin navigation">
     <button class="icon-btn nav-close" id="close-nav" type="button" aria-label="Close navigation" aria-controls="sidebar"><span class="sidebar-close-symbol" aria-hidden="true">&times;</span><svg class="icon sidebar-collapse-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
     <a class="brand" href="#admin-dashboard">
-      <span class="sidebar-logo"><img src="{{ asset('assets/ulslogo.png') }}" alt="Christian Formation Office logo" width="44" height="44"></span>
+      <span class="sidebar-logo"><img src="{{ asset('images/cfo/cfo-logo.png') }}" alt="Christian Formation Office logo" width="44" height="44"></span>
       <strong class="sidebar-school-name">Christian<br>Formation Office</strong>
     </a>
     <nav id="navigation" aria-label="Main navigation" data-nav-badges="{{ url('/api/admin/nav-badges') }}" data-badges="{{ json_encode(\App\Services\AdminNavigation::badges()) }}"></nav>

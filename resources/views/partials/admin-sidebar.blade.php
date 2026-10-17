@@ -1,7 +1,7 @@
 <aside class="sidebar" id="sidebar" aria-label="Admin navigation">
     <button class="nav-close" type="button" aria-label="Close navigation" aria-controls="sidebar"><span class="sidebar-close-symbol" aria-hidden="true">&times;</span><svg class="icon sidebar-collapse-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
     <a class="brand" href="{{ url('/admin') }}#admin-dashboard">
-        <span class="sidebar-logo"><img src="{{ asset('assets/ulslogo.png') }}" alt="Christian Formation Office logo" width="44" height="44"></span>
+        <span class="sidebar-logo"><img src="{{ asset('images/cfo/cfo-logo.png') }}" alt="Christian Formation Office logo" width="44" height="44"></span>
         <strong class="sidebar-school-name">Christian<br>Formation Office</strong>
     </a>
     @php
