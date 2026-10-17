@@ -37,7 +37,7 @@ return [
     ],
     'Office' => [
         'admin-announcements' => ['Announcements', 'info'],
-        'admin-activity' => ['Activity log', 'list'],
+        'admin-activity' => ['Activity log', 'list', ['super_admin_only' => true]],
         'admin-settings' => ['Settings', 'settings'],
     ],
 ];

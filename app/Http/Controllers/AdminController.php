@@ -1,14 +1,27 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Models\{Announcement, Certificate, PasswordResetRequest, Registration, Schedule, ScheduleChange, User};
 use App\Http\Requests\SaveRecollectionScheduleRequest;
-use App\Services\CfoService as Cfo;
-use App\Services\CertificateTemplate;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Cache, Crypt, DB, Hash, Storage};
-use Illuminate\Support\Str;
+use App\Models\Announcement;
+use App\Models\Certificate;
+use App\Models\PasswordResetRequest;
+use App\Models\Registration;
+use App\Models\Schedule;
+use App\Models\ScheduleChange;
+use App\Models\User;
 use App\Services\AccountId;
+use App\Services\AutomaticCertificate;
+use App\Services\CertificateTemplate;
+use App\Services\CfoService as Cfo;
+use App\Services\StudentIdentity;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -17,14 +30,21 @@ class AdminController extends Controller
     public function state(Request $request)
     {
         $resources = array_filter(explode(',', (string) $request->query('resources', '')));
+        if (! $request->user()->isSuperAdmin() && array_intersect($resources, ['settings', 'activity_logs'])) {
+            abort(403);
+        }
         $all = $resources === [] || in_array('year', $resources);
         $has = fn (string ...$names) => $all || array_intersect($resources, $names) !== [];
+        $users = User::query()->orderBy('name');
+        if (! $request->user()->isSuperAdmin()) {
+            $users->where('role', User::ROLE_STUDENT);
+        }
 
         return response()->json(array_filter([
             'current_year' => now()->year,
             'server_date' => today()->toDateString(),
             'archive_timezone' => config('app.timezone'),
-            'users' => $has('users') ? User::orderBy('name')->get() : null,
+            'users' => $has('users') ? $users->get() : null,
             'registrations' => $has('registrations', 'attendance', 'users', 'schedules') ? Registration::currentYear()->with(['user', 'schedule.courses', 'certificate'])->latest()->get() : null,
             'history' => $request->boolean('include_history') ? Registration::historical()->with(['user', 'schedule.courses', 'certificate', 'certificateRecord'])->orderByDesc('year')->latest()->get() : null,
             'schedules' => $has('schedules', 'registrations', 'schedule_changes') ? Schedule::withScheduleLinks()->orderBy('date')->get()->each(fn ($schedule) => $schedule->setAttribute('has_linked_records', $schedule->has_linked_records)) : null,
@@ -32,11 +52,11 @@ class AdminController extends Controller
             'resets' => $has('password_resets', 'users') ? PasswordResetRequest::with(['user', 'reviewer:id,name'])->latest()->get() : null,
             'academic_options' => $has('academic_options') ? DB::table('academic_options')->orderBy('type')->orderBy('name')->get() : null,
             'course_year_sections' => $has('academic_options', 'course_year_sections') ? DB::table('course_year_sections')->orderBy('course_id')->orderBy('year_level')->orderBy('section')->get() : null,
-            'settings' => $has('settings') ? Cfo::settings('office', ['name' => 'Christian Formation Office', 'school' => 'Christian Formation Office']) : null,
-            'template' => $has('settings') ? CertificateTemplate::current() : null,
+            'settings' => $request->user()->isSuperAdmin() && $has('settings') ? Cfo::settings('office', ['name' => 'Christian Formation Office', 'school' => 'Christian Formation Office']) : null,
+            'template' => $request->user()->isSuperAdmin() && $has('settings') ? CertificateTemplate::current() : null,
             'notifications' => $has('notifications') ? DB::table('cfo_notifications')->where('user_id', $request->user()->id)->latest()->limit(50)->get() : null,
             'announcements' => $has('announcements') ? Announcement::with('author')->orderByDesc('published_at')->get() : null,
-            'logs' => $has('activity_logs') ? DB::table('activity_logs')->leftJoin('users', 'users.id', '=', 'activity_logs.actor_id')->select('activity_logs.*', 'users.name as actor')->orderByDesc('activity_logs.id')->limit(200)->get() : null,
+            'logs' => $request->user()->isSuperAdmin() && $has('activity_logs') ? DB::table('activity_logs')->leftJoin('users', 'users.id', '=', 'activity_logs.actor_id')->select('activity_logs.*', 'users.name as actor')->orderByDesc('activity_logs.id')->limit(200)->get() : null,
         ], fn ($value) => $value !== null))->header('Cache-Control', 'private, no-store');
     }
 
@@ -59,7 +79,9 @@ class AdminController extends Controller
     public function user(Request $request, User $user)
     {
         abort_unless($user->role === 'Student', 403);
-        if ($request->exists('email')) $request->merge(['email' => strtolower(trim((string) $request->input('email', '')))]);
+        if ($request->exists('email')) {
+            $request->merge(['email' => strtolower(trim((string) $request->input('email', '')))]);
+        }
         $input = $request->validate([
             'student_id' => ['sometimes', 'bail', 'required', 'string', 'max:50', ...($request->input('student_id') !== $user->student_id ? ['regex:'.AccountId::PATTERN] : []), Rule::unique('users', 'student_id')->ignore($user->id)],
             'first_name' => 'required|string|max:80', 'middle_name' => 'nullable|string|max:80', 'last_name' => 'required|string|max:80',
@@ -84,30 +106,76 @@ class AdminController extends Controller
         $input['name'] = trim(implode(' ', array_filter([$input['first_name'], $input['middle_name'] ?? '', $input['last_name']])));
         DB::transaction(function () use ($user, $input) {
             $user->update($input);
-            if ($user->status !== 'Approved') { DB::table('sessions')->where('user_id', $user->id)->delete(); $user->setRememberToken(Str::random(60)); $user->save(); }
+            if ($user->status !== 'Approved') {
+                DB::table('sessions')->where('user_id', $user->id)->delete();
+                $user->setRememberToken(Str::random(60));
+                $user->save();
+            }
             Cfo::audit('account.reviewed', 'user', $user->id, ['status' => $user->status]);
         });
+
         return response()->json(['message' => 'Student account saved.']);
     }
 
-    public function reviewAdmin(Request $request, User $user)
+    public function createStaff(Request $request)
     {
-        abort_unless($user->role === 'Admin' && $user->id !== $request->user()->id, 403);
+        if ($request->exists('email')) {
+            $request->merge(['email' => strtolower(trim((string) $request->input('email', '')))]);
+        }
         $input = $request->validate([
-            'status' => 'required|in:Approved,Rejected',
-            'rejection_reason' => 'required_if:status,Rejected|nullable|string|max:2000',
+            'employee_id' => ['required', 'string', 'max:50', Rule::unique('users', 'student_id')],
+            'first_name' => 'required|string|max:80',
+            'middle_name' => 'nullable|string|max:80',
+            'last_name' => 'required|string|max:80',
+            'email' => ['required', 'email', 'max:190', Rule::unique('users', 'email')],
         ]);
-        DB::transaction(function () use ($user, $input) {
-            $pending = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
-            Cfo::require($pending->status === 'Pending', 'This administrator account was already reviewed.');
-            if ($input['status'] === 'Approved') \App\Services\StudentIdentity::assertCanRegisterAdmin($pending->getAttributes());
-            $pending->update([
-                'status' => $input['status'],
-                'rejection_reason' => $input['status'] === 'Rejected' ? $input['rejection_reason'] : null,
+        Cfo::require(! User::where(function ($query) use ($input) {
+            $query->where('original_email', $input['email'])
+                ->orWhere('login_email', $input['email'])
+                ->orWhere('system_username', $input['email']);
+        })->exists(), 'This email is already used by another account.');
+        StudentIdentity::assertCanRegisterAdmin([
+            'student_id' => $input['employee_id'], 'email' => $input['email'],
+            'first_name' => $input['first_name'], 'middle_name' => $input['middle_name'] ?? null,
+            'last_name' => $input['last_name'],
+        ]);
+        $temporary = Str::random(12).'Aa1!';
+        $staff = DB::transaction(function () use ($input, $temporary) {
+            $staff = User::create([
+                'name' => trim(implode(' ', array_filter([$input['first_name'], $input['middle_name'] ?? '', $input['last_name']]))),
+                'first_name' => $input['first_name'], 'middle_name' => $input['middle_name'] ?? null, 'last_name' => $input['last_name'],
+                'student_id' => $input['employee_id'], 'email' => $input['email'], 'original_email' => $input['email'],
+                'system_username' => $input['email'], 'login_email' => $input['email'],
+                'role' => User::ROLE_CFO_STAFF, 'status' => 'Approved', 'password' => $temporary,
+                'password_change_required' => true, 'password_change_expires_at' => now()->addDay(),
             ]);
-            Cfo::audit('account.reviewed', 'user', $pending->id, ['role' => 'Admin', 'status' => $pending->status]);
+            Cfo::audit('staff.created', 'user', $staff->id, ['role' => User::ROLE_CFO_STAFF]);
+
+            return $staff;
         });
-        return response()->json(['message' => 'Administrator account reviewed.']);
+
+        return response()->json([
+            'message' => 'CFO Staff account created. Give the temporary password to the staff member in person; it is shown only once.',
+            'user' => $staff, 'temporary_password' => $temporary,
+        ], 201)->header('Cache-Control', 'private, no-store');
+    }
+
+    public function updateStaff(Request $request, User $user)
+    {
+        abort_unless($user->isCfoStaff(), 404);
+        $input = $request->validate(['status' => 'required|in:Approved,Inactive']);
+        DB::transaction(function () use ($user, $input) {
+            $staff = User::lockForUpdate()->findOrFail($user->id);
+            $staff->update(['status' => $input['status']]);
+            if ($staff->status !== 'Approved') {
+                DB::table('sessions')->where('user_id', $staff->id)->delete();
+                $staff->setRememberToken(Str::random(60));
+                $staff->save();
+            }
+            Cfo::audit('staff.status_changed', 'user', $staff->id, ['status' => $staff->status]);
+        });
+
+        return response()->json(['message' => 'CFO Staff account updated.']);
     }
 
     public function resetStudentPassword(Request $request, User $user)
@@ -117,7 +185,7 @@ class AdminController extends Controller
         $temporary = Str::random(12).random_int(0, 9);
         $expiresAt = now()->addDay();
 
-        DB::transaction(function () use ($user, $request, $temporary, $expiresAt) {
+        DB::transaction(function () use ($user, $temporary, $expiresAt) {
             $student = User::lockForUpdate()->findOrFail($user->id);
             Cfo::require($student->role === 'Student' && $student->status === 'Approved', 'Only approved student accounts can be reset.');
 
@@ -162,13 +230,21 @@ class AdminController extends Controller
             // Venue conflicts can involve disjoint courses. Lock the existing
             // course rows in a consistent order to serialize all schedule saves.
             DB::table('academic_options')->where('type', 'course')->orderBy('id')->lockForUpdate()->get();
-            if ($schedule?->exists) $schedule = Schedule::with('courses')->lockForUpdate()->findOrFail($schedule->id);
-            if ($schedule?->exists) Cfo::require(! $schedule->finalized_at && $schedule->status !== 'Cancelled', 'Completed and Cancelled schedules are view only.');
+            if ($schedule?->exists) {
+                $schedule = Schedule::with('courses')->lockForUpdate()->findOrFail($schedule->id);
+            }
+            if ($schedule?->exists) {
+                Cfo::require(! $schedule->finalized_at && $schedule->status !== 'Cancelled', 'Completed and Cancelled schedules are view only.');
+            }
             if ($yearBlocks !== null) {
                 $allowedStatuses = ['Draft' => ['Draft', 'Open'], 'Open' => ['Open', 'Closed'], 'Closed' => ['Closed', 'Open']];
-                if ($schedule?->exists) Cfo::require(in_array($input['status'], $allowedStatuses[$schedule->status] ?? [], true), 'This schedule status cannot be changed in that way.');
+                if ($schedule?->exists) {
+                    Cfo::require(in_array($input['status'], $allowedStatuses[$schedule->status] ?? [], true), 'This schedule status cannot be changed in that way.');
+                }
                 $mapping = $this->validatedYearBlockSections($yearBlocks, $courseIds, $input['year_levels']);
-                if (! $schedule?->exists) $this->validateAddedAcademicGroups($this->academicGroups($courseIds, $input['year_levels'], [], $mapping), $sections);
+                if (! $schedule?->exists) {
+                    $this->validateAddedAcademicGroups($this->academicGroups($courseIds, $input['year_levels'], [], $mapping), $sections);
+                }
             } elseif ($schedule?->exists && (array) $schedule->course_sections_by_year !== []) {
                 // Older clients can update metadata without silently flattening a saved block scope.
                 Cfo::require($this->normalizedCourseIds($courseIds) === $this->normalizedCourseIds($schedule->courses->pluck('id')->all())
@@ -181,8 +257,11 @@ class AdminController extends Controller
                     ? array_intersect_key((array) ($schedule?->course_sections ?? []), array_flip($courseIds))
                     : $this->validatedCourseSections($courseSections, $courseIds, $input['year_levels'], $sections, $schedule);
             }
-            if ($courseSections !== null || $yearBlocks !== null || ($schedule?->exists && (array) $schedule->course_sections_by_year !== [])) $input['sections'] = $this->courseSectionUnion($mapping);
-            elseif ($mapping !== []) $input['sections'] = array_values(array_unique([...$input['sections'], ...$this->courseSectionUnion($mapping)]));
+            if ($courseSections !== null || $yearBlocks !== null || ($schedule?->exists && (array) $schedule->course_sections_by_year !== [])) {
+                $input['sections'] = $this->courseSectionUnion($mapping);
+            } elseif ($mapping !== []) {
+                $input['sections'] = array_values(array_unique([...$input['sections'], ...$this->courseSectionUnion($mapping)]));
+            }
             $input['section'] = $input['sections'][0];
             $previousGroups = $schedule?->exists ? $this->scheduleAcademicGroups($schedule) : [];
             $nextGroups = $schedule?->exists ? $this->academicGroups($courseIds, $input['year_levels'], $input['sections'], $mapping) : [];
@@ -194,21 +273,29 @@ class AdminController extends Controller
                 $input['section'] = $schedule->section;
             }
             $addedGroups = $schedule?->exists ? array_values(array_diff_key($nextGroups, $previousGroups)) : [];
-            if ($schedule?->exists) $this->validateAddedAcademicGroups($addedGroups, $sections);
+            if ($schedule?->exists) {
+                $this->validateAddedAcademicGroups($addedGroups, $sections);
+            }
             $pureAddition = $schedule?->exists && $previousGroups !== [] && $addedGroups !== []
                 && $schedule->courses->every(fn ($course) => $schedule->sectionsForCourse($course->id) !== [])
                 && array_diff_key($previousGroups, $nextGroups) === [];
             $sameWindow = $schedule?->exists && $input['date'] === $schedule->date
                 && $input['start_time'] === $schedule->start_time && $input['end_time'] === $schedule->end_time;
-            if ($addedGroups !== []) $this->assertNoAddedScheduleOverlap($input, $addedGroups, $schedule->id);
-            if (! ($pureAddition && $sameWindow)) $this->assertNoScheduleOverlap([...$input, 'course_sections' => $mapping], $courseIds, $schedule?->id);
+            if ($addedGroups !== []) {
+                $this->assertNoAddedScheduleOverlap($input, $addedGroups, $schedule->id);
+            }
+            if (! ($pureAddition && $sameWindow)) {
+                $this->assertNoScheduleOverlap([...$input, 'course_sections' => $mapping], $courseIds, $schedule?->id);
+            }
 
             $input['title'] = $this->generatedScheduleTitle($courseIds, $input['year_levels'], $input['sections'], $mapping, $input['date']);
             if ($schedule?->exists) {
                 Cfo::require(! $schedule->finalized_at && $schedule->status !== 'Cancelled', 'Completed and Cancelled schedules are view only.');
                 $limit = $input['slot_limit'] ?? 100000;
                 Cfo::require($limit >= $schedule->registrations()->count(), 'The slot limit cannot be below the assigned student count.');
-                if ($schedule->registrations()->exists()) Cfo::require((int) substr($input['date'], 0, 4) === $schedule->year, 'An assigned schedule cannot move to a different year.');
+                if ($schedule->registrations()->exists()) {
+                    Cfo::require((int) substr($input['date'], 0, 4) === $schedule->year, 'An assigned schedule cannot move to a different year.');
+                }
                 $currentCourses = $schedule->courses()->pluck('academic_options.id')->map(fn ($id) => (int) $id)->sort()->values()->all();
                 $nextCourses = collect($courseIds)->map(fn ($id) => (int) $id)->sort()->values()->all();
                 $currentYears = collect($schedule->year_levels)->sort()->values()->all();
@@ -220,9 +307,12 @@ class AdminController extends Controller
                     $names = DB::table('academic_options')->whereIn('id', $courseIds)->pluck('name');
                     $courseNames = DB::table('academic_options')->whereIn('id', $courseIds)->pluck('id', 'name');
                     $excluded = $schedule->registrations()->with('user')->get()->contains(function ($registration) use ($names, $courseNames, $input, $mapping) {
-                        if (! $registration->user) return false;
+                        if (! $registration->user) {
+                            return false;
+                        }
                         $group = $registration->academicGroup();
                         $courseId = $courseNames[$group['course']] ?? null;
+
                         return ! $names->contains($group['course']) || ! in_array($group['year_level'], $input['year_levels'], true)
                             || ! in_array($group['section'], $this->mappedSections($mapping, $courseId, $group['year_level'], $input['sections']), true);
                     });
@@ -231,7 +321,9 @@ class AdminController extends Controller
                 if ($schedule->registrations()->where('attendance', '!=', 'Not Yet Recorded')->exists()) {
                     Cfo::require($input['date'] === $schedule->date && $input['start_time'] === $schedule->start_time && $input['end_time'] === $schedule->end_time && $input['venue'] === $schedule->venue, 'Recorded events retain their date, time, and venue.');
                 }
-                if (! $sameWindow || $input['venue'] !== $schedule->venue) $this->assertNoVenueOverlap($input, $schedule->id);
+                if (! $sameWindow || $input['venue'] !== $schedule->venue) {
+                    $this->assertNoVenueOverlap($input, $schedule->id);
+                }
                 $schedule->update([...$input, 'capacity' => $input['slot_limit'] ?? 100000]);
             } else {
                 $this->assertNoVenueOverlap($input);
@@ -248,7 +340,9 @@ class AdminController extends Controller
                     ]);
                 }
             }
-            if ($addedReferences) Cfo::touch('academic_options');
+            if ($addedReferences) {
+                Cfo::touch('academic_options');
+            }
             Cfo::touch('schedules');
             $audit = ['status' => $schedule->status];
             if ($addedGroups !== []) {
@@ -256,8 +350,10 @@ class AdminController extends Controller
                 $audit['added_groups_summary'] = 'Added groups: '.implode(', ', $audit['added_groups']);
             }
             Cfo::audit('schedule.saved', 'schedule', $schedule->id, $audit);
+
             return $this->loadedSchedule($schedule);
         }, 3);
+
         return response()->json($saved);
     }
 
@@ -284,19 +380,32 @@ class AdminController extends Controller
             ->when($excludeId, fn ($query) => $query->where('id', '!=', $excludeId))
             ->whereHas('courses', fn ($query) => $query->whereIn('academic_options.id', $courseIds))
             ->with('courses')->get()->contains(function ($other) use ($input, $courseIds) {
-                if ($other->year_levels !== [] && array_intersect($other->year_levels, $input['year_levels']) === []) return false;
+                if ($other->year_levels !== [] && array_intersect($other->year_levels, $input['year_levels']) === []) {
+                    return false;
+                }
                 $years = $other->year_levels === [] ? $input['year_levels'] : array_intersect($other->year_levels, $input['year_levels']);
-                if ($years === []) $years = [null];
+                if ($years === []) {
+                    $years = [null];
+                }
                 foreach ($other->courses as $course) {
-                    if (! in_array((int) $course->id, array_map('intval', $courseIds), true)) continue;
+                    if (! in_array((int) $course->id, array_map('intval', $courseIds), true)) {
+                        continue;
+                    }
                     foreach ($years as $year) {
                         $previous = $other->sectionsForCourse($course->id, $year);
                         $next = $this->mappedSections($input['course_sections'] ?? [], $course->id, $year, $input['sections']);
-                        if ($previous === [] && $other->hasYearSpecificSectionsForCourse($course->id)) continue;
-                        if ($next === [] && $this->isYearBlockSections($input['course_sections'][$course->id] ?? [])) continue;
-                        if ($previous === [] || array_intersect($previous, $next) !== []) return true;
+                        if ($previous === [] && $other->hasYearSpecificSectionsForCourse($course->id)) {
+                            continue;
+                        }
+                        if ($next === [] && $this->isYearBlockSections($input['course_sections'][$course->id] ?? [])) {
+                            continue;
+                        }
+                        if ($previous === [] || array_intersect($previous, $next) !== []) {
+                            return true;
+                        }
                     }
                 }
+
                 return false;
             });
         Cfo::require(! $conflict, 'This course, year level and section already has a Recollection Day at an overlapping time.');
@@ -304,7 +413,9 @@ class AdminController extends Controller
 
     private function validatedCourseSections(array $mapping, array $courseIds, array $years, array $globalSections, ?Schedule $schedule = null): array
     {
-        if (! $schedule?->exists) Cfo::require(count($years) === 1, 'Choose exactly one year level for per-course sections.');
+        if (! $schedule?->exists) {
+            Cfo::require(count($years) === 1, 'Choose exactly one year level for per-course sections.');
+        }
         Cfo::require($this->normalizedCourseIds(array_keys($mapping)) === $this->normalizedCourseIds($courseIds), 'Choose sections for every selected course, and only those courses.');
         foreach ($courseIds as $id) {
             $selected = $mapping[$id] ?? [];
@@ -312,10 +423,13 @@ class AdminController extends Controller
             if (! $schedule?->exists) {
                 $configured = DB::table('course_year_sections')->where('course_id', $id)->where('year_level', $years[0])->pluck('section')->all();
                 $allowed = $configured ?: $globalSections;
-                foreach ($selected as $section) Cfo::require(in_array($section, $allowed, true), 'A selected section does not exist for its course and year level.');
+                foreach ($selected as $section) {
+                    Cfo::require(in_array($section, $allowed, true), 'A selected section does not exist for its course and year level.');
+                }
             }
             $mapping[$id] = array_values($selected);
         }
+
         return $mapping;
     }
 
@@ -334,6 +448,7 @@ class AdminController extends Controller
         }
         unset($blocks);
         Cfo::require($this->normalizedCourseIds(array_unique($usedYears)) === $this->normalizedCourseIds($years), 'Each selected year-level block needs at least one course with sections.');
+
         return $mapping;
     }
 
@@ -341,8 +456,11 @@ class AdminController extends Controller
     {
         $mapping = [];
         foreach ($schedule->courses as $course) {
-            if ($course->pivot->sections !== null) $mapping[$course->id] = $course->pivot->sections;
+            if ($course->pivot->sections !== null) {
+                $mapping[$course->id] = $course->pivot->sections;
+            }
         }
+
         return $mapping;
     }
 
@@ -354,6 +472,7 @@ class AdminController extends Controller
     private function mappedSections(array $mapping, int|string|null $courseId, ?string $year, array $fallback): array
     {
         $sections = $mapping[$courseId] ?? $fallback;
+
         return $this->isYearBlockSections($sections) ? ($sections[$year] ?? []) : $sections;
     }
 
@@ -363,6 +482,7 @@ class AdminController extends Controller
         foreach ($mapping as $selected) {
             $sections = [...$sections, ...($this->isYearBlockSections($selected) ? array_merge(...array_values($selected)) : $selected)];
         }
+
         return array_values(array_unique($sections));
     }
 
@@ -378,6 +498,7 @@ class AdminController extends Controller
                 }
             }
         }
+
         return $groups;
     }
 
@@ -408,10 +529,16 @@ class AdminController extends Controller
             ->with('courses')->get();
         foreach ($groups as $group) {
             foreach ($otherSchedules as $other) {
-                if (! $other->courses->contains('id', $group['course_id'])) continue;
-                if ($other->year_levels !== [] && ! in_array($group['year_level'], $other->year_levels, true)) continue;
+                if (! $other->courses->contains('id', $group['course_id'])) {
+                    continue;
+                }
+                if ($other->year_levels !== [] && ! in_array($group['year_level'], $other->year_levels, true)) {
+                    continue;
+                }
                 $sections = $other->sectionsForCourse($group['course_id'], $group['year_level']);
-                if ($sections === [] && $other->hasYearSpecificSectionsForCourse($group['course_id'])) continue;
+                if ($sections === [] && $other->hasYearSpecificSectionsForCourse($group['course_id'])) {
+                    continue;
+                }
                 Cfo::require($sections !== [] && ! in_array($group['section'], $sections, true),
                     'This course, year level and section ('.$group['label'].') already has a Recollection Day at an overlapping time: '.$other->title.'.');
             }
@@ -427,11 +554,19 @@ class AdminController extends Controller
         $names = DB::table('academic_options')->whereIn('id', $courseIds)->orderBy('name')->get(['id', 'name']);
         $description = $names->map(function ($course) use ($mapping, $sections, $years) {
             $selected = $mapping[$course->id] ?? $sections;
-            if (! $this->isYearBlockSections($selected)) return $course->name.' '.implode(', ', $selected);
+            if (! $this->isYearBlockSections($selected)) {
+                return $course->name.' '.implode(', ', $selected);
+            }
             $groups = [];
-            foreach ($years as $year) foreach ($selected[$year] ?? [] as $section) $groups[] = $year.$section;
+            foreach ($years as $year) {
+                foreach ($selected[$year] ?? [] as $section) {
+                    $groups[] = $year.$section;
+                }
+            }
+
             return $course->name.' '.implode(', ', $groups);
         })->implode(' / ');
+
         return $prefix.$this->shortenGeneratedTitle($description, 190 - $this->titleLength($prefix) - $this->titleLength($suffix)).$suffix;
     }
 
@@ -443,15 +578,20 @@ class AdminController extends Controller
 
     private function shortenGeneratedTitle(string $value, int $limit): string
     {
-        if ($this->titleLength($value) <= $limit) return $value;
+        if ($this->titleLength($value) <= $limit) {
+            return $value;
+        }
         $shortened = '';
         $length = 0;
         foreach (mb_str_split($value, 1, 'UTF-8') as $character) {
             $size = $this->titleLength($character);
-            if ($length + $size > max(0, $limit - 1)) break;
+            if ($length + $size > max(0, $limit - 1)) {
+                break;
+            }
             $shortened .= $character;
             $length += $size;
         }
+
         return preg_replace('/[\p{Z}\x{0009}-\x{000D}\x{FEFF}]+$/u', '', $shortened).'…';
     }
 
@@ -459,6 +599,7 @@ class AdminController extends Controller
     {
         $ids = array_map('strval', $ids);
         sort($ids, SORT_STRING);
+
         return $ids;
     }
 
@@ -466,19 +607,25 @@ class AdminController extends Controller
     {
         foreach ($mapping as &$sections) {
             if ($this->isYearBlockSections($sections)) {
-                foreach ($sections as &$selected) sort($selected, SORT_STRING);
+                foreach ($sections as &$selected) {
+                    sort($selected, SORT_STRING);
+                }
                 unset($selected);
                 ksort($sections, SORT_STRING);
-            } else sort($sections, SORT_STRING);
+            } else {
+                sort($sections, SORT_STRING);
+            }
         }
         unset($sections);
         ksort($mapping, SORT_STRING);
+
         return $mapping;
     }
 
     private function loadedSchedule(Schedule $schedule): Schedule
     {
         $loaded = Schedule::withScheduleLinks()->findOrFail($schedule->id);
+
         return $loaded->setAttribute('has_linked_records', $loaded->has_linked_records);
     }
 
@@ -494,7 +641,9 @@ class AdminController extends Controller
             Cfo::require($lockedCourses === $currentCourses, 'This schedule changed while saving. Refresh and retry.');
             Cfo::require(! $schedule->finalized_at, 'Completed schedules are view only.');
             $previous = $schedule->status;
-            if ($previous === $input['status']) return $this->loadedSchedule($schedule);
+            if ($previous === $input['status']) {
+                return $this->loadedSchedule($schedule);
+            }
             $allowed = ['Open' => ['Closed', 'Cancelled'], 'Draft' => ['Open', 'Cancelled'], 'Closed' => ['Open', 'Cancelled'], 'Cancelled' => []];
             Cfo::require(in_array($input['status'], $allowed[$previous] ?? [], true), 'This schedule status cannot be changed in that way.');
             if ($input['status'] === 'Open') {
@@ -515,8 +664,10 @@ class AdminController extends Controller
                 }
             }
             Cfo::audit('schedule.status_changed', 'schedule', $schedule->id, ['from' => $previous, 'to' => $schedule->status]);
+
             return $this->loadedSchedule($schedule);
         }, 3);
+
         return response()->json($saved);
     }
 
@@ -529,6 +680,7 @@ class AdminController extends Controller
             Cfo::audit('schedule.deleted', 'schedule', $schedule->id);
             $schedule->delete();
         });
+
         return response()->json(['message' => 'Unused schedule deleted.']);
     }
 
@@ -549,13 +701,16 @@ class AdminController extends Controller
             }
             if (isset($input['status'])) {
                 Cfo::require(! $r->recollection_schedule_id || $input['status'] === 'Approved', 'Assigned registrations must remain approved.');
-                $r->status = $input['status']; $r->rejection_reason = $input['rejection_reason'] ?? null;
+                $r->status = $input['status'];
+                $r->rejection_reason = $input['rejection_reason'] ?? null;
             }
             if (isset($input['receipt_status'])) {
                 Cfo::require((bool) $r->receipt_path, 'Upload a receipt before reviewing it.');
                 Cfo::require(! $r->recollection_schedule_id || $input['receipt_status'] === 'Approved', 'An assigned registration must retain a verified receipt.');
-                $r->receipt_status = $input['receipt_status']; $r->receipt_reason = $input['receipt_reason'] ?? null;
-                $r->receipt_verified_by = $request->user()->id; $r->receipt_verified_at = now();
+                $r->receipt_status = $input['receipt_status'];
+                $r->receipt_reason = $input['receipt_reason'] ?? null;
+                $r->receipt_verified_by = $request->user()->id;
+                $r->receipt_verified_at = now();
             }
             if (isset($input['attendance'])) {
                 Cfo::require((bool) $r->recollection_schedule_id, 'Assign a schedule before recording attendance.');
@@ -564,13 +719,16 @@ class AdminController extends Controller
                     $certificate->update(['revoked_at' => now(), 'revoked_by' => $request->user()->id, 'revocation_reason' => 'Attendance corrected; new verification and issuance required.']);
                     Cfo::audit('certificate.revoked', 'certificate', $certificate->id, ['reason' => 'attendance.corrected', 'snapshot' => $certificate->snapshot]);
                 }
-                $r->attendance = $input['attendance']; $r->attendance_recorded_by = $request->user()->id;
+                $r->attendance = $input['attendance'];
+                $r->attendance_recorded_by = $request->user()->id;
                 $r->attendance_recorded_at = now();
-                $r->attendance_verified_by = null; $r->attendance_verified_at = null;
+                $r->attendance_verified_by = null;
+                $r->attendance_verified_at = null;
             }
             if ($input['verify_attendance'] ?? false) {
                 Cfo::require($r->attendance !== 'Not Yet Recorded', 'Record attendance before verification.');
-                $r->attendance_verified_by = $request->user()->id; $r->attendance_verified_at = now();
+                $r->attendance_verified_by = $request->user()->id;
+                $r->attendance_verified_at = now();
             }
             $r->save();
             if ($previousStatus !== 'Approved' && $r->status === 'Approved') {
@@ -583,11 +741,14 @@ class AdminController extends Controller
             if (isset($input['schedule_id']) && (int) $input['schedule_id'] !== (int) $r->recollection_schedule_id) {
                 Cfo::assign($r, $input['schedule_id'], adminAssignment: true);
                 $closed = ScheduleChange::where('registration_id', $r->id)->where('status', 'Pending')->update(['status' => 'Closed', 'reviewed_by' => $request->user()->id, 'reviewed_at' => now()]);
-                if ($closed) Cfo::touch('schedule_changes');
+                if ($closed) {
+                    Cfo::touch('schedule_changes');
+                }
             }
             Cfo::audit('registration.reviewed', 'registration', $r->id, array_intersect_key($input, array_flip(['status', 'receipt_status', 'attendance', 'verify_attendance'])));
-            \App\Services\AutomaticCertificate::sync($r);
+            AutomaticCertificate::sync($r);
         });
+
         return response()->json(['message' => 'Record saved.']);
     }
 
@@ -624,6 +785,7 @@ class AdminController extends Controller
                 Cfo::notifyStudent($r->user_id, 'schedule_change_rejected', $change->student_message, 'schedule_change', $change->id);
             }
         });
+
         return response()->json(['message' => 'Decision saved.']);
     }
 
@@ -632,7 +794,9 @@ class AdminController extends Controller
         $certificate = DB::transaction(function () use ($registration, $request) {
             $r = Registration::with(['user', 'schedule'])->lockForUpdate()->findOrFail($registration->id);
             Cfo::require($r->attendance === 'Present' && (bool) $r->attendance_verified_at, 'A certificate requires Present and verified attendance.');
-            if ($existing = $r->certificate) return $existing;
+            if ($existing = $r->certificate) {
+                return $existing;
+            }
             $template = Cfo::settings('certificate');
             Cfo::require(! empty($template['title']) && ! empty($template['signatory']), 'Save the official certificate template and signatory first.');
             // Current-year issuance continues to honor office profile corrections.
@@ -642,8 +806,10 @@ class AdminController extends Controller
             $c = Certificate::updateOrCreate(['registration_id' => $r->id], ['certificate_number' => sprintf('CFO-%d-%06d', $r->year, $r->id), 'snapshot' => $snapshot, 'issued_by' => $request->user()->id, 'revoked_at' => null, 'revoked_by' => null, 'revocation_reason' => null]);
             Cfo::audit('certificate.issued', 'certificate', $c->id);
             Cfo::notifyStudent($r->user_id, 'certificate_ready', 'Your '.$r->year.' Recollection certificate is ready.', 'registration', $r->id);
+
             return $c;
         });
+
         return response()->json($certificate);
     }
 
@@ -662,6 +828,7 @@ class AdminController extends Controller
                 Cfo::require($existing->created_by === $request->user()->id, 'This publication key is already in use.');
                 Cfo::require($existing->published_at !== null, 'This announcement is still a draft. Publish it from the drafts list.');
                 Cfo::require($existing->title === $input['title'] && $existing->preview === $input['preview'] && $existing->body === $input['body'], 'This announcement was already published. Open a new form to publish a different announcement.');
+
                 return $existing->load('author');
             }
             $announcement = Announcement::create([
@@ -711,6 +878,7 @@ class AdminController extends Controller
                     Cfo::require($existing->created_by === $request->user()->id, 'This publication key is already in use.');
                     Cfo::require($existing->published_at === null, 'This announcement was already published.');
                     Cfo::require($existing->title === $input['title'] && $existing->preview === $input['preview'] && $existing->body === $input['body'], 'This draft was already saved with different content. Reload announcements before saving again.');
+
                     return $existing->load('author');
                 }
                 $announcement = Announcement::create([
@@ -721,6 +889,7 @@ class AdminController extends Controller
                 ]);
             }
             Cfo::audit('announcement.draft_saved', 'announcement', $announcement->id, ['title' => $announcement->title]);
+
             return $announcement->load('author');
         });
 
@@ -749,6 +918,7 @@ class AdminController extends Controller
             $announcement->update([...$input, 'published_at' => now()]);
             Cfo::audit('announcement.published', 'announcement', $announcement->id, ['title' => $announcement->title]);
             $this->notifyAnnouncement($announcement);
+
             return $announcement->load('author');
         });
 
@@ -780,7 +950,9 @@ class AdminController extends Controller
             ? ['name' => 'required|string|max:190', 'school' => 'required|string|max:190', 'address' => 'nullable|string|max:500', 'head' => 'nullable|string|max:190']
             : CertificateTemplate::rules();
         $input = $request->validate($rules);
-        if ($key === 'certificate') $input = CertificateTemplate::normalize($input);
+        if ($key === 'certificate') {
+            $input = CertificateTemplate::normalize($input);
+        }
         unset($input['image'], $input['remove_image'], $input['logo_image'], $input['remove_logo']);
         $uploads = [];
         try {
@@ -788,13 +960,19 @@ class AdminController extends Controller
                 $input = [...CertificateTemplate::current(), ...$input];
                 // Keep prior template images for certificates whose issuance snapshot uses them.
                 $input['image_path'] = Cfo::settings('certificate')['image_path'] ?? null;
-                if ($request->boolean('remove_image')) $input['image_path'] = null;
+                if ($request->boolean('remove_image')) {
+                    $input['image_path'] = null;
+                }
                 $input['logo_path'] = Cfo::settings('certificate')['logo_path'] ?? null;
-                if ($request->boolean('remove_logo')) $input['logo_path'] = null;
+                if ($request->boolean('remove_logo')) {
+                    $input['logo_path'] = null;
+                }
                 foreach (['image' => 'image_path', 'logo_image' => 'logo_path'] as $field => $path) {
                     if ($request->hasFile($field)) {
                         $input[$path] = Storage::disk(config('filesystems.upload_disk'))->putFile('certificate-templates', $request->file($field));
-                        if (! $input[$path]) throw new \RuntimeException('The certificate image could not be stored. Please try again.');
+                        if (! $input[$path]) {
+                            throw new \RuntimeException('The certificate image could not be stored. Please try again.');
+                        }
                         $uploads[] = $input[$path];
                     }
                 }
@@ -806,9 +984,12 @@ class AdminController extends Controller
             });
         } catch (\Throwable $exception) {
             // Only files from this failed save are disposable, never earlier snapshots.
-            foreach ($uploads as $path) Storage::disk(config('filesystems.upload_disk'))->delete($path);
+            foreach ($uploads as $path) {
+                Storage::disk(config('filesystems.upload_disk'))->delete($path);
+            }
             throw $exception;
         }
+
         return response()->json(['message' => 'Settings saved.']);
     }
 
@@ -818,6 +999,7 @@ class AdminController extends Controller
         $id = DB::table('academic_options')->insertGetId([...$input, 'created_at' => now(), 'updated_at' => now()]);
         Cfo::touch('academic_options');
         Cfo::audit('academic_option.created', 'academic_option', $id);
+
         return response()->json(['message' => 'Reference option added.'], 201);
     }
 
@@ -835,11 +1017,15 @@ class AdminController extends Controller
                 throw ValidationException::withMessages(['name' => 'This course already exists.']);
             }
             $oldName = $option->name;
-            if ($oldName === $input['name']) return $option;
+            if ($oldName === $input['name']) {
+                return $option;
+            }
             DB::table('academic_options')->where('id', $id)->update(['name' => $input['name'], 'updated_at' => now()]);
             DB::table('users')->select('id', 'course')->whereNotNull('course')->orderBy('id')->lockForUpdate()->chunkById(200, function ($users) use ($oldName, $input, $normalize) {
                 $ids = $users->filter(fn ($user) => $normalize($user->course) === $normalize($oldName))->pluck('id');
-                if ($ids->isNotEmpty()) DB::table('users')->whereIn('id', $ids)->update(['course' => $input['name'], 'updated_at' => now()]);
+                if ($ids->isNotEmpty()) {
+                    DB::table('users')->whereIn('id', $ids)->update(['course' => $input['name'], 'updated_at' => now()]);
+                }
             });
             // Update both current and archived registration names without changing unrelated snapshot fields.
             DB::table('recollection_registrations')->select('id', 'details', 'student_snapshot')->orderBy('id')->lockForUpdate()->chunkById(200, function ($registrations) use ($oldName, $input, $normalize) {
@@ -852,14 +1038,20 @@ class AdminController extends Controller
                             $changes[$column] = json_encode($snapshot, JSON_THROW_ON_ERROR);
                         }
                     }
-                    if ($changes !== []) DB::table('recollection_registrations')->where('id', $registration->id)->update([...$changes, 'updated_at' => now()]);
+                    if ($changes !== []) {
+                        DB::table('recollection_registrations')->where('id', $registration->id)->update([...$changes, 'updated_at' => now()]);
+                    }
                 }
             });
-            foreach (['academic_options', 'users', 'registrations', 'schedules', 'attendance'] as $resource) Cfo::touch($resource);
+            foreach (['academic_options', 'users', 'registrations', 'schedules', 'attendance'] as $resource) {
+                Cfo::touch($resource);
+            }
             Cfo::audit('academic_option.updated', 'academic_option', $id, ['old_name' => $oldName, 'name' => $input['name']]);
             $option->name = $input['name'];
+
             return $option;
         }, 3);
+
         return response()->json(['message' => 'Course updated.', 'academic_option' => $option]);
     }
 
@@ -867,21 +1059,35 @@ class AdminController extends Controller
     {
         DB::transaction(function () use ($id) {
             DB::table('academic_options')->where('type', 'course')->orderBy('id')->lockForUpdate()->get();
-            $option = DB::table('academic_options')->find($id); abort_unless($option, 404);
+            $option = DB::table('academic_options')->find($id);
+            abort_unless($option, 404);
             $usedByProfile = $option->type === 'course'
                 ? User::whereNotNull('course')->pluck('course')->contains(fn ($name) => mb_strtolower(trim($name)) === mb_strtolower(trim($option->name)))
                 : User::where($option->type, $option->name)->exists();
             Cfo::require(! $usedByProfile, 'This option is used by student profiles.');
-            if ($option->type === 'course') Cfo::require(! DB::table('recollection_schedule_courses')->where('academic_option_id', $id)->exists(), 'This course is assigned to a Recollection Day.');
-            if ($option->type === 'course') Cfo::require(! DB::table('course_year_sections')->where('course_id', $id)->exists(), 'This course has configured sections. Remove its unused sections first.');
-            if ($option->type === 'year_level') Cfo::require(! Schedule::where('year_level', $option->name)->orWhereJsonContains('year_levels', $option->name)->exists(), 'This year level is used by a Recollection Day.');
-            if ($option->type === 'section') Cfo::require(! Schedule::where('section', $option->name)->orWhereJsonContains('sections', $option->name)->exists(), 'This section is used by a Recollection Day.');
-            if ($option->type === 'year_level') Cfo::require(! DB::table('course_year_sections')->where('year_level', $option->name)->exists(), 'This year level is used by configured course sections. Remove the unused configuration first.');
-            if ($option->type === 'section') Cfo::require(! DB::table('course_year_sections')->pluck('section')->contains(fn ($section) => mb_strtolower($section) === mb_strtolower($option->name)), 'This section is used by configured course sections. Remove the unused configuration first.');
+            if ($option->type === 'course') {
+                Cfo::require(! DB::table('recollection_schedule_courses')->where('academic_option_id', $id)->exists(), 'This course is assigned to a Recollection Day.');
+            }
+            if ($option->type === 'course') {
+                Cfo::require(! DB::table('course_year_sections')->where('course_id', $id)->exists(), 'This course has configured sections. Remove its unused sections first.');
+            }
+            if ($option->type === 'year_level') {
+                Cfo::require(! Schedule::where('year_level', $option->name)->orWhereJsonContains('year_levels', $option->name)->exists(), 'This year level is used by a Recollection Day.');
+            }
+            if ($option->type === 'section') {
+                Cfo::require(! Schedule::where('section', $option->name)->orWhereJsonContains('sections', $option->name)->exists(), 'This section is used by a Recollection Day.');
+            }
+            if ($option->type === 'year_level') {
+                Cfo::require(! DB::table('course_year_sections')->where('year_level', $option->name)->exists(), 'This year level is used by configured course sections. Remove the unused configuration first.');
+            }
+            if ($option->type === 'section') {
+                Cfo::require(! DB::table('course_year_sections')->pluck('section')->contains(fn ($section) => mb_strtolower($section) === mb_strtolower($option->name)), 'This section is used by configured course sections. Remove the unused configuration first.');
+            }
             DB::table('academic_options')->where('id', $id)->delete();
             Cfo::touch('academic_options');
             Cfo::audit('academic_option.deleted', 'academic_option', $id);
         }, 3);
+
         return response()->json(['message' => 'Unused reference option removed.']);
     }
 
@@ -906,8 +1112,10 @@ class AdminController extends Controller
             }
             Cfo::touch('academic_options');
             Cfo::audit('course_year_section.created', 'course_year_section', $id, $input);
+
             return $id;
         });
+
         return response()->json(['message' => 'Course section added.', 'course_year_section' => DB::table('course_year_sections')->find($id)], 201);
     }
 
@@ -924,9 +1132,14 @@ class AdminController extends Controller
             Cfo::require(! $usedByStudent, 'This course/year section is used by student profiles and cannot be removed.');
             $usedBySchedule = Schedule::with('courses')->whereHas('courses', fn ($query) => $query->where('academic_options.id', $option->course_id))
                 ->get()->contains(function ($schedule) use ($option) {
-                    if (! $schedule->includesYearLevel($option->year_level)) return false;
+                    if (! $schedule->includesYearLevel($option->year_level)) {
+                        return false;
+                    }
                     $sections = $schedule->sectionsForCourse($option->course_id, $option->year_level);
-                    if ($sections === [] && $schedule->hasYearSpecificSectionsForCourse($option->course_id)) return false;
+                    if ($sections === [] && $schedule->hasYearSpecificSectionsForCourse($option->course_id)) {
+                        return false;
+                    }
+
                     return $sections === [] || in_array(mb_strtolower($option->section), array_map('mb_strtolower', $sections), true);
                 });
             Cfo::require(! $usedBySchedule, 'This course/year section is assigned to a Recollection Day and cannot be removed.');
@@ -934,6 +1147,7 @@ class AdminController extends Controller
             Cfo::touch('academic_options');
             Cfo::audit('course_year_section.deleted', 'course_year_section', $id, ['course_id' => $option->course_id, 'year_level' => $option->year_level, 'section' => $option->section]);
         });
+
         return response()->json(['message' => 'Unused course section removed.']);
     }
 
@@ -948,13 +1162,15 @@ class AdminController extends Controller
             if ($input['status'] === 'Approved') {
                 Cfo::require($reset->user->status === 'Approved', 'Only approved accounts can recover their password.');
                 $temporary = Str::random(11).random_int(0, 9);
-                $reset->temp_password_hash = Hash::make($temporary); $reset->expires_at = null;
+                $reset->temp_password_hash = Hash::make($temporary);
+                $reset->expires_at = null;
                 Cache::forever('recovery-secret:'.$reset->id, Crypt::encryptString($temporary));
                 DB::table('sessions')->where('user_id', $reset->user_id)->delete();
             }
             $reset->save();
             Cfo::audit('recovery.'.strtolower($input['status']), 'password_reset', $reset->id);
         });
+
         return response()->json(['message' => 'Decision saved. The requesting student page updates automatically. Approved temporary passwords have no time limit and can only be used once.']);
     }
 }

@@ -14,6 +14,14 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public const ROLE_STUDENT = 'Student';
+
+    public const ROLE_CFO_STAFF = 'CFOStaff';
+
+    public const ROLE_SUPER_ADMIN = 'SuperAdmin';
+
+    public const ROLE_LEGACY_ADMIN = 'Admin';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -55,6 +63,37 @@ class User extends Authenticatable
     public function registrations()
     {
         return $this->hasMany(Registration::class);
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->role === self::ROLE_STUDENT;
+    }
+
+    public function isCfoStaff(): bool
+    {
+        return $this->role === self::ROLE_CFO_STAFF;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        // Legacy Admin is recognized during rolling deployments. The role
+        // migration converts every persisted Admin account to SuperAdmin.
+        return in_array($this->role, [self::ROLE_SUPER_ADMIN, self::ROLE_LEGACY_ADMIN], true);
+    }
+
+    public function hasOfficeAccess(): bool
+    {
+        return $this->isCfoStaff() || $this->isSuperAdmin();
+    }
+
+    public function roleLabel(): string
+    {
+        return match ($this->role) {
+            self::ROLE_CFO_STAFF => 'CFO Staff',
+            self::ROLE_SUPER_ADMIN, self::ROLE_LEGACY_ADMIN => 'Super Admin',
+            default => 'Student',
+        };
     }
 
     protected static function booted(): void

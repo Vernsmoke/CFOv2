@@ -1,20 +1,99 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Models\{PasswordResetRequest, User};
+use App\Mail\RegistrationVerificationCode;
+use App\Models\PasswordResetRequest;
+use App\Models\User;
+use App\Services\AccountId;
 use App\Services\CfoService as Cfo;
 use App\Services\RecoveryRequestLimiter;
-use App\Services\StudentIdentity;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Auth, Cache, Crypt, DB, Hash, RateLimiter};
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use App\Services\AccountId;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public static function passwordRule(): Password { return Password::min(8)->mixedCase()->numbers()->symbols(); }
+    private const REGISTRATION_EMAIL_VERIFICATION = 'registration_email_verification';
+
+    public static function passwordRule(): Password
+    {
+        return Password::min(8)->mixedCase()->numbers()->symbols();
+    }
+
+    public function sendRegistrationEmailCode(Request $request)
+    {
+        $email = strtolower(trim((string) $request->input('email', '')));
+        $request->merge(['email' => $email]);
+        $request->validate([
+            'email' => ['required', 'email', 'ends_with:@gmail.com', 'max:190', 'unique:users,email'],
+        ], ['email.ends_with' => 'Enter a valid Gmail address ending in @gmail.com.']);
+
+        $state = $request->session()->get(self::REGISTRATION_EMAIL_VERIFICATION);
+        if (($state['email'] ?? null) === $email && (int) ($state['sent_at'] ?? 0) > now()->subMinute()->timestamp) {
+            $retryAfter = max(1, 60 - (now()->timestamp - (int) $state['sent_at']));
+
+            return response()->json(['message' => 'Please wait '.$retryAfter.' seconds before requesting another code.'], 429)
+                ->header('Retry-After', (string) $retryAfter);
+        }
+
+        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        Mail::to($email)->send(new RegistrationVerificationCode($code));
+        $request->session()->put(self::REGISTRATION_EMAIL_VERIFICATION, [
+            'email' => $email,
+            'code_hash' => hash_hmac('sha256', $code, (string) config('app.key')),
+            'expires_at' => now()->addMinutes(10)->timestamp,
+            'sent_at' => now()->timestamp,
+            'attempts' => 0,
+            'verified_at' => null,
+        ]);
+
+        return response()->json(['message' => 'A 6-digit verification code was sent to '.$email.'.', 'expires_in' => 600]);
+    }
+
+    public function verifyRegistrationEmailCode(Request $request)
+    {
+        $email = strtolower(trim((string) $request->input('email', '')));
+        $request->merge(['email' => $email]);
+        $input = $request->validate([
+            'email' => ['required', 'email', 'ends_with:@gmail.com', 'max:190'],
+            'code' => ['required', 'string', 'regex:/^\d{6}$/'],
+        ], [
+            'email.ends_with' => 'Enter a valid Gmail address ending in @gmail.com.',
+            'code.regex' => 'Enter the 6-digit verification code.',
+        ]);
+        $state = $request->session()->get(self::REGISTRATION_EMAIL_VERIFICATION);
+        if (! $state || ($state['email'] ?? null) !== $email || (int) ($state['expires_at'] ?? 0) < now()->timestamp) {
+            $request->session()->forget(self::REGISTRATION_EMAIL_VERIFICATION);
+
+            throw ValidationException::withMessages(['code' => 'This verification code has expired. Request a new code.']);
+        }
+        $state['attempts'] = (int) ($state['attempts'] ?? 0) + 1;
+        if ($state['attempts'] > 5) {
+            $request->session()->forget(self::REGISTRATION_EMAIL_VERIFICATION);
+
+            throw ValidationException::withMessages(['code' => 'Too many incorrect attempts. Request a new code.']);
+        }
+        $candidate = hash_hmac('sha256', $input['code'], (string) config('app.key'));
+        if (! hash_equals((string) $state['code_hash'], $candidate)) {
+            $request->session()->put(self::REGISTRATION_EMAIL_VERIFICATION, $state);
+
+            throw ValidationException::withMessages(['code' => 'The verification code is incorrect.']);
+        }
+        $state['verified_at'] = now()->timestamp;
+        $request->session()->put(self::REGISTRATION_EMAIL_VERIFICATION, $state);
+
+        return response()->json(['message' => 'Gmail address verified. You can continue creating your account.']);
+    }
 
     public function register(Request $request)
     {
@@ -25,10 +104,14 @@ class AuthController extends Controller
             'first_name' => ['required', 'string', 'max:80'], 'middle_name' => ['nullable', 'string', 'max:80'],
             'last_name' => ['required', 'string', 'max:80'], 'email' => ['required', 'email', 'ends_with:@gmail.com', 'max:190', 'unique:users'],
             'password' => ['required', 'confirmed', self::passwordRule()],
-            'role' => ['sometimes', Rule::in(['Student', 'Admin'])],
+            'role' => ['sometimes', Rule::in([User::ROLE_STUDENT])],
         ], ['student_id.regex' => AccountId::MESSAGE, 'email.ends_with' => 'Enter a valid Gmail address ending in @gmail.com.']);
+        $verification = $request->session()->get(self::REGISTRATION_EMAIL_VERIFICATION);
+        if (! $verification || ($verification['email'] ?? null) !== $normalizedEmail || empty($verification['verified_at']) || (int) ($verification['expires_at'] ?? 0) < now()->timestamp) {
+            throw ValidationException::withMessages(['email' => 'Verify this Gmail address before creating your account.']);
+        }
         $input['email'] = $normalizedEmail;
-        $input['role'] = $input['role'] ?? 'Student';
+        $input['role'] = User::ROLE_STUDENT;
         $input['original_email'] = $normalizedEmail;
         $input['login_email'] = Str::before($normalizedEmail, '@').'@cfo.office.com';
         $input['system_username'] = $input['login_email'];
@@ -39,12 +122,13 @@ class AuthController extends Controller
                 ->orWhere('system_username', $input['login_email']);
         })->exists(), 'This system username is already registered. Contact the CFO.');
         $input['name'] = trim(implode(' ', array_filter([$input['first_name'], $input['middle_name'] ?? '', $input['last_name']])));
-        DB::transaction(function () use ($input, $request) {
-            if ($input['role'] === 'Admin') StudentIdentity::assertCanRegisterAdmin($input, $request->user());
+        DB::transaction(function () use ($input) {
             $user = User::create([...$input, 'status' => 'Pending']);
             Cfo::audit('account.registered', 'user', $user->id);
-            Cfo::notifyAdmins(($user->role === 'Admin' ? 'An administrator' : 'A student').' account is awaiting office verification.');
+            Cfo::notifyAdmins('A student account is awaiting office verification.');
         });
+        $request->session()->forget(self::REGISTRATION_EMAIL_VERIFICATION);
+
         return response()->json(['message' => 'Your account is pending verification. Visit the Christian Formation Office for approval. Your login email is '.$input['login_email'].'.', 'login_email' => $input['login_email']], 201);
     }
 
@@ -64,7 +148,9 @@ class AuthController extends Controller
             })->lockForUpdate()->first();
             Cfo::require($user && Hash::check($input['password'], $user->password), 'The credentials are incorrect.');
             Cfo::require($user->status === 'Approved', $user->status === 'Rejected' ? 'Account rejected: '.$user->rejection_reason : 'Your account is '.$user->status.'. Visit the CFO for verification.');
-            if ($user->password_change_required) Cfo::require($user->password_change_expires_at && $user->password_change_expires_at->isFuture(), 'This temporary password has expired. Visit the CFO to request another reset.');
+            if ($user->password_change_required) {
+                Cfo::require($user->password_change_expires_at && $user->password_change_expires_at->isFuture(), 'This temporary password has expired. Visit the CFO to request another reset.');
+            }
             // Serialize login with approval and password replacement. Only valid credentials
             // may close a request; merely submitting recovery never changes the password.
             PasswordResetRequest::where('user_id', $user->id)
@@ -74,6 +160,7 @@ class AuthController extends Controller
                     Cache::forget('recovery-secret:'.$reset->id);
                     Cfo::audit('recovery.cancelled_after_login', 'password_reset', $reset->id);
                 });
+
             return $user;
         });
         Auth::login($user, $request->boolean('remember'));
@@ -82,15 +169,20 @@ class AuthController extends Controller
         if ($user->password_change_required) {
             RateLimiter::clear($key);
             $request->session()->put('force_password_change', true);
+
             return response()->json(['user' => $user, 'csrf_token' => csrf_token(), 'redirect' => '/force-password']);
         }
         RateLimiter::clear($key);
-        return response()->json(['user' => $user, 'csrf_token' => csrf_token(), 'redirect' => $user->role === 'Admin' ? '/admin' : '/student#dashboard']);
+
+        return response()->json(['user' => $user, 'csrf_token' => csrf_token(), 'redirect' => $user->hasOfficeAccess() ? '/admin' : '/student#dashboard']);
     }
 
     public function logout(Request $request)
     {
-        Auth::logout(); $request->session()->invalidate(); $request->session()->regenerateToken();
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return response()->json(['message' => 'Logged out.', 'csrf_token' => csrf_token()]);
     }
 
@@ -99,7 +191,7 @@ class AuthController extends Controller
         $user = $request->user();
         $normalizedEmail = strtolower(trim((string) $request->input('email', '')));
         $request->merge(['email' => $normalizedEmail]);
-        $emailRules = $user->role === 'Student'
+        $emailRules = $user->isStudent()
             ? ['required', 'email', 'ends_with:@gmail.com', 'max:190', Rule::unique('users', 'email')->ignore($user->id), Rule::unique('users', 'original_email')->ignore($user->id)]
             : ['required', 'email', 'max:190', Rule::unique('users', 'email')->ignore($user->id)];
         $input = $request->validate([
@@ -108,13 +200,15 @@ class AuthController extends Controller
             'current_password' => 'required|current_password', 'password' => ['nullable', 'confirmed', self::passwordRule()],
         ]);
         unset($input['current_password']);
-        if (empty($input['password'])) unset($input['password']);
+        if (empty($input['password'])) {
+            unset($input['password']);
+        }
         $input['email'] = $normalizedEmail;
         $input['original_email'] = $normalizedEmail;
         Cfo::require(! User::where('id', '!=', $user->id)->where(function ($query) use ($normalizedEmail) {
             $query->where('email', $normalizedEmail)->orWhere('original_email', $normalizedEmail)->orWhere('login_email', $normalizedEmail)->orWhere('system_username', $normalizedEmail);
         })->exists(), 'This email is already used by another account.');
-        if ($user->role === 'Student') {
+        if ($user->isStudent()) {
             $input['original_email'] = $normalizedEmail;
             $input['login_email'] = Str::before($normalizedEmail, '@').'@cfo.office.com';
             $input['system_username'] = $input['login_email'];
@@ -128,15 +222,21 @@ class AuthController extends Controller
         $input['name'] = trim(implode(' ', array_filter([$input['first_name'], $input['middle_name'] ?? '', $input['last_name']])));
         DB::transaction(function () use ($user, $input) {
             $user->update($input);
-            if (isset($input['password'])) { $user->setRememberToken(Str::random(60)); $user->save(); DB::table('sessions')->where('user_id', $user->id)->where('id', '!=', session()->getId())->delete(); }
+            if (isset($input['password'])) {
+                $user->setRememberToken(Str::random(60));
+                $user->save();
+                DB::table('sessions')->where('user_id', $user->id)->where('id', '!=', session()->getId())->delete();
+            }
             Cfo::audit('profile.updated', 'user', $user->id);
         });
-        if ($user->role === 'Student' && isset($input['password'])) {
+        if ($user->isStudent() && isset($input['password'])) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+
             return response()->json(['requires_login' => true, 'redirect' => '/login?password_changed=1', 'csrf_token' => csrf_token(), 'message' => 'Password changed. Sign in again with your new password.']);
         }
+
         return response()->json(['user' => $user->fresh(), 'csrf_token' => csrf_token(), 'message' => 'Profile saved.']);
     }
 
@@ -161,7 +261,9 @@ class AuthController extends Controller
                 ->orWhere('system_username', $email);
         }))->first();
         if ($owned) {
-            if (in_array($owned->fresh()->status, ['Pending', 'Approved', 'Verified'], true)) return response()->json(['message' => $message, 'recovery_limit' => $limit]);
+            if (in_array($owned->fresh()->status, ['Pending', 'Approved', 'Verified'], true)) {
+                return response()->json(['message' => $message, 'recovery_limit' => $limit]);
+            }
         }
         $secret = Str::random(64);
         $request->session()->put('recovery_secret', $secret);
@@ -173,13 +275,18 @@ class AuthController extends Controller
                     ->orWhere('login_email', $email)
                     ->orWhere('system_username', $email);
             })->where('status', 'Approved')->lockForUpdate()->first();
-            if (! $user) return;
+            if (! $user) {
+                return;
+            }
             // Do not let an unauthenticated repeat request cancel an approved recovery.
-            if (PasswordResetRequest::where('user_id', $user->id)->whereIn('status', ['Pending', 'Approved', 'Verified'])->exists()) return;
+            if (PasswordResetRequest::where('user_id', $user->id)->whereIn('status', ['Pending', 'Approved', 'Verified'])->exists()) {
+                return;
+            }
             $reset = PasswordResetRequest::create(['user_id' => $user->id, 'recovery_hash' => hash('sha256', $secret)]);
             Cfo::audit('recovery.requested', 'password_reset', $reset->id);
             Cfo::notifyAdmins('A password recovery request needs in-person verification.');
         });
+
         return response()->json(['message' => $message, 'recovery_limit' => $limit]);
     }
 
@@ -203,9 +310,12 @@ class AuthController extends Controller
                 $data['expires_in'] = null;
                 $data['login_email'] = $reset->user->login_email ?: ($reset->user->system_username ?: $reset->user->email);
                 $encrypted = Cache::pull('recovery-secret:'.$reset->id);
-                if ($encrypted) $data['temporary_password'] = Crypt::decryptString($encrypted);
+                if ($encrypted) {
+                    $data['temporary_password'] = Crypt::decryptString($encrypted);
+                }
             }
         }
+
         return response()->json($data)->header('Cache-Control', 'no-store');
     }
 
@@ -217,20 +327,25 @@ class AuthController extends Controller
         abort_if(RateLimiter::tooManyAttempts($key, 5), 429, 'Too many attempts. Please wait.');
         RateLimiter::hit($key, 60);
         $valid = DB::transaction(function () use ($reset, $request) {
-            if (! $reset) return false;
+            if (! $reset) {
+                return false;
+            }
             User::whereKey($reset->user_id)->lockForUpdate()->firstOrFail();
             $locked = PasswordResetRequest::lockForUpdate()->find($reset->id);
             if ($locked->status !== 'Approved' || ! Hash::check($request->string('temporary_password'), $locked->temp_password_hash)) {
                 Cfo::audit('recovery.verification_failed', 'password_reset', $locked->id);
+
                 return false;
             }
             $locked->update(['status' => 'Verified', 'verified_at' => now(), 'temp_password_hash' => null]);
             $request->session()->put('recovery_verified', $locked->id);
             Cache::forget('recovery-secret:'.$locked->id);
             Cfo::audit('recovery.verified', 'password_reset', $locked->id);
+
             return true;
         });
         Cfo::require($valid, 'The temporary password is invalid or already used.');
+
         return response()->json(['message' => 'Create your new permanent password.']);
     }
 
@@ -246,13 +361,15 @@ class AuthController extends Controller
             $user->password = $input['password'];
             $user->password_change_required = false;
             $user->password_change_expires_at = null;
-            $user->setRememberToken(Str::random(60)); $user->save();
+            $user->setRememberToken(Str::random(60));
+            $user->save();
             $reset->update(['status' => 'Completed', 'used_at' => now(), 'temp_password_hash' => null]);
             DB::table('sessions')->where('user_id', $user->id)->delete();
             Cfo::audit('recovery.completed', 'password_reset', $reset->id);
         });
         $request->session()->forget(['recovery_secret', 'recovery_verified']);
         $request->session()->regenerate();
+
         return response()->json(['message' => 'Password changed. Sign in with your new password.', 'csrf_token' => csrf_token()]);
     }
 
@@ -275,13 +392,15 @@ class AuthController extends Controller
         });
 
         $request->session()->forget('force_password_change');
-        if ($user->role === 'Student') {
+        if ($user->isStudent()) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+
             return response()->json(['requires_login' => true, 'redirect' => '/login?password_changed=1', 'csrf_token' => csrf_token(), 'message' => 'Password changed. Sign in again with your new password.']);
         }
         $request->session()->regenerate();
-        return response()->json(['message' => 'Your new password is saved.', 'redirect' => $user->role === 'Admin' ? '/admin' : '/student#dashboard', 'csrf_token' => csrf_token()]);
+
+        return response()->json(['message' => 'Your new password is saved.', 'redirect' => $user->hasOfficeAccess() ? '/admin' : '/student#dashboard', 'csrf_token' => csrf_token()]);
     }
 }

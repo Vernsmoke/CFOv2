@@ -11,7 +11,7 @@ class LiveController extends Controller
     {
         $versions = $this->readVersions();
 
-        if ($request->user()->role !== 'Admin') {
+        if (! $request->user()->hasOfficeAccess()) {
             $versions = array_intersect_key($versions, array_flip([
                 'year', 'users', 'schedules', 'registrations', 'attendance', 'schedule_changes', 'notifications', 'announcements', 'academic_options', 'settings',
             ]));

@@ -10,7 +10,7 @@ class RecollectionRegistrationFilters extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->role === 'Admin';
+        return $this->user()?->hasOfficeAccess() === true;
     }
 
     public function rules(): array

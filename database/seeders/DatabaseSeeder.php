@@ -27,8 +27,8 @@ class DatabaseSeeder extends Seeder
             throw new \RuntimeException('Set CFO_DEFAULT_ADMIN_EMAIL to a valid administrator email before seeding.');
         }
         $existing = User::where('email', $email)->first();
-        if ($existing && $existing->role !== 'Admin') {
-            throw new \RuntimeException('CFO_DEFAULT_ADMIN_EMAIL is already used by a non-admin account. Choose a different administrator email.');
+        if ($existing && ! $existing->isSuperAdmin()) {
+            throw new \RuntimeException('CFO_DEFAULT_ADMIN_EMAIL is already used by a non-Super Admin account. Choose a different email.');
         }
 
         $identityCollision = User::where('id', '!=', $existing?->id ?? 0)->where(function ($query) use ($email) {
@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'CFO',
             'middle_name' => null,
             'last_name' => 'Administrator',
-            'role' => 'Admin',
+            'role' => User::ROLE_SUPER_ADMIN,
             'status' => 'Approved',
             'password' => Hash::make($password),
         ]);

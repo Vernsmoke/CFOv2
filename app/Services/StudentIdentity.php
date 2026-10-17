@@ -12,9 +12,9 @@ final class StudentIdentity
 
     public static function assertCanRegisterAdmin(array $identity, ?User $actor = null): void
     {
-        if ($actor?->role === 'Student' || self::matchesStudent($identity)) {
+        if ($actor?->isStudent() || self::matchesStudent($identity)) {
             throw ValidationException::withMessages([
-                'role' => 'These details match a student identity. Students cannot register as administrators. Contact the CFO Office for verification.',
+                'role' => 'These details match a student identity. Student identities cannot be used for CFO Staff accounts.',
             ]);
         }
     }
@@ -30,9 +30,15 @@ final class StudentIdentity
 
         foreach ($students as $student) {
             $record = $student->getAttributes();
-            if ($id !== '' && $id === self::normalize($record['student_id'] ?? '')) return true;
-            if (array_intersect($emails, self::emails($record)) !== []) return true;
-            if (self::sameName($identity, $record)) return true;
+            if ($id !== '' && $id === self::normalize($record['student_id'] ?? '')) {
+                return true;
+            }
+            if (array_intersect($emails, self::emails($record)) !== []) {
+                return true;
+            }
+            if (self::sameName($identity, $record)) {
+                return true;
+            }
         }
 
         return false;
@@ -48,12 +54,16 @@ final class StudentIdentity
         $emails = [];
         foreach (self::EMAIL_FIELDS as $field) {
             $email = strtolower(trim($identity[$field] ?? ''));
-            if ($email === '') continue;
+            if ($email === '') {
+                continue;
+            }
             $emails[] = $email;
             // Personal Gmail dot/plus aliases identify the same mailbox.
             if (preg_match('/\A([^@]+)@(gmail\.com|googlemail\.com)\z/', $email, $parts)) {
                 $local = str_replace('.', '', Str::before($parts[1], '+'));
-                if ($local !== '') $emails[] = $local.'@gmail.com';
+                if ($local !== '') {
+                    $emails[] = $local.'@gmail.com';
+                }
             }
         }
 
@@ -69,7 +79,9 @@ final class StudentIdentity
             $middle = self::normalize($identity['middle_name'] ?? '');
             $studentMiddle = self::normalize($student['middle_name'] ?? '');
             // Omission of a middle name must not bypass a student identity match.
-            if ($middle === '' || $studentMiddle === '' || $middle === $studentMiddle) return true;
+            if ($middle === '' || $studentMiddle === '' || $middle === $studentMiddle) {
+                return true;
+            }
         }
 
         $fullName = fn (array $record) => self::normalize($record['name'] ?? implode(' ', array_filter([

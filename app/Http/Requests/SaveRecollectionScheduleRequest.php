@@ -11,7 +11,7 @@ class SaveRecollectionScheduleRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->role === 'Admin';
+        return $this->user()?->hasOfficeAccess() === true;
     }
 
     public function academicYearLevels(): array
@@ -80,9 +80,12 @@ class SaveRecollectionScheduleRequest extends FormRequest
                 && $this->input('status') === 'Draft') {
                 $validator->errors()->add('status', 'Choose Open for Registration or Closed before publishing. Draft schedules cannot be published.');
             }
-            if ($this->route('schedule') !== null || ! $this->exists('course_groups') || $validator->errors()->isNotEmpty()) return;
+            if ($this->route('schedule') !== null || ! $this->exists('course_groups') || $validator->errors()->isNotEmpty()) {
+                return;
+            }
             if (! $this->exists('course_sections_by_year')) {
                 $validator->errors()->add('course_groups', 'Save the selected sections for every course group.');
+
                 return;
             }
             $mapping = [];
@@ -91,6 +94,7 @@ class SaveRecollectionScheduleRequest extends FormRequest
                 $year = $group['year_level'];
                 if (isset($mapping[$courseId][$year])) {
                     $validator->errors()->add('course_groups.'.$index.'.year_level', 'This course and year level already has a group. Add its sections to the existing group.');
+
                     continue;
                 }
                 $mapping[$courseId][$year] = $group['sections'];
@@ -104,7 +108,9 @@ class SaveRecollectionScheduleRequest extends FormRequest
     private function normalizedMapping(array $mapping): array
     {
         foreach ($mapping as &$years) {
-            foreach ($years as &$sections) sort($sections, SORT_STRING);
+            foreach ($years as &$sections) {
+                sort($sections, SORT_STRING);
+            }
             unset($sections);
             ksort($years, SORT_STRING);
         }

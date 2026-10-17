@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Services;
 
-use App\Models\{Registration, Schedule, User};
+use App\Models\Registration;
+use App\Models\Schedule;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -19,7 +22,9 @@ class CfoService
 
     public static function touch(string $resource): void
     {
-        if (! DB::getSchemaBuilder()->hasTable('cfo_resource_versions')) return;
+        if (! DB::getSchemaBuilder()->hasTable('cfo_resource_versions')) {
+            return;
+        }
 
         DB::table('cfo_resource_versions')->where('resource', $resource)->increment('version', 1, [
             'updated_at' => now(),
@@ -57,34 +62,58 @@ class CfoService
 
     public static function notifyAdmins(string $message): void
     {
-        foreach (User::where('role', 'Admin')->where('status', 'Approved')->pluck('id') as $id) self::notify($id, $message);
+        foreach (User::whereIn('role', [User::ROLE_CFO_STAFF, User::ROLE_SUPER_ADMIN, User::ROLE_LEGACY_ADMIN])
+            ->where('status', 'Approved')->pluck('id') as $id) {
+            self::notify($id, $message);
+        }
     }
 
     public static function require(bool $condition, string $message): void
     {
-        if (! $condition) throw ValidationException::withMessages(['request' => $message]);
+        if (! $condition) {
+            throw ValidationException::withMessages(['request' => $message]);
+        }
     }
 
     // First reason a registration cannot be assigned to a schedule, or null when it can.
     // assign() enforces this; the change-request screen uses it to list eligible schedules.
     public static function assignmentProblem(Registration $registration, Schedule $schedule, bool $adminCorrection = false, bool $adminAssignment = false): ?string
     {
-        if ($registration->is_archived || $schedule->finalized_at) return 'Archived records and finalized batches cannot be assigned.';
-        if (! ($registration->status === 'Approved' && $registration->receipt_status === 'Approved')) return 'Approve the registration and receipt before assigning a schedule.';
-        if (! ($adminCorrection || ($registration->attendance === 'Not Yet Recorded' && ! $registration->certificate()->exists()))) return 'Recorded attendance or an issued certificate prevents reassignment.';
-        if (! ($schedule->isOpen() && $schedule->date >= today()->toDateString())) return 'Choose an Open upcoming schedule.';
-        if ($schedule->year !== $registration->year) return 'The schedule must belong to the registration year.';
+        if ($registration->is_archived || $schedule->finalized_at) {
+            return 'Archived records and finalized batches cannot be assigned.';
+        }
+        if (! ($registration->status === 'Approved' && $registration->receipt_status === 'Approved')) {
+            return 'Approve the registration and receipt before assigning a schedule.';
+        }
+        if (! ($adminCorrection || ($registration->attendance === 'Not Yet Recorded' && ! $registration->certificate()->exists()))) {
+            return 'Recorded attendance or an issued certificate prevents reassignment.';
+        }
+        if (! ($schedule->isOpen() && $schedule->date >= today()->toDateString())) {
+            return 'Choose an Open upcoming schedule.';
+        }
+        if ($schedule->year !== $registration->year) {
+            return 'The schedule must belong to the registration year.';
+        }
         // Preserve the legacy administrator override only for legacy schedules.
         // A configured per-course scope must never manufacture a nonexistent group.
         $courseNames = $adminAssignment && ! $schedule->hasCourseSections() ? collect() : $schedule->courses->pluck('name');
         if ($courseNames->isNotEmpty()) {
             $group = $registration->academicGroup();
-            if (! $courseNames->contains($group['course'])) return 'This Recollection Day is not assigned to your course.';
-            if (! $schedule->includesYearLevel($group['year_level'])) return 'This Recollection Day is not assigned to your year level.';
-            if (! $schedule->includesSectionForCourse($group['course'], $group['section'], $group['year_level'])) return 'This Recollection Day is not assigned to your section.';
+            if (! $courseNames->contains($group['course'])) {
+                return 'This Recollection Day is not assigned to your course.';
+            }
+            if (! $schedule->includesYearLevel($group['year_level'])) {
+                return 'This Recollection Day is not assigned to your year level.';
+            }
+            if (! $schedule->includesSectionForCourse($group['course'], $group['section'], $group['year_level'])) {
+                return 'This Recollection Day is not assigned to your section.';
+            }
         }
         $limit = $schedule->slot_limit ?? $schedule->capacity;
-        if (! ($schedule->registrations()->active()->where('id', '!=', $registration->id)->count() < $limit)) return 'This Recollection Day is full.';
+        if (! ($schedule->registrations()->active()->where('id', '!=', $registration->id)->count() < $limit)) {
+            return 'This Recollection Day is full.';
+        }
+
         return null;
     }
 
@@ -102,7 +131,9 @@ class CfoService
     // Caller holds the registration lock and a transaction. Lock schedules in ID order.
     public static function assign(Registration $registration, int $scheduleId, bool $adminCorrection = false, bool $adminAssignment = false): void
     {
-        if ($adminAssignment) self::require(auth()->user()?->role === 'Admin', 'Only administrators can assign students across academic groups.');
+        if ($adminAssignment) {
+            self::require(auth()->user()?->hasOfficeAccess() === true, 'Only CFO staff can assign students across academic groups.');
+        }
         $ids = array_filter([$registration->recollection_schedule_id, $scheduleId]);
         $schedules = Schedule::whereIn('id', $ids)->orderBy('id')->lockForUpdate()->get();
         $schedule = $schedules->firstWhere('id', $scheduleId);
@@ -114,13 +145,16 @@ class CfoService
             'attendance' => 'Not Yet Recorded', 'attendance_recorded_by' => null, 'attendance_recorded_at' => null,
             'attendance_verified_by' => null, 'attendance_verified_at' => null,
         ] : [])]);
-        if ($adminCorrection) AutomaticCertificate::sync($registration);
+        if ($adminCorrection) {
+            AutomaticCertificate::sync($registration);
+        }
         self::audit('schedule.assigned', 'registration', $registration->id, ['from' => $old, 'to' => $schedule->id]);
     }
 
     public static function settings(string $key, array $defaults = []): array
     {
         $value = DB::table('cfo_settings')->where('key', $key)->value('value');
+
         return $value ? json_decode($value, true) : $defaults;
     }
 }

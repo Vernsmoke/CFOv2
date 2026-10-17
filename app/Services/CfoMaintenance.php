@@ -16,7 +16,7 @@ final class CfoMaintenance
     public static function runOncePerSessionDay(Request $request, User $user): void
     {
         $date = today()->toDateString();
-        $scope = $user->role === 'Admin' ? 'all' : 'user-'.$user->id;
+        $scope = $user->hasOfficeAccess() ? 'all' : 'user-'.$user->id;
         $marker = $date.'|'.$scope;
 
         if ($request->session()->get('cfo_maintenance') === $marker) {
@@ -28,7 +28,7 @@ final class CfoMaintenance
             Cache::lock($cacheKey.':lock', 30)->block(10, function () use ($cacheKey, $user): void {
                 Cache::remember($cacheKey, now()->addDays(2), function () use ($user): bool {
                     Registration::archivePastYears();
-                    AutomaticCertificate::syncEligible($user->role === 'Admin' ? null : $user->id);
+                    AutomaticCertificate::syncEligible($user->hasOfficeAccess() ? null : $user->id);
 
                     return true;
                 });
