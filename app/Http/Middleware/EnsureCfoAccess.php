@@ -2,6 +2,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\PasswordResetRequest;
+use App\Services\CfoMaintenance;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -15,8 +16,7 @@ class EnsureCfoAccess
         abort_if($user->password_change_required, 403, 'Change your temporary password before accessing the system.');
         abort_if($role && $user->role !== $role, 403);
         abort_if(PasswordResetRequest::where('user_id', $user->id)->whereIn('status', ['Approved', 'Verified'])->exists(), 403, 'Complete your office password recovery before accessing the system.');
-        \App\Models\Registration::archivePastYears();
-        \App\Services\AutomaticCertificate::syncEligible($user->role === 'Admin' ? null : $user->id);
+        CfoMaintenance::runOncePerSessionDay($request, $user);
         return $next($request);
     }
 }
