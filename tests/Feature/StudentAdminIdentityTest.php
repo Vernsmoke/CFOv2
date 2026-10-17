@@ -92,33 +92,25 @@ class StudentAdminIdentityTest extends TestCase
         $this->assertSame('Student', $student->fresh()->role);
     }
 
-    public function test_different_middle_names_and_unrelated_admin_applicants_still_require_office_approval(): void
+    public function test_unrelated_office_applicants_still_cannot_use_public_registration(): void
     {
         $this->student();
         $this->postJson('/api/register', $this->registration([
             'first_name' => 'Juan', 'middle_name' => 'Miguel', 'last_name' => 'Dela Cruz',
-        ]))->assertCreated();
-        $applicant = User::where('email', 'newstaff@gmail.com')->firstOrFail();
-        $this->assertSame('Admin', $applicant->role);
-        $this->assertSame('Pending', $applicant->status);
-        $this->postJson('/api/login', ['email' => 'newstaff@gmail.com', 'password' => 'CfoTest!234'])->assertUnprocessable();
-        $this->assertGuest();
+        ]))->assertUnprocessable()->assertJsonValidationErrors('role');
+        $this->assertDatabaseCount('users', 1);
     }
 
-    public function test_admin_approval_rechecks_student_identity_for_existing_pending_applicants(): void
+    public function test_super_admin_staff_creation_rechecks_student_identity(): void
     {
-        $reviewer = User::factory()->create(['role' => 'Admin', 'status' => 'Approved']);
-        $applicant = User::factory()->create([
-            'role' => 'Admin', 'status' => 'Pending', 'student_id' => '25-00001',
-            'email' => 'juan.delacruz+staff@gmail.com', 'first_name' => 'New', 'last_name' => 'Staff',
-        ]);
+        $reviewer = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN, 'status' => 'Approved']);
         $this->student();
-        $url = '/api/admin/users/'.$applicant->id.'/review-admin';
-        $this->actingAs($reviewer)->patchJson($url, ['status' => 'Approved'])
+        $this->actingAs($reviewer)->postJson('/api/admin/staff', [
+            'employee_id' => '25-00001', 'email' => 'juan.delacruz+staff@gmail.com',
+            'first_name' => 'New', 'middle_name' => '', 'last_name' => 'Staff',
+        ])
             ->assertUnprocessable()->assertJsonValidationErrors('role');
-        $this->assertSame('Pending', $applicant->fresh()->status);
         $this->assertDatabaseCount('activity_logs', 0);
-        $this->patchJson($url, ['status' => 'Rejected', 'rejection_reason' => 'Student identity requires office review.'])->assertOk();
-        $this->assertSame('Rejected', $applicant->fresh()->status);
+        $this->assertDatabaseCount('users', 2);
     }
 }

@@ -70,7 +70,7 @@ class ProductionReadinessTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $admin = User::where('email', 'admin@example.com')->firstOrFail();
-        $this->assertSame('Admin', $admin->role);
+        $this->assertSame(User::ROLE_SUPER_ADMIN, $admin->role);
         $this->assertTrue(Hash::check($password, $admin->password));
 
         config(['cfo.admin.password' => null]);
@@ -89,14 +89,18 @@ class ProductionReadinessTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $admin = User::where('email', 'interface.admin@cfo.office.com')->firstOrFail();
+        $staff = User::where('email', 'interface.staff@cfo.office.com')->firstOrFail();
         $student = User::where('login_email', 'interface.student@cfo.office.com')->firstOrFail();
 
-        $this->assertSame('Admin', $admin->role);
+        $this->assertSame(User::ROLE_SUPER_ADMIN, $admin->role);
         $this->assertSame('Approved', $admin->status);
         $this->assertTrue(Hash::check('ChangeMe123!', $admin->password));
+        $this->assertSame(User::ROLE_CFO_STAFF, $staff->role);
+        $this->assertSame('Approved', $staff->status);
+        $this->assertTrue(Hash::check('ChangeMe123!', $staff->password));
         $this->assertSame('Student', $student->role);
         $this->assertSame('Approved', $student->status);
         $this->assertTrue(Hash::check('ChangeMe123!', $student->password));
-        $this->assertDatabaseCount('users', 2);
+        $this->assertDatabaseCount('users', 3);
     }
 }

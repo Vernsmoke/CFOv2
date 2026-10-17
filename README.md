@@ -64,9 +64,14 @@ Open `http://127.0.0.1:8000`.
 
 When `CFO_DEMO_ACCOUNTS_ENABLED=true`, `php artisan migrate --seed` creates these local accounts:
 
-### Administrator
+### Super Admin
 
 - Email: `interface.admin@cfo.office.com`
+- Password: `ChangeMe123!`
+
+### CFO Staff
+
+- Email: `interface.staff@cfo.office.com`
 - Password: `ChangeMe123!`
 
 ### Student
@@ -75,6 +80,20 @@ When `CFO_DEMO_ACCOUNTS_ENABLED=true`, `php artisan migrate --seed` creates thes
 - Password: `ChangeMe123!`
 
 Demo accounts are restricted to `local` and `testing` environments. For a production installation, set `CFO_DEMO_ACCOUNTS_ENABLED=false` and configure a unique administrator with `CFO_DEFAULT_ADMIN_EMAIL` and `CFO_DEFAULT_ADMIN_PASSWORD`.
+
+## Account roles
+
+- **Student** accounts are created through public registration and can access only their own registration, schedules, receipts, notifications, and certificates.
+- **CFO Staff** accounts are created by a Super Admin under **Settings → Staff accounts**. They can perform daily office workflows but cannot manage staff, system settings, academic reference data, certificate templates, or activity logs.
+- **Super Admin** accounts have full office access. Existing `Admin` accounts are converted to `SuperAdmin` by the role migration.
+
+To provision another Super Admin from the server console:
+
+```powershell
+php artisan cfo:create-super-admin person@example.com --name="Full Name"
+```
+
+The public account form intentionally creates students only. CFO Staff receive a one-time password from a Super Admin and must change it within 24 hours.
 
 ## Important security notes
 

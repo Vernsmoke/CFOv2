@@ -14,8 +14,8 @@ class DesignSystemTest extends TestCase
     {
         $this->get('/')->assertOk()
             ->assertSee('data-cfo-surface="auth"', false)
-            ->assertSee('cfo-design.css')->assertSee('images/cfo/chapel.webp')
-            ->assertSee('id="login-form"', false)->assertSee("roleSelect('login-role', true)", false)
+            ->assertSee('cfo-design.css')->assertSee('images/cfo/cfo-chapel-hero.webp')
+            ->assertSee('id="login-form"', false)->assertDontSee('id="login-role"', false)
             ->assertDontSee('login-background.css');
     }
 
@@ -40,7 +40,10 @@ class DesignSystemTest extends TestCase
     public function test_brand_assets_exist_and_the_theme_is_screen_only(): void
     {
         foreach (['fonts/cfo/cabinet-bold.woff2', 'fonts/cfo/cabinet-regular.woff2',
-            'fonts/cfo/inter-variable.woff2', 'images/cfo/cfo-logo.png', 'images/cfo/chapel.webp'] as $asset) {
+            'fonts/cfo/inter-variable.woff2', 'images/cfo/cfo-logo.png',
+            'images/cfo/cfo-chapel-hero.webp', 'images/cfo/cfo-discover-altar.webp',
+            'images/cfo/cfo-office-submit.webp', 'images/cfo/cfo-system-background.webp',
+            'assets/student/images/cfo-dashboard-chapel.webp'] as $asset) {
             $this->assertFileExists(public_path($asset));
         }
         $this->assertStringContainsString('media="screen"', file_get_contents(resource_path('views/partials/design-system.blade.php')));

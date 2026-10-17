@@ -30,7 +30,7 @@ class CfoWorkflowTest extends TestCase
         $input=['student_id'=>'24-10723','first_name'=>'New','last_name'=>'Student','email'=>'new@gmail.com','password'=>'CfoTest!234','password_confirmation'=>'CfoTest!234'];
         $this->postJson('/api/register',[...$input,'role'=>'SuperAdmin'])->assertUnprocessable();
         $this->postJson('/api/register',[...$input,'email'=>'new@outlook.com'])->assertUnprocessable();
-        $this->postJson('/api/register',$input)->assertCreated()->assertJsonPath('login_email','new@cfo.office.com');
+        $this->withVerifiedRegistrationEmail($input['email'])->postJson('/api/register',$input)->assertCreated()->assertJsonPath('login_email','new@cfo.office.com');
         $user=User::where('email',$input['email'])->firstOrFail();
         $this->assertSame('Pending',$user->status);
         $this->assertSame('new@cfo.office.com',$user->system_username);

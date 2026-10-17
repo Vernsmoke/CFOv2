@@ -39,8 +39,8 @@ class AdminHeaderTest extends TestCase
             $this->assertCount(1, $xpath->query('.//button[@id="toggle-nav"]', $header));
             $this->assertCount(1, $xpath->query('.//*[@id="live-status"]', $header));
             $this->assertCount(1, $xpath->query('.//button[@aria-label="Notifications"]', $header));
-            $this->assertStringContainsString('Admin User', $header->textContent);
-            $this->assertStringContainsString('Administrator', $header->textContent);
+            $this->assertStringContainsString('Different Admin Name', $header->textContent);
+            $this->assertStringContainsString('Super Admin', $header->textContent);
             $avatars = $xpath->query('.//*[contains(concat(" ", normalize-space(@class), " "), " avatar ")]', $header);
             $this->assertCount(1, $avatars);
             $this->assertSame('AD', trim($avatars->item(0)->textContent));
