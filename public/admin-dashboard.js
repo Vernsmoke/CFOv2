@@ -49,6 +49,21 @@
     }
     function note(message, neutral = false) { return `<div class="notice ${neutral ? 'neutral' : ''}">${escapeHTML(message)}</div>`; }
     function empty(title, description, actions = '') { return `<section class="panel empty">${icon('file')}<h2>${escapeHTML(title)}</h2><p>${escapeHTML(description)}</p><div class="actions" style="justify-content:center">${actions}</div></section>`; }
+    function loadingState(title,route) {
+      const signal='<span class="loading-signal" aria-hidden="true"><i></i><i></i><i></i></span>';
+      const line=(size='')=>`<span class="skeleton-line${size?' '+size:''}"></span>`;
+      const status=`<div class="loading-status" role="status">${signal}<div><strong>Opening ${escapeHTML(title)}</strong><span>Retrieving the latest saved records</span></div></div>`;
+      if(route==='admin-dashboard'){
+        const cards=Array.from({length:4},()=>`<div class="loading-metric">${line('short')}${line('number')}${line('medium')}</div>`).join('');
+        return `<section class="loading-state loading-dashboard" aria-busy="true" aria-label="Loading ${escapeHTML(title)}">${status}<div class="loading-metrics">${cards}</div><div class="loading-panel">${line('medium')}${line()}${line('wide')}${line('medium')}</div></section>`;
+      }
+      if(['admin-settings','admin-certificate-template','admin-add-new-recollection-schedule','admin-lan-access'].includes(route)){
+        const fields=Array.from({length:6},()=>`<div class="loading-field">${line('short')}${line()}</div>`).join('');
+        return `<section class="loading-state" aria-busy="true" aria-label="Loading ${escapeHTML(title)}">${status}<div class="loading-form">${fields}<div class="loading-action">${line('button')}</div></div></section>`;
+      }
+      const rows=Array.from({length:6},(_,index)=>`<div class="loading-row">${line(index%2?'medium':'wide')}${line('short')}${line('medium')}${line('short')}</div>`).join('');
+      return `<section class="loading-state" aria-busy="true" aria-label="Loading ${escapeHTML(title)}">${status}<div class="loading-table"><div class="loading-table-tools">${line('medium')}${line('button')}</div>${rows}</div></section>`;
+    }
     let toastTimer;
     function toast(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('#toast').hidden = true; }, 4500); }
     const dialog = $('#dialog');
@@ -399,7 +414,12 @@
       const headerAncestors=route==='admin-dashboard'?[]:[{name:'Dashboard',href:'/admin#admin-dashboard'}];
       if(route==='admin-add-new-recollection-schedule')headerAncestors.push({name:navLabel('admin-recollection-schedule'),href:'/admin#admin-recollection-schedule'});
       window.AdminHeader?.setPage(headerName,headerAncestors);
-      if (!liveRefresh) { $('#page-title').textContent=meta[0]; $('#page-description').textContent=meta[1]; $('#page-category').textContent=meta[2]; $('#page-actions').innerHTML=''; if(!canRenderCached)$('#page').innerHTML=note('Loading saved records',true); }
+      if (!liveRefresh) {
+        $('#page-title').textContent=meta[0]; $('#page-description').textContent=meta[1]; $('#page-category').textContent=meta[2]; $('#page-actions').innerHTML='';
+        $('#page').classList.toggle('is-refreshing',canRenderCached);
+        $('#page').setAttribute('aria-busy','true');
+        if(!canRenderCached)$('#page').innerHTML=loadingState(meta[0],route);
+      }
       if(window.CfoSearch&&!liveRefresh){if(['admin-dashboard','admin-student-attendance','admin-schedule-change-requests','admin-password-resets','admin-history','admin-activity','admin-certificate','admin-certificate-template','admin-settings','admin-lan-access'].includes(route)||scheduleWorkspace)window.CfoSearch.mount($('#cfo-context-search'),null);else window.CfoSearch.pending($('#cfo-context-search'));}
       try {
         window.CfoAdminSettingsNavigation?.mount()?.sync(route,params);
@@ -421,7 +441,18 @@
         if(liveRefresh&&changedResources.includes('users')&&state.users){const oldIds=new Set(oldUsers.map(row=>String(row.id)));const created=state.users.find(row=>!oldIds.has(String(row.id)));if(created){window.CFO_LIVE_HIGHLIGHT_ID=created.id;toast('New '+created.role.toLowerCase()+' account: '+created.name);}}
         renderAdminRouteContent(route,params);
         if(!liveRefresh){if(!mySchedulesController?.isModalOpen())($('#ms-page-title') || $('#attendance-heading') || (route==='admin-history'?($('#history-heading') || $('#main-content')):creatingSchedule?$('#main-content'):$('#page-title'))).focus({preventScroll:true});$('#main-content').scrollTo?.({top:0,behavior:'instant'});}
-      } catch(error) { if(liveRefresh)throw error;if(version===cfoRouteVersion) {if(canRenderCached)toast('Unable to refresh records: '+error.message);else{$('#page').innerHTML=empty('Unable to load records',error.message,button('Retry','connected-reload'));if(!['admin-dashboard','admin-student-attendance','admin-schedule-change-requests','admin-password-resets','admin-history','admin-activity','admin-certificate','admin-certificate-template','admin-settings','admin-lan-access'].includes(route))window.CfoSearch?.pending($('#cfo-context-search'),'Search unavailable. Use Retry below to reload this page.',true);}} }
+      } catch(error) {
+        if(liveRefresh)throw error;
+        if(version===cfoRouteVersion) {
+          if(canRenderCached)toast('Unable to refresh records: '+error.message);
+          else{
+            $('#page').innerHTML=empty('Unable to load records',error.message,button('Retry','connected-reload'));
+            if(!['admin-dashboard','admin-student-attendance','admin-schedule-change-requests','admin-password-resets','admin-history','admin-activity','admin-certificate','admin-certificate-template','admin-settings','admin-lan-access'].includes(route))window.CfoSearch?.pending($('#cfo-context-search'),'Search unavailable. Use Retry below to reload this page.',true);
+          }
+        }
+      } finally {
+        if(!liveRefresh&&version===cfoRouteVersion){$('#page').classList.remove('is-refreshing');$('#page').removeAttribute('aria-busy');}
+      }
     }
     function connectedDashboard() {
       $('#page-actions').innerHTML='';

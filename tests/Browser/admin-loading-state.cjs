@@ -59,4 +59,7 @@ async function successfulRequestClearsTimeout() {
 }
 
 assert.match(source, /CfoAdminSettingsNavigation\?\.mount\(\)\?\.sync/, 'optional setup must not strand the loading state');
+assert.match(source, /function loadingState\(title,route\)/, 'admin pages should use a layout-aware loading state');
+assert.match(source, /loadingState\(meta\[0\],route\)/, 'route loading should render the redesigned skeleton');
+assert.doesNotMatch(source, /note\('Loading saved records',true\)/, 'the old flat loading notice should not return');
 Promise.all([timeoutFailure(), successfulRequestClearsTimeout()]).then(() => console.log('admin loading state tests passed'));
