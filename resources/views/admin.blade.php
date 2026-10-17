@@ -55,7 +55,7 @@
     <nav id="navigation" aria-label="Main navigation" data-nav-badges="{{ url('/api/admin/nav-badges') }}" data-badges="{{ json_encode(\App\Services\AdminNavigation::badges()) }}"></nav>
     <div class="sidebar-footer">
       <span class="avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 2)) }}</span>
-      <a class="sidebar-profile-link" href="#admin-settings" title="Profile and settings"><strong>{{ auth()->user()->name }}</strong><small>Administrator</small></a>
+      <a class="sidebar-profile-link" href="#admin-settings" title="Profile and settings"><strong>{{ auth()->user()->name }}</strong><small>{{ auth()->user()->roleLabel() }}</small></a>
       <button data-action="logout" aria-label="Log out" title="Logout"><span data-icon="logout"></span></button>
     </div>
   </aside>
@@ -75,7 +75,7 @@
   <script>
     window.ADMIN_CONFIG = {
       CFO_BACKEND: {{ Illuminate\Support\Js::from($cfoBackend) }},
-      navigation: @json(config('admin_navigation')),
+      navigation: @json(\App\Services\AdminNavigation::itemsFor(auth()->user())),
       accessUrl: {{ Illuminate\Support\Js::from(config('access.url')) }}
     };
   </script>

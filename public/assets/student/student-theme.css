@@ -234,12 +234,7 @@
   body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-reflection > .dash-leaf-decoration { color: var(--st-green); opacity: .12; }
   body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-preview-note { color: var(--st-muted); font-size: 10px; }
 
-  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-menu,
   body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-panel { background: var(--st-panel); color: var(--st-text); border: 1px solid var(--cfo-border); border-radius: 10px; box-shadow: 0 2px 8px rgba(4,27,49, .16); }
-  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-menu button,
-  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-menu a { padding: 9px 11px; font-size: 11px; font-weight: bold; color: var(--st-text); }
-  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-menu button:hover,
-  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-menu a:hover,
   body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-item:hover,
   body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-item.is-unviewed { background: var(--st-navy); }
   body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-heading { border-color: var(--st-line); }
@@ -772,10 +767,10 @@
   }
 }
 
-/* Use the admin's campus photo behind every student route. */
+/* Use the shared CFO chapel photo behind every student route. */
 @media screen {
   body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) {
-    --st-background-image: url("../../images/admin-campus-bg.png");
+    --st-background-image: url("../../images/cfo/cfo-system-background.webp");
     --st-background-position: center;
     --st-background-fallback: var(--cfo-navy);
     position: relative;

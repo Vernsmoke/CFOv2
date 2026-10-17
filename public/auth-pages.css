@@ -21,7 +21,7 @@
   border-right: 1px solid var(--cfo-border);
   border-radius: 0;
   background: linear-gradient(180deg, var(--cfo-navy) 44%, #062542d9 75%, #062542b3),
-    url("images/admin-campus-bg.png") center bottom / auto 65% no-repeat;
+    url("images/cfo/cfo-system-background.webp") center / cover no-repeat;
 }
 
 #app > .registration-shell .registration-main {

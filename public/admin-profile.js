@@ -1,4 +1,4 @@
-/* Administrator profile summary and edit dialog, matching the student profile flow. */
+/* Office profile summary and edit dialog, matching the student profile flow. */
 (function (root) {
   'use strict';
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -6,8 +6,8 @@
 
   function pageHtml(user) {
     const line = (label, value) => `<dl class="admin-profile-line"><dt>${label}</dt><dd>${escape(value || '—')}</dd></dl>`;
-    return `<section class="admin-profile"><div class="panel-head"><div><h2>Administrator Profile</h2><p>View your account and administrator information.</p></div><button type="button" class="btn" data-action="admin-profile-edit">Edit Basic Information</button></div>
-      <div class="admin-profile-grid"><section class="panel admin-profile-summary"><div class="panel-body"><div class="admin-profile-avatar" aria-hidden="true">${escape(initials(user))}</div><h2>${escape(user.name || 'Administrator')}</h2><p class="muted">Employee ID: ${escape(user.student_id || '—')}</p><p class="muted">Account status: ${escape(user.status || '—')}</p></div></section>
+    return `<section class="admin-profile"><div class="panel-head"><div><h2>Office Profile</h2><p>View your CFO account information.</p></div><button type="button" class="btn" data-action="admin-profile-edit">Edit Basic Information</button></div>
+      <div class="admin-profile-grid"><section class="panel admin-profile-summary"><div class="panel-body"><div class="admin-profile-avatar" aria-hidden="true">${escape(initials(user))}</div><h2>${escape(user.name || 'Office user')}</h2><p class="muted">Role: ${escape(user.role === 'CFOStaff' ? 'CFO Staff' : 'Super Admin')}</p><p class="muted">Employee ID: ${escape(user.student_id || '—')}</p><p class="muted">Account status: ${escape(user.status || '—')}</p></div></section>
       <section class="panel admin-profile-information"><div class="panel-head"><div><h2>Personal Information</h2><p>Your saved account details.</p></div></div><div class="panel-body">${line('Full Name',user.name)}${line('Registered Email',user.original_email || user.email)}${line('Login Email',user.login_email || user.system_username || user.email)}${line('Account Role',user.role || 'Admin')}</div></section></div>
       </section>`;
   }

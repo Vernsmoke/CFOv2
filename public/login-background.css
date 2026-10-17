@@ -24,7 +24,7 @@ body:has(#app > :is(.login-page, .registration-shell)) {
   background: var(--cfo-navy);
 }
 
-/* Match the admin campus photograph and fixed navy overlay. */
+/* Share the real CFO chapel photograph with the admin and student surfaces. */
 body:has(#app > :is(.login-page, .registration-shell))::before {
   content: "";
   position: fixed;
@@ -35,7 +35,7 @@ body:has(#app > :is(.login-page, .registration-shell))::before {
   pointer-events: none;
   background-color: var(--cfo-navy);
   background-image: linear-gradient(rgba(4,27,49,.88), rgba(4,27,49,.88)),
-    url("./images/admin-campus-bg.png");
+    url("./images/cfo/cfo-system-background.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

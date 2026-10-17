@@ -28,7 +28,7 @@
             <a class="account admin-header-account" href="{{ url('/admin') }}#admin-settings" aria-label="Open admin profile">
         @endif
             <span class="avatar" id="admin-header-avatar">AD</span>
-            <span class="admin-header-account-copy"><strong id="admin-header-name">Admin User</strong><small id="admin-header-role">Administrator</small></span>
+            <span class="admin-header-account-copy"><strong id="admin-header-name">{{ auth()->user()->name }}</strong><small id="admin-header-role">{{ auth()->user()->roleLabel() }}</small></span>
         @if($headerSpa)</button>@else</a>@endif
     </div>
 </header>

@@ -262,13 +262,7 @@
   body.dashboard-mode:has(.dash-content #dashboard-title) .dash-reflection > .dash-leaf-decoration { color: var(--sd-green); opacity: .12; }
   body.dashboard-mode:has(.dash-content #dashboard-title) .dash-preview-note { color: var(--sd-muted); font-size: 10px; }
 
-  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu,
   body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-panel { background: var(--sd-panel); color: var(--sd-text); border: 1px solid #47789c; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, .16); }
-  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu { top: calc(100% + 10px); }
-  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu button,
-  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu a { padding: 9px 11px; font-size: 11px; font-weight: bold; color: var(--sd-text); }
-  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu button:hover,
-  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu a:hover,
   body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-item:hover,
   body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-item.is-unviewed { background: var(--sd-navy); }
   body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-heading { border-color: var(--sd-line); }

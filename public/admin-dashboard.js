@@ -1,5 +1,7 @@
     'use strict';
     window.CFO_BACKEND = window.ADMIN_CONFIG.CFO_BACKEND;
+    const isSuperAdmin = ['SuperAdmin','Admin'].includes(window.CFO_BACKEND.user.role);
+    const superAdminRoutes = new Set(['admin-activity','admin-course-year','admin-certificate-template']);
 
 
     /* 09. Shared UI helpers */
@@ -199,7 +201,7 @@
       'admin-certificate-template':['Certificate template','Customize the current design shown on eligible certificates.','Documents','file'],
       'admin-history':['Recollection History','Completed batches and permanently retained yearly records.','Documents','history'],
       'admin-announcements':['Announcements','Publish notices for students.','Office','info'],
-      'admin-settings':['Settings','Administrator profile and Christian Formation Office information.','Office','settings'],
+      'admin-settings':['Settings','Your CFO profile and role-appropriate office settings.','Office','settings'],
       'admin-password-resets':['Password reset requests','Review requests and verify students in person.','Office','lock'],
       'admin-activity':['Activity log','Recorded office actions.','Office','history'],
       'login':['Signed out','No real account session was changed.','Preview','logout']
@@ -397,6 +399,10 @@
       if (!liveRefresh) { pendingConnectedSave=null; closeDialog(); closeNavigation(); activeGrid=null; }
       if (!liveRefresh) { schedulePageController?.destroy?.(); schedulePageController=null; }
       const {route,params}=routeDetails(); currentRoute=route;
+      if(!isSuperAdmin && (superAdminRoutes.has(route) || (route==='admin-settings' && params.has('tab')))) {
+        location.hash='admin-settings';
+        return;
+      }
       const scheduleWorkspace=['admin-recollection-schedule','admin-add-new-recollection-schedule'].includes(route);
       if(!scheduleWorkspace){mySchedulesController?.destroy();mySchedulesController=null;}
       const creatingSchedule=route==='admin-add-new-recollection-schedule';
@@ -1086,24 +1092,29 @@ Object.assign(actions,{
       CfoAnnouncements.bind($('#page'));
     }
     function connectedSettings(params) {
+      if(!isSuperAdmin){$('#page').innerHTML=window.CfoAdminProfile.pageHtml(window.CFO_BACKEND.user);return;}
       if(params.get('tab')==='office'){connectedOffice();return;}
       const r=window.CFO_BACKEND.user;
       if(params.get('tab')==='admins') {
-        const rows=cfoState.users.filter(r=>r.role==='Admin');
-        connectedGrid({key:'connected-admins',hideClearFilters:true,toolbar:'',title:'Administrator accounts',rows:()=>rows,columns:[{label:'Name',get:r=>r.name},{label:'Employee ID',get:r=>r.student_id||'—'},{label:'Email',get:r=>r.email},{label:'Login email',get:r=>r.login_email||r.system_username||r.email},{label:'Status',get:r=>r.status}],rowActions:r=>r.status==='Pending'&&r.id!==window.CFO_BACKEND.user.id?button('Review / Approve','connected-admin-review',r.id,'compact'):''});
-        $('#page').insertAdjacentHTML('afterbegin',note('Public Admin registrations appear here as Pending. Verify the applicant with the CFO before approving administrator access.',true));return;
+        const rows=cfoState.users.filter(r=>['CFOStaff','SuperAdmin','Admin'].includes(r.role));
+        connectedGrid({key:'connected-staff',hideClearFilters:true,toolbar:button('Add CFO Staff','connected-staff-create','','primary','plus'),title:'Office accounts',rows:()=>rows,columns:[{label:'Name',get:r=>r.name},{label:'Role',get:r=>r.role==='CFOStaff'?'CFO Staff':'Super Admin'},{label:'Employee ID',get:r=>r.student_id||'—'},{label:'Email',get:r=>r.email},{label:'Status',html:r=>badge(r.status)}],rowActions:r=>r.role==='CFOStaff'?button(r.status==='Approved'?'Disable':'Reactivate','connected-staff-status',r.id,r.status==='Approved'?'danger':''):''});
+        $('#page').insertAdjacentHTML('afterbegin',note('Only Super Admins can create or disable CFO Staff accounts. Temporary passwords are shown once and must be changed within 24 hours.',true));return;
       }
       $('#page').innerHTML=window.CfoAdminProfile.pageHtml(r);
     }
-    function connectedAdminReview(id) {
+    function connectedStaffCreate() {
+      showDialog('Add CFO Staff',`<form id="connected-staff-form"><div class="form-grid">${field('Employee ID','employee_id','','text','required maxlength=50')}${field('Work email','email','','email','required maxlength=190')}${field('First name','first_name','','text','required maxlength=80')}${field('Middle name','middle_name','','text','maxlength=80')}${field('Last name','last_name','','text','required maxlength=80')}</div>${note('The account will be active immediately. Share the one-time password in person.',true)}<div class="form-actions"><button class="btn primary" type="submit">Create CFO Staff</button></div></form>`,'');
+      $('#connected-staff-form').onsubmit=e=>{e.preventDefault();saveConnected('/api/admin/staff','POST',Object.fromEntries(new FormData(e.target)),false,result=>setTimeout(()=>showDialog('CFO Staff account created',details([['Login email',result.user.email],['Temporary password',result.temporary_password]])+note('Copy this password now. It will not be shown again and expires in 24 hours.',true)),0));};
+    }
+    function connectedStaffStatus(id) {
       const r=cfoState.users.find(row=>String(row.id)===String(id));
-      if(!r||r.role!=='Admin'||r.status!=='Pending')return;
-      showDialog('Review administrator account',details([['Name',r.name],['Employee ID',r.student_id||'—'],['Email',r.email]])+`<form id="connected-admin-review-form">${selectField('Decision','status',['Approved','Rejected'],'Approved')}${field('Rejection reason','rejection_reason','')}${note('Approve only after verifying this person is authorized to manage CFO records.',true)}<div class="form-actions"><button class="btn primary" type="submit">Save decision</button></div></form>`,'');
-      $('#connected-admin-review-form').onsubmit=e=>{e.preventDefault();saveConnected('/api/admin/users/'+id+'/review-admin','PATCH',Object.fromEntries(new FormData(e.target)));};
+      if(!r||r.role!=='CFOStaff')return;
+      const status=r.status==='Approved'?'Inactive':'Approved';
+      saveConnected('/api/admin/staff/'+id,'PATCH',{status});
     }
     if (window.CFO_BACKEND) {
       Object.assign(actions, {
-        'connected-admin-review':connectedAdminReview,
+        'connected-staff-create':connectedStaffCreate,'connected-staff-status':connectedStaffStatus,
         'connected-reload':renderConnectedAdmin,'connected-student':connectedStudentEdit,'connected-receipt':connectedReceipt,'connected-attendance-edit':connectedAttendanceEdit,'connected-request':connectedRequest,'cr-approve':id=>decideChangeRequest(id,'Approved'),'cr-reject':id=>decideChangeRequest(id,'Rejected'),
         'connected-registration':connectedRegistration,
         'connected-print':()=>{if(!activeGrid)return;const rows=activeGrid.filtered();printPreview('Student attendance',`<table><thead><tr><th>Student ID</th><th>Name</th><th>Course</th><th>Year Level</th><th>Section</th><th>Schedule</th><th>Attendance</th></tr></thead><tbody>${rows.map(r=>{const group=attendanceAcademicGroup(r);return `<tr>${[r.user?.student_id,attendanceStudentName(r),group.course,group.year_level,group.section,connectedSchedule(r),r.attendance].map(v=>`<td>${escapeHTML(v)}</td>`).join('')}</tr>`;}).join('')}</tbody></table>`);},
@@ -1123,7 +1134,7 @@ Object.assign(actions,{
     actions['connected-history-view']=connectedHistoryView;
     /* cfo-certificates-v2: Student Certificates list (Present students with a ready certificate) */
     function connectedCertificates() {
-      $('#page-actions').innerHTML=link('Certificate template','admin-certificate-template','primary');
+      $('#page-actions').innerHTML=(!window.CFO_BACKEND||['SuperAdmin','Admin'].includes(window.CFO_BACKEND.user?.role))?link('Certificate template','admin-certificate-template','primary'):'';
       Object.assign(actions,{
         'certificate-print':id=>{const w=window.open('/certificates/'+encodeURIComponent(id),'_blank');if(!w){toast('Allow pop-ups to print the certificate.');return;}w.opener=null;w.addEventListener('load',()=>{try{w.focus();w.print();}catch(error){toast('Certificate opened. Use the browser Print command to print or save as PDF.');}},{once:true});},
         'certificate-download':id=>{const a=document.createElement('a');a.href='/certificates/'+encodeURIComponent(id)+'?download=1';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();toast('SVG download requested. Open the file in your browser to print or save as PDF.');}

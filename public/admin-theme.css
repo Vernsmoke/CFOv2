@@ -81,7 +81,7 @@
     --admin-stat-green: var(--green);
     --admin-stat-orange: var(--yellow);
     --admin-stat-red: var(--cfo-error-text);
-    --admin-background-image: url("./images/admin-campus-bg.png") !important;
+    --admin-background-image: url("./images/cfo/cfo-system-background.webp") !important;
     --admin-background-fallback: var(--cfo-navy) !important;
     --admin-background-position: center !important;
     --admin-background-panel: var(--cfo-panel);

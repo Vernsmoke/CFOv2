@@ -69,6 +69,7 @@
     --admin-card-radius:12px;--admin-container-shadow:none;--admin-container-gap:20px;--admin-border-width:1px;
     --admin-card-background:#fff;--admin-toolbar-background:var(--brand-soft);--admin-background-panel:#fff;
     --admin-font-family:var(--brand-body);--admin-title-size:34px;--admin-panel-title-size:20px;
+    background:linear-gradient(#f4f7fbeb,#f4f7fbf7),url('images/cfo/cfo-system-background.webp') center/cover fixed no-repeat;
     --admin-body-size:14px;--admin-button-size:13px;--admin-input-size:14px;--admin-phone-input-size:16px;
     --admin-sidebar-menu-size:15px;--admin-sidebar-group-size:11px;--admin-hint-size:12px;
     --admin-metric-label-size:13px;--admin-metric-value-size:30px;--admin-badge-size:12px;
@@ -147,7 +148,7 @@
   html.cfo-design :is(.admin-profile-avatar,.admin-profile-summary .avatar){background:var(--brand-night);color:#fff}
 
   /* Student workspace uses the same shell, with its existing navigation controls. */
-  html.cfo-design body.dashboard-mode .dash-shell{--sidebar-width:278px;background:var(--brand-canvas);color:var(--brand-ink);font-family:var(--brand-body)}
+  html.cfo-design body.dashboard-mode .dash-shell{--sidebar-width:278px;background:linear-gradient(#f4f7fbeb,#f4f7fbf7),url('images/cfo/cfo-system-background.webp') center/cover fixed no-repeat;color:var(--brand-ink);font-family:var(--brand-body)}
   html.cfo-design body.dashboard-mode .dash-sidebar{inset:16px auto 16px 16px;width:246px;height:calc(100dvh - 32px);border-radius:26px;background:var(--brand-night);color:#fff;border:0;box-shadow:none;overflow-y:auto}
   html.cfo-design body.dashboard-mode .dash-sidebar::before{content:none}
   html.cfo-design body.dashboard-mode .dash-shell.dash-nav-hidden .dash-sidebar{transform:translateX(calc(-100% - 32px))}
@@ -219,7 +220,7 @@
   html.cfo-design[data-cfo-surface=auth] .login-card .primary{min-height:48px;font-size:15px}
   html.cfo-design[data-cfo-surface=auth] .login-card :is(.divider,.google){display:none}
   html.cfo-design[data-cfo-surface=auth] #app>.registration-shell{background:#fff;color:var(--brand-ink);border:0;box-shadow:none;border-radius:20px}
-  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .brand-panel.auth-brand-panel{background:var(--brand-blue);color:#fff;border:0;padding:48px 28px}
+  html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .brand-panel.auth-brand-panel{background:linear-gradient(#113163d9,#113163f2),url('images/cfo/cfo-system-background.webp') center/cover no-repeat;color:#fff;border:0;padding:48px 28px}
   html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .brand-panel :is(p,h1,h2,.auth-university,.auth-product,.auth-quote,.auth-motto){color:#fff}
   html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .brand-panel{font-family:var(--brand-heading)}
   html.cfo-design[data-cfo-surface=auth] #app>.registration-shell .auth-seal{width:100px;height:100px;box-shadow:none;border-radius:50%;background:#fff}

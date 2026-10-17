@@ -4351,6 +4351,7 @@ html:has(> body.dashboard-mode) {
 <link rel="stylesheet" href="{{ asset('recovery.css') }}?v={{ filemtime(public_path('recovery.css')) }}">
 <link rel="stylesheet" href="{{ asset('auth-branding.css') }}?v={{ filemtime(public_path('auth-branding.css')) }}">
 <link rel="stylesheet" href="{{ asset('auth-pages.css') }}?v={{ filemtime(public_path('auth-pages.css')) }}">
+<link rel="stylesheet" href="{{ asset('cfo-landing.css') }}?v={{ filemtime(public_path('cfo-landing.css')) }}">
 @include('partials.design-system')
 </head>
 <body>
@@ -4366,16 +4367,18 @@ window.CFO_BACKEND = {{ Illuminate\Support\Js::from($cfoBackend) }};
 if (window.CFO_BACKEND && !window.CFO_BACKEND.csrf_token) {
   window.CFO_BACKEND.csrf_token = document.querySelector('meta[name="csrf-token"]').content;
 }
-const iconPaths = {"user": "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8", "person": "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8", "chevron": "m9 18 6-6-6-6", "down": "m6 9 6 6 6-6", "eye": "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0", "lock": "M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4", "login": "M10 17l5-5-5-5M15 12H3M21 3v18", "info": "M12 17v-5M12 7h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0", "cap": "M2 8l10-5 10 5-10 5-10-5M5 10v7c4 4 10 4 14 0v-7", "id": "M2 5h20v14H2zM7 10h4M7 14h7", "check": "m5 12 4 4L19 6", "left": "M19 12H5m7 7-7-7 7-7", "right": "M5 12h14m-7-7 7 7-7 7", "copy": "M9 3h11v14H9zM6 7H3v14h11v-2", "edit": "m4 16 12-12 4 4L8 20H4zM14 6l4 4", "shield": "M12 2l9 4v6c0 5-5 9-9 11-4-2-9-6-9-11V6z", "send": "M22 2 9 15M22 2l-7 20-6-7-7-6"};
+const iconPaths = {"user": "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8", "person": "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8", "chevron": "m9 18 6-6-6-6", "down": "m6 9 6 6 6-6", "eye": "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0", "lock": "M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4", "mail": "M4 5h16v14H4zM4 7l8 6 8-6", "login": "M10 17l5-5-5-5M15 12H3M21 3v18", "info": "M12 17v-5M12 7h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0", "cap": "M2 8l10-5 10 5-10 5-10-5M5 10v7c4 4 10 4 14 0v-7", "id": "M2 5h20v14H2zM7 10h4M7 14h7", "check": "m5 12 4 4L19 6", "left": "M19 12H5m7 7-7-7 7-7", "right": "M5 12h14m-7-7 7 7-7 7", "copy": "M9 3h11v14H9zM6 7H3v14h11v-2", "edit": "m4 16 12-12 4 4L8 20H4zM14 6l4 4", "shield": "M12 2l9 4v6c0 5-5 9-9 11-4-2-9-6-9-11V6z", "send": "M22 2 9 15M22 2l-7 20-6-7-7-6"};
 function icon(name, cls=""){return `<svg class="icon ${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${iconPaths[name]||iconPaths.info}"/></svg>`;}
 function registerStyles(id, css){let node=document.getElementById(`style-${id}`);if(!node){node=document.createElement("style");node.id=`style-${id}`;document.head.appendChild(node);}node.textContent=css;}
 // Shared fields, notices, and password validation. Loaded before page scripts.
 
-// Mount the shared UI shell before rendering a page.
-document.body.insertAdjacentHTML('afterbegin', `<div class="campus campus-left" aria-hidden="true"></div>
-  <div class="campus campus-right" aria-hidden="true"></div>
-  <main id="app"></main>
-  <dialog id="notice"><div class="dialog-icon" data-icon="info"></div><h2 id="notice-title"></h2><p id="notice-text"></p><button class="primary" id="notice-close" type="button">Got it</button></dialog>`);
+// Mount the shared UI shell only in isolated previews that do not include the server-rendered shell.
+if (!document.querySelector('#app')) {
+  document.body.insertAdjacentHTML('afterbegin', `<div class="campus campus-left" aria-hidden="true"></div>
+    <div class="campus campus-right" aria-hidden="true"></div>
+    <main id="app"></main>
+    <dialog id="notice"><div class="dialog-icon" data-icon="info"></div><h2 id="notice-title"></h2><p id="notice-text"></p><button class="primary" id="notice-close" type="button">Got it</button></dialog>`);
+}
 
 const app=document.querySelector('#app');
 
@@ -4383,7 +4386,8 @@ const escapeHTML=(value)=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 
 function field(id,label,placeholder,type='text',symbol='person',value='',required=true){return `<div class="field"><label for="${id}">${label}</label><div class="input-wrap ${type==='password'?'password-input':''}">${icon(symbol)}<input id="${id}" name="${id}" type="${type}" placeholder="${placeholder}" value="${escapeHTML(value)}" ${required?'required':''} ${type==='password'?'autocomplete="new-password"':type==='email'?'autocomplete="email"':''}>${type==='password'?`<button type="button" class="reveal" aria-label="Show ${label.toLowerCase()}" data-reveal="${id}">${icon('eye')}</button>`:''}</div></div>`}
 
-function roleSelect(id='role',login=false){return `<div class="field ${login?'':'role-field'}"><label for="${id}">${login?'Role':'Select Role'}</label><div class="input-wrap">${icon('user')}<select id="${id}" name="role" required>${login?'<option value="">Select Role</option>':''}<option ${!login&&accountState.role==='Student'?'selected':''}>Student</option><option ${!login&&accountState.role==='Admin'?'selected':''}>Admin</option></select>${icon('down','select-chevron')}</div>${login?'<small>Please select whether you are a Student or an Admin.</small>':''}</div>`}
+// Kept as an empty compatibility boundary for the isolated browser-state harness.
+function roleSelect(){return ''}
 
 function showNotice(title,text){document.querySelector('#notice-title').textContent=title;document.querySelector('#notice-text').textContent=text;document.querySelector('.dialog-icon').innerHTML=icon('info');document.querySelector('#notice').showModal()}
 
@@ -4524,45 +4528,61 @@ body .admin-ui .sidebar button:focus-visible,body .admin-ui .sidebar a:focus-vis
 // Login screen and its UI-only actions.
 function login() {
   document.body.classList.remove('registration-mode');
+  document.body.classList.add('landing-mode');
   app.innerHTML = `
-    <section class="login-page">
-      <a class="login-brand" href="#login"><img src="{{ asset('images/cfo/cfo-logo.png') }}" alt="" width="48" height="48"><span>Christian Formation Office<small>Recollection management system</small></span></a>
-      <header class="login-heading">
-        <h1>Formation,<br><em>where you are.</em></h1>
-        <p>Your recollection journey starts here. Access your schedule, manage your registration, and stay connected with the Christian Formation Office.</p>
-      </header>
-      <div class="quick-actions">
-        <a class="quick-card" href="#register">
-          ${icon('user')}
-          <div><strong>Create Account</strong><span>Create a new student<br>or admin account.</span></div>
-          ${icon('chevron', 'chevron')}
-        </a>
-        <a class="quick-card secondary" href="#forgot-password">
-          ${icon('lock')}
-          <div><strong>Forgot Password?</strong><span>Reset your password.</span></div>
-          ${icon('chevron', 'chevron')}
-        </a>
+    <div class="landing-page-v2" id="top">
+      <div class="landing-shell">
+        <header class="landing-nav landing-wrap">
+          <a class="landing-brand" href="#login" aria-label="Christian Formation Office home"><img src="{{ asset('images/cfo/cfo-logo.png') }}" alt=""><span>Christian Formation Office</span></a>
+          <nav class="landing-links" aria-label="Primary navigation"><a href="#services">Services</a><a href="#journey">Your journey</a><a class="landing-button small" href="#register">Create Student Account</a></nav>
+        </header>
+        <section class="landing-hero landing-wrap" aria-labelledby="landing-hero-title">
+          <div class="landing-hero-copy landing-reveal">
+            <p class="landing-eyebrow">University of La Salette, Inc. / CFO</p>
+            <h1 id="landing-hero-title">Formation, <span class="landing-highlight">where you are.</span></h1>
+            <p class="landing-lead">Find activities, submit requirements, and follow every update in one secure workspace.</p>
+            <a class="landing-explore" href="#services">Explore what the office can help you do <span aria-hidden="true">↓</span></a>
+          </div>
+          <div class="landing-visual landing-reveal">
+            <div class="landing-access-card">
+              <figure class="landing-photo"><img src="{{ asset('images/cfo/cfo-chapel-hero.webp') }}" alt="The Christian Formation Office chapel and altar"><figcaption><strong>Faith in action</strong><span>Campus formation, connected.</span></figcaption></figure>
+              <form class="landing-login" id="login-form">
+                <div class="landing-login-heading"><div><p class="landing-eyebrow">Secure access</p><h2>Sign in to your workspace</h2></div><span>Student and staff accounts</span></div>
+                <div class="landing-login-fields">
+                  ${field('login-email', 'Email Address', 'Email address', 'email', 'mail')}
+                  ${field('login-password', 'Password', 'Password', 'password', 'lock')}
+                  <label class="remember"><input type="checkbox" id="remember">Remember me</label>
+                  <button class="landing-button" type="submit">Sign in <span aria-hidden="true">→</span></button>
+                </div>
+                <div class="landing-account-links"><a href="#register">Create Student Account</a><a href="#forgot-password">Forgot Password?</a></div>
+              </form>
+            </div>
+            <span class="landing-stamp">Belong</span>
+          </div>
+          <dl class="landing-summary landing-reveal" aria-label="Workspace summary"><div><dt>Find</dt><dd>Activities made for you</dd></div><div><dt>Share</dt><dd>Requirements in one place</dd></div><div><dt>Follow</dt><dd>Clear status updates</dd></div></dl>
+        </section>
       </div>
-      <section class="login-card">
-        <img class="login-photo" src="{{ asset('images/cfo/chapel.webp') }}" alt="A quiet chapel, a place for prayer and reflection" width="460" height="150">
-        <h2 class="login-title"><span class="title-icon">${icon('user')}</span>Login</h2>
-        <p class="login-description">Enter your credentials to access your account.</p>
-        <form id="login-form">
-          ${roleSelect('login-role', true)}
-          ${field('login-email', 'Email Address', 'Enter your email address', 'email', 'mail')}
-          ${field('login-password', 'Password', 'Enter your password', 'password', 'lock')}
-          <label class="remember"><input type="checkbox" id="remember">Remember me</label>
-          <button class="primary full" type="submit">${icon('login')}Login</button>
-        </form>
-        <div class="divider">or</div>
-        <button class="primary full google" id="google-login" type="button">
-          <span class="google-mark" aria-hidden="true">G</span>Continue with Google
-        </button>
+      <section id="services" class="landing-services" aria-labelledby="services-title">
+        <div class="landing-wrap">
+          <div class="landing-section-heading landing-reveal"><p class="landing-eyebrow">One connected office</p><h2 id="services-title">Everything your formation journey needs.</h2><p>Three simple ways to stay connected with the Christian Formation Office.</p></div>
+          <div class="landing-service-grid">
+            <article class="landing-service-card featured landing-reveal"><img src="{{ asset('images/cfo/cfo-discover-altar.webp') }}" alt="The altar inside the Christian Formation Office chapel"><div class="landing-service-body"><span>01 / Discover</span><h3>Meet the moment.</h3><p>Find retreats, recollections, liturgies, and programs intended for your department and year.</p></div></article>
+            <article class="landing-service-card landing-reveal"><img src="{{ asset('images/cfo/cfo-office-submit.webp') }}" alt="The Christian Formation Office service area"><div class="landing-service-body"><span>02 / Submit</span><h3>Keep every requirement together.</h3><p>Register and send required documents through your private workspace.</p></div></article>
+            <article class="landing-service-card accent landing-reveal"><div class="landing-service-body"><span>03 / Follow</span><h3>Know what happens next.</h3><p>See review results, corrections, reminders, and office announcements without chasing updates.</p><a class="landing-text-link" href="#top">Sign in</a></div></article>
+          </div>
+        </div>
       </section>
-    </section>`;
+      <section id="journey" class="landing-journey" aria-labelledby="journey-title">
+        <div class="landing-wrap landing-journey-layout">
+          <div class="landing-journey-intro landing-reveal"><h2 id="journey-title">One path.<br><span>Less friction.</span></h2><p>The workspace keeps the practical details out of the way so you can focus on showing up.</p></div>
+          <ol class="landing-steps"><li class="landing-reveal"><span>01</span><div><h3>Choose an activity</h3><p>See the programs available to you and check every requirement before registering.</p></div></li><li class="landing-reveal"><span>02</span><div><h3>Complete your record</h3><p>Submit details and documents securely, then correct anything the office sends back.</p></div></li><li class="landing-reveal"><span>03</span><div><h3>Stay connected</h3><p>Return for confirmations, reminders, and the next opportunity to take part.</p></div></li></ol>
+        </div>
+      </section>
+      <section class="landing-closing"><div class="landing-wrap landing-closing-inner landing-reveal"><p>Your formation workspace is ready.</p><h2>Take the next step.</h2><a class="landing-button" href="#top">Sign in</a></div></section>
+      <footer class="landing-footer"><div class="landing-wrap"><a class="landing-brand" href="#top"><img src="{{ asset('images/cfo/cfo-logo.png') }}" alt=""><span>Christian Formation Office</span></a><p>University of La Salette, Inc.</p><a href="#top">Back to top</a></div></footer>
+    </div>`;
 
   document.querySelector('#login-password').autocomplete = 'current-password';
-  if (window.CFO_BACKEND) document.querySelector('.quick-card span').textContent = 'Create a new student account.';
   document.querySelector('#login-form').onsubmit = event => {
     event.preventDefault();
     if (window.CFO_BACKEND) {
@@ -4570,7 +4590,6 @@ function login() {
         const result = await cfoRequest('/api/login', 'POST', {
           email: document.querySelector('#login-email').value,
           password: document.querySelector('#login-password').value,
-          role: document.querySelector('#login-role').value,
           remember: document.querySelector('#remember').checked
         });
         document.querySelector('#login-password').value = '';
@@ -4581,14 +4600,21 @@ function login() {
     showNotice('Login preview', 'This interface is ready for connection to the CFO login service. No credentials have been sent or saved.');
     event.target.reset();
   };
-  document.querySelector('#google-login').disabled = true; document.querySelector('#google-login').textContent = 'Google sign-in is not configured';
   bindReveal();
+  const landingReveals = document.querySelectorAll('.landing-services .landing-reveal, .landing-journey .landing-reveal, .landing-closing .landing-reveal');
+  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    landingReveals.forEach(element => element.classList.add('is-deferred'));
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); }
+    }), {threshold: .14});
+    landingReveals.forEach(element => observer.observe(element));
+  } else landingReveals.forEach(element => element.classList.add('is-visible'));
 }
 
 
 // Account creation: information, password, and review screens.
 
-const accountState={step:1,role:'Student',studentId:'',firstName:'',middleName:'',lastName:'',email:'',password:'',confirmPassword:''};
+const accountState={step:1,role:'Student',studentId:'',firstName:'',middleName:'',lastName:'',email:'',verificationCode:'',verifiedEmail:'',password:'',confirmPassword:''};
 
 function reminder(blue=false){return `<aside class="reminder ${blue?'blue':''}">${icon('info')}<div><strong>Important Reminder</strong>${blue?'After creating your account, visit the Christian Formation Office in person for account verification and approval before you can log in to the system.':'After completing the registration, your account will be subject for approval.<br>Visit the Christian Formation Office in person for verification and approval before you can log in to the system.'}</div></aside>`}
 
@@ -4597,24 +4623,29 @@ function actions(backLabel='Back',nextLabel='Next',backSymbol='left',nextSymbol=
 function detail(label,value){return `<div class="detail-row"><dt>${label}</dt><dd>${escapeHTML(value||'—')}</dd></div>`}
 
 function registration(){
+ document.body.classList.remove?.('landing-mode');
  document.body.classList.add('registration-mode');
- const labels=['Account Information','Create Password','Review & Confirm'];
+ const labels=['Account Information','Verify Gmail','Create Password','Review & Confirm'];
  let content='';
- if(accountState.step===1){content=`${banner('cap',`${accountState.role} Account Registration`,`Fill in your information below to create your ${accountState.role.toLowerCase()} account.`)}${roleSelect()}${field('studentId',accountState.role==='Admin'?'Employee ID Number':'Student ID Number','24-10723','text','id',accountState.studentId)}<div class="name-row">${field('firstName','First Name','Enter your first name','text','person',accountState.firstName)}${field('middleName','Middle Name','Enter your middle name','text','person',accountState.middleName,false)}${field('lastName','Last Name','Enter your last name','text','person',accountState.lastName)}</div>${field('email','Registered Gmail','Enter your Gmail address (e.g. juan@gmail.com)','email','mail',accountState.email)}${accountState.role==='Student'?`<p class="notice neutral" id="login-email-preview">Generated login email: <strong>${escapeHTML(accountState.email.includes('@')?accountState.email.trim().toLowerCase().split('@')[0]+'@cfo.office.com':'Enter a Gmail address')}</strong></p>`:''}${actions('Cancel','Next','close')}${reminder()}`}
- else if(accountState.step===2){content=`${banner('lock','Create a Secure Password','Your password helps keep your account safe. Please follow the requirements below.')}${field('password','Create Password','Enter your password','password','lock',accountState.password)}${field('confirmPassword','Confirm Password','Re-enter your password','password','lock',accountState.confirmPassword)}<aside class="requirements">${icon('shield')}<div><h2>Password Requirements</h2><ul>${rules.map((rule,i)=>`<li id="rule-${i}"><span class="rule-dot" aria-hidden="true"></span><span>${rule.text}<span class="rule-status sr-only"></span></span></li>`).join('')}</ul></div></aside>${actions()}`}
- else{content=`${banner('file','Review Your Information','Please check if all the information below is correct before creating your account.')}<div class="review-heading"><h2>Account Details</h2><button class="outline edit-button" type="button" data-edit="1" aria-label="Edit account details">${icon('edit')}Edit</button></div><dl class="details">${detail('Role',accountState.role)}${detail(accountState.role==='Admin'?'Employee ID Number':'Student ID Number',accountState.studentId)}${detail('First Name',accountState.firstName)}${detail('Middle Name',accountState.middleName)}${detail('Last Name',accountState.lastName)}${detail('Email Address',accountState.email)}</dl><div class="review-heading"><h2>Security Details</h2><button class="outline edit-button" type="button" data-edit="2" aria-label="Edit password">${icon('edit')}Edit</button></div><dl class="details">${detail('Password','••••••••••••')}</dl>${reminder(true)}${actions('Back','Create Account')}`}
+ if(accountState.step===1){content=`${banner('cap','Student Account Registration','Fill in your information below to create your student account.')}${field('studentId','Student ID Number','24-10723','text','id',accountState.studentId)}<div class="name-row">${field('firstName','First Name','Enter your first name','text','person',accountState.firstName)}${field('middleName','Middle Name','Enter your middle name','text','person',accountState.middleName,false)}${field('lastName','Last Name','Enter your last name','text','person',accountState.lastName)}</div>${field('email','Registered Gmail','Enter your Gmail address (e.g. juan@gmail.com)','email','mail',accountState.email)}<p class="notice neutral" id="login-email-preview">Generated login email: <strong>${escapeHTML(accountState.email.includes('@')?accountState.email.trim().toLowerCase().split('@')[0]+'@cfo.office.com':'Enter a Gmail address')}</strong></p>${actions('Cancel','Next','close')}${reminder()}`}
+ else if(accountState.step===2){content=`${banner('mail','Verify Your Gmail','We sent a 6-digit verification code to <strong>'+escapeHTML(accountState.email.trim().toLowerCase())+'</strong>. Enter it below before continuing.')}${field('verificationCode','Verification Code','Enter the 6-digit code','text','lock',accountState.verificationCode)}<p class="notice neutral">The code expires after 10 minutes. Check your spam folder if it does not arrive.</p><button class="outline" type="button" id="resend-verification">Send a new code</button>${actions('Back','Verify Code')}`}
+ else if(accountState.step===3){content=`${banner('lock','Create a Secure Password','Your password helps keep your account safe. Please follow the requirements below.')}${field('password','Create Password','Enter your password','password','lock',accountState.password)}${field('confirmPassword','Confirm Password','Re-enter your password','password','lock',accountState.confirmPassword)}<aside class="requirements">${icon('shield')}<div><h2>Password Requirements</h2><ul>${rules.map((rule,i)=>`<li id="rule-${i}"><span class="rule-dot" aria-hidden="true"></span><span>${rule.text}<span class="rule-status sr-only"></span></span></li>`).join('')}</ul></div></aside>${actions()}`}
+ else{content=`${banner('file','Review Your Information','Please check if all the information below is correct before creating your account.')}<div class="review-heading"><h2>Account Details</h2><button class="outline edit-button" type="button" data-edit="1" aria-label="Edit account details">${icon('edit')}Edit</button></div><dl class="details">${detail('Role','Student')}${detail('Student ID Number',accountState.studentId)}${detail('First Name',accountState.firstName)}${detail('Middle Name',accountState.middleName)}${detail('Last Name',accountState.lastName)}${detail('Verified Gmail',accountState.email)}</dl><div class="review-heading"><h2>Security Details</h2><button class="outline edit-button" type="button" data-edit="3" aria-label="Edit password">${icon('edit')}Edit</button></div><dl class="details">${detail('Password','••••••••••••')}</dl>${reminder(true)}${actions('Back','Create Account')}`}
 app.innerHTML=`<section class="registration-shell"><aside class="brand-panel auth-brand-panel" aria-label="Christian Formation Office Recollection"><img class="auth-seal" src="{{ asset('images/cfo/cfo-logo.png') }}" alt="Christian Formation Office logo" width="180" height="180"><p class="auth-university">Christian<br><strong>Formation Office</strong></p><p class="auth-product">Recollection</p><p class="auth-quote">In faith, in community,<br>towards a better you.</p><p class="auth-motto">A Journey of Faith<br>A Brighter Tomorrow</p></aside><section class="registration-main"><nav class="topbar"><a class="back-link" href="#login">${icon('left')}Back to Login</a><p>Need help? Contact the <a href="#" id="office-help">Christian Formation Office</a></p></nav><header class="register-heading"><h1 tabindex="-1" id="page-title">Create Account</h1><p>Join the Christian Formation Office Recollection System</p></header><ol class="steps" aria-label="Registration progress">${labels.map((label,i)=>`<li class="${i+1===accountState.step?'active':i+1<accountState.step?'done':''}" ${i+1===accountState.step?'aria-current="step"':''}><span class="step-number">${i+1<accountState.step?icon('check'):i+1}</span>${label}</li>`).join('')}</ol><form id="registration-form">${content}</form></section></section>`;
 
  const form=document.querySelector('#registration-form');
  window.CfoAccountIds.bind(document.querySelector('#studentId'));
  window.CfoRegistrationEmail.bind(document.querySelector('#email'));
- form.addEventListener('input',e=>{if(e.target.name in accountState)accountState[e.target.name]=e.target.value;if(e.target.name==='email'){const preview=document.querySelector('#login-email-preview strong');if(preview){const email=accountState.email.trim().toLowerCase();preview.textContent=email.includes('@')?email.split('@')[0]+'@cfo.office.com':'Enter a Gmail address';}}if(accountState.step===2)updateRules()});
- const role=document.querySelector('#role');if(role)role.onchange=()=>{accountState.role=role.value;registration();document.querySelector('#role').focus()};
+ const verificationInput=document.querySelector('#verificationCode');
+ if(verificationInput){verificationInput.inputMode='numeric';verificationInput.autocomplete='one-time-code';verificationInput.maxLength=6;}
+ form.addEventListener('input',e=>{if(e.target.name in accountState)accountState[e.target.name]=e.target.value;if(e.target.name==='email'){const email=accountState.email.trim().toLowerCase();if(accountState.verifiedEmail!==email)accountState.verifiedEmail='';const preview=document.querySelector('#login-email-preview strong');if(preview)preview.textContent=email.includes('@')?email.split('@')[0]+'@cfo.office.com':'Enter a Gmail address';}if(accountState.step===3)updateRules()});
  document.querySelector('#previous').onclick=()=>{if(accountState.step===1){location.hash='login'}else{setStep(accountState.step-1)}};
  document.querySelectorAll('[data-edit]').forEach(button=>button.onclick=()=>setStep(Number(button.dataset.edit)));
  document.querySelector('#office-help').onclick=e=>{e.preventDefault();showNotice('Christian Formation Office','For registration assistance and account verification, please visit the Christian Formation Office in person.')};
- form.onsubmit=e=>{e.preventDefault();if(window.CFO_BACKEND && accountState.step===3){cfoSubmit(form,async()=>{const result=await cfoRequest('/api/register','POST',{student_id:accountState.studentId,first_name:accountState.firstName,middle_name:accountState.middleName,last_name:accountState.lastName,email:accountState.email,role:accountState.role,password:accountState.password,password_confirmation:accountState.confirmPassword});accountState.password='';accountState.confirmPassword='';accountState.step=1;location.hash='login';setTimeout(()=>showNotice('Account created','Your generated login email is '+(result.login_email||'')+'. '+result.message),0);});return;}const error=document.querySelector('#form-error');if(accountState.step===1){for(const name of ['studentId','firstName','lastName','email']){if(!accountState[name].trim()){error.textContent='Please enter your ID, first name, last name and Gmail address.';document.getElementById(name).focus();return}}if(!window.CfoAccountIds.valid(accountState.studentId)){error.textContent=window.CfoAccountIds.message;document.getElementById('studentId').focus();return}if(!window.CfoRegistrationEmail.valid(accountState.email)){error.textContent=window.CfoRegistrationEmail.message;document.getElementById('email').focus();return}setStep(2)}else if(accountState.step===2){if(!rules.every(rule=>rule.test(accountState.password))){error.textContent='Please meet all five password requirements before continuing.';document.querySelector('#password').focus();return}if(accountState.password!==accountState.confirmPassword){error.textContent='Your passwords do not match. Please re-enter your password.';document.querySelector('#confirmPassword').focus();return}setStep(3)}else{showNotice('Registration preview complete','You have completed the registration screens. This UI is not connected to the CFO registration service, so no account has been created and no information has been submitted.');accountState.password='';accountState.confirmPassword='';accountState.step=1;location.hash='login'}};
- bindReveal();if(accountState.step===2)updateRules();
+ const resend=document.querySelector('#resend-verification');
+ if(resend)resend.onclick=()=>cfoSubmit(form,async()=>{const result=await cfoRequest('/api/register/email/send-code','POST',{email:accountState.email});accountState.verificationCode='';showNotice('Verification code sent',result.message);},true);
+ form.onsubmit=e=>{e.preventDefault();const error=document.querySelector('#form-error');if(accountState.step===1){for(const name of ['studentId','firstName','lastName','email']){if(!accountState[name].trim()){error.textContent='Please enter your ID, first name, last name and Gmail address.';document.getElementById(name).focus();return}}if(!window.CfoAccountIds.valid(accountState.studentId)){error.textContent=window.CfoAccountIds.message;document.getElementById('studentId').focus();return}if(!window.CfoRegistrationEmail.valid(accountState.email)){error.textContent=window.CfoRegistrationEmail.message;document.getElementById('email').focus();return}if(window.CFO_BACKEND){cfoSubmit(form,async()=>{const result=await cfoRequest('/api/register/email/send-code','POST',{email:accountState.email});accountState.verifiedEmail='';accountState.verificationCode='';setStep(2);showNotice('Verification code sent',result.message);},true);return;}setStep(2);return;}if(accountState.step===2){if(!/^\d{6}$/.test(accountState.verificationCode)){error.textContent='Enter the 6-digit verification code.';verificationInput.focus();return}if(window.CFO_BACKEND){cfoSubmit(form,async()=>{const result=await cfoRequest('/api/register/email/verify-code','POST',{email:accountState.email,code:accountState.verificationCode});accountState.verifiedEmail=accountState.email.trim().toLowerCase();accountState.verificationCode='';setStep(3);showNotice('Email verified',result.message);},true);return;}accountState.verifiedEmail=accountState.email.trim().toLowerCase();setStep(3);return;}if(accountState.step===3){if(accountState.verifiedEmail!==accountState.email.trim().toLowerCase()){error.textContent='Verify this Gmail address before continuing.';setStep(1);return}if(!rules.every(rule=>rule.test(accountState.password))){error.textContent='Please meet all five password requirements before continuing.';document.querySelector('#password').focus();return}if(accountState.password!==accountState.confirmPassword){error.textContent='Your passwords do not match. Please re-enter your password.';document.querySelector('#confirmPassword').focus();return}setStep(4);return;}if(window.CFO_BACKEND){cfoSubmit(form,async()=>{const result=await cfoRequest('/api/register','POST',{student_id:accountState.studentId,first_name:accountState.firstName,middle_name:accountState.middleName,last_name:accountState.lastName,email:accountState.email,role:accountState.role,password:accountState.password,password_confirmation:accountState.confirmPassword});Object.assign(accountState,{step:1,studentId:'',firstName:'',middleName:'',lastName:'',email:'',verificationCode:'',verifiedEmail:'',password:'',confirmPassword:''});location.hash='login';setTimeout(()=>showNotice('Account created','Your generated login email is '+(result.login_email||'')+'. '+result.message),0);});return;}showNotice('Registration preview complete','You have completed the registration screens. No account has been created and no information has been submitted.');Object.assign(accountState,{step:1,verificationCode:'',verifiedEmail:'',password:'',confirmPassword:''});location.hash='login'};
+ bindReveal();if(accountState.step===3)updateRules();
 }
 function setStep(step){accountState.step=step;registration();document.querySelector('#page-title').focus({preventScroll:true});window.scrollTo({top:0,behavior:'instant'})}
 function updateRules(){rules.forEach((rule,i)=>{const item=document.querySelector(`#rule-${i}`);const valid=rule.test(accountState.password);item.classList.toggle('valid',valid);item.querySelector('.rule-dot').textContent=valid?'✓':'';item.querySelector('.rule-status').textContent=valid?' (met)':' (not met)'});const confirm=document.querySelector('#confirmPassword');confirm.setAttribute('aria-invalid',String(Boolean(confirm.value)&&confirm.value!==accountState.password));document.querySelector('#form-error').textContent=''}
@@ -4635,6 +4666,7 @@ function resetRequirements(){return `<div class="requirements">${icon('shield')}
 function forgot() {
  stopRecoveryPolling();
  stopRecoveryRequestCountdown();
+ document.body.classList.remove?.('landing-mode');
  document.body.classList.add('registration-mode');
  const step=resetState.step;
  const labels=['Verify Account','Enter Temporary Password','Create New Password'];

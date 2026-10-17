@@ -1678,10 +1678,6 @@ body .dash-shell .dash-panel-heading > button {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-body .dash-shell .dash-profile-menu button {
-  color: #123d39;
-  font-weight: 600;
-}
 body .admin-ui .view-btn,
 body .admin-ui .view-all,
 body .admin-ui .date-selector,
@@ -1810,13 +1806,14 @@ html:has(> body.dashboard-mode) {
   overflow-y: auto;
   isolation: isolate;
 }
-/* Display only the campus region of the reference, excluding its navigation and text. */
+/* Keep the real chapel present behind the navigation without competing with labels. */
 .dash-sidebar:before {
   content: "";
   position: absolute;
   inset: auto 0 0;
   height: 285px;
-  background: var(--dashboard-reference) left -1119px/1536px 1536px no-repeat;
+  background: linear-gradient(rgba(6, 37, 66, .12), rgba(6, 37, 66, .7)),
+    url("{{ asset('images/cfo/cfo-system-background.webp') }}") center / cover no-repeat;
   mask-image: linear-gradient(transparent, #000 40%);
   z-index: -1;
   pointer-events: none;
@@ -1906,6 +1903,62 @@ html:has(> body.dashboard-mode) {
     serif;
   color: #fff;
 }
+.dash-sidebar-footer {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 14px 18px;
+  border-top: 1px solid #ffffff30;
+  background: transparent;
+  flex-shrink: 0;
+}
+.dash-sidebar-avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff18;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+.dash-sidebar-profile {
+  display: block;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+}
+.dash-sidebar-profile strong,
+.dash-sidebar-profile small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dash-sidebar-profile strong { font-size: 13px; }
+.dash-sidebar-profile small { margin-top: 3px; color: #b9d5cd; font-size: 11px; }
+.dash-sidebar-profile:hover strong { text-decoration: underline; }
+.dash-sidebar-logout {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #ffffff30;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+}
+.dash-sidebar-logout:hover { background: #ffffff16; }
+.dash-sidebar-logout .icon { width: 20px; height: 20px; }
 .dash-main-pane {
   margin-left: var(--sidebar-width);
   min-width: 0;
@@ -2080,35 +2133,6 @@ html:has(> body.dashboard-mode) {
   width: 18px;
   height: 18px;
   margin-left: 24px;
-}
-.dash-profile-menu {
-  position: absolute;
-  right: 0;
-  top: 57px;
-  width: 200px;
-  padding: 8px;
-  border: 1px solid #e0e8e7;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 10px 30px #113f4020;
-  z-index: 20;
-}
-.dash-profile-menu button,
-.dash-profile-menu a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 12px;
-  background: none;
-  color: #123740;
-  border-radius: 6px;
-  font-size: 15px;
-  text-align: left;
-}
-.dash-profile-menu button:hover,
-.dash-profile-menu a:hover {
-  background: #edf5f1;
 }
 .dash-content {
   padding: 23px 20px 12px 24px;
@@ -2290,11 +2314,11 @@ html:has(> body.dashboard-mode) {
 }
 .dash-chapel-image img {
   position: absolute;
-  max-width: none;
-  width: 472.6154%;
-  height: 459.1929%;
-  left: -110.1538%;
-  top: -230.0448%;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
 }
 .dash-chapel figcaption {
   text-align: center;
@@ -4644,7 +4668,7 @@ html:has(> body.dashboard-mode) {
         <p class="dash-preview-note">UI preview · Sample student data</p>
         --></template>
 
-    <!-- dashboard: 10 dynamic value(s); used by studentTemplate(). -->
+    <!-- dashboard: 7 dynamic value(s); used by studentTemplate(). -->
     <template id="html-dashboard-6"><!--<div class="dash-shell">
     <aside class="dash-sidebar" id="dashboard-navigation" aria-label="Student navigation">
       <button type="button" class="dash-sidebar-close dash-icon-button" aria-label="Close navigation">@{{0}}</button>
@@ -4653,8 +4677,11 @@ html:has(> body.dashboard-mode) {
         <span class="dash-university">Christian<br><strong>Formation Office</strong></span><span class="dash-brand-subtitle">Recollection</span>
       </a>
       <nav class="dash-nav" aria-label="Main navigation">@{{1}}</nav>
-      <button type="button" class="dash-logout" id="openLogout" data-dashboard-action="logout">@{{2}}<span>Logout</span></button>
-      <p class="dash-sidebar-quote">A Journey of Faith<br>A Brighter Tomorrow</p>
+      <div class="dash-sidebar-footer">
+        <span class="dash-sidebar-avatar" aria-hidden="true">JD</span>
+        <button type="button" class="dash-sidebar-profile" data-dashboard-action="profile" aria-label="Open student profile"><strong>Juan Dela Cruz</strong><small>Student</small></button>
+        <button type="button" class="dash-sidebar-logout" id="openLogout" data-dashboard-action="logout" aria-label="Log out" title="Logout">@{{2}}</button>
+      </div>
     </aside>
     <button type="button" class="dash-backdrop" aria-label="Close navigation" tabindex="-1" hidden></button>
     <div class="dash-main-pane">
@@ -4669,13 +4696,12 @@ html:has(> body.dashboard-mode) {
             </section>
           </div>
           <div class="dash-profile">
-            <button type="button" class="dash-profile-button" id="dashboard-profile" aria-expanded="false" aria-controls="dashboard-profile-menu"><span class="dash-avatar">JD</span><span class="dash-profile-name"><strong>Juan Dela Cruz</strong><span>Student</span></span>@{{5}}</button>
-            <div class="dash-profile-menu" id="dashboard-profile-menu" hidden><button type="button" data-dashboard-action="profile">@{{6}}My Profile</button><button type="button" data-dashboard-action="logout">@{{7}}Logout</button></div>
+            <button type="button" class="dash-profile-button" id="dashboard-profile" data-dashboard-action="profile" aria-label="Open student profile"><span class="dash-avatar">JD</span><span class="dash-profile-name"><strong>Juan Dela Cruz</strong><span>Student</span></span></button>
           </div>
         </div>
       </header>
-      <section class="dash-content" aria-labelledby="@{{8}}">
-        @{{9}}
+      <section class="dash-content" aria-labelledby="@{{5}}">
+        @{{6}}
       </section>
     </div>
   </div>--></template>
@@ -4930,7 +4956,7 @@ html:has(> body.dashboard-mode) {
 
   <!-- 7.1.3 Dashboard image resource shared by CSS and visible page images. -->
   <template id="embedded-student-assets">
-    <img data-resource="dashboard-reference" src="{{ asset('assets/student/images/dashboard-reference.webp') }}" alt="">
+    <img data-resource="dashboard-reference" src="{{ asset('assets/student/images/cfo-dashboard-chapel.webp') }}" alt="">
   </template>
 
   <!-- ==================== 7.3 JAVASCRIPT / FUNCTIONALITY ==================== -->
@@ -5408,9 +5434,6 @@ function dashboard({ content = null, active = "dashboard", titleId = "recollecti
     icon("login"),
     icon("menu"),
     icon("bell"),
-    icon("down"),
-    icon("person"),
-    icon("login"),
     content === null ? "dashboard-title" : titleId,
     content ??
       studentTemplate("html-dashboard-5", [
@@ -5454,8 +5477,6 @@ function dashboard({ content = null, active = "dashboard", titleId = "recollecti
   const menuButton = app.querySelector("#dashboard-menu");
   const closeButton = app.querySelector(".dash-sidebar-close");
   const backdrop = app.querySelector(".dash-backdrop");
-  const profileButton = app.querySelector("#dashboard-profile");
-  const profileMenu = app.querySelector("#dashboard-profile-menu");
   const notificationArea = app.querySelector(".dash-notification-area");
   const notificationButton = app.querySelector("#dashboard-notifications");
   const notificationPanel = app.querySelector("#student-notification-panel");
@@ -5480,14 +5501,9 @@ function dashboard({ content = null, active = "dashboard", titleId = "recollecti
     syncNavigation();
     if (returnFocus) menuButton.focus();
   }
-  function closeProfile() {
-    profileMenu.hidden = true;
-    profileButton.setAttribute("aria-expanded", "false");
-  }
   menuButton.addEventListener(
     "click",
     () => {
-      closeProfile();
       if (compact.matches) shell.classList.toggle("dash-nav-open");
       else {
         dashboardSidebarCollapsed = !dashboardSidebarCollapsed;
@@ -5506,24 +5522,14 @@ function dashboard({ content = null, active = "dashboard", titleId = "recollecti
       const focusWasInSidebar = sidebar.contains(document.activeElement);
       shell.classList.remove("dash-nav-open");
       shell.classList.toggle("dash-nav-hidden", dashboardSidebarCollapsed);
-      closeProfile();
       syncNavigation();
       if (sidebar.inert && focusWasInSidebar) menuButton.focus();
-    },
-    options,
-  );
-  profileButton.addEventListener(
-    "click",
-    () => {
-      profileMenu.hidden = !profileMenu.hidden;
-      profileButton.setAttribute("aria-expanded", String(!profileMenu.hidden));
     },
     options,
   );
   document.addEventListener(
     "click",
     (event) => {
-      if (!event.target.closest(".dash-profile")) closeProfile();
       if (notificationArea && !notificationArea.contains(event.target)) closeStudentNotificationPanel();
     },
     options,
@@ -5533,10 +5539,6 @@ function dashboard({ content = null, active = "dashboard", titleId = "recollecti
     (event) => {
       if (event.key === "Escape") {
         if (shell.classList.contains("dash-nav-open")) closeNavigation();
-        if (!profileMenu.hidden) {
-          closeProfile();
-          profileButton.focus();
-        }
         if (notificationPanel && !notificationPanel.hidden) closeStudentNotificationPanel(true);
       }
       if (event.key === "Tab" && compact.matches && shell.classList.contains("dash-nav-open")) {
@@ -5572,9 +5574,9 @@ function dashboard({ content = null, active = "dashboard", titleId = "recollecti
     const user = window.CFO_BACKEND.user;
     const registration = cfoStudent.registrations.find(r=>!r.is_archived && r.year===cfoStudent.current_year);
     const schedule = registration?.schedule;
-    app.querySelector(".dash-profile-name strong").textContent = user.name;
-    app.querySelector(".dash-avatar").textContent =
-      (user.first_name?.[0] || "") + (user.last_name?.[0] || "");
+    app.querySelectorAll(".dash-profile-name strong, .dash-sidebar-profile strong").forEach(element => { element.textContent = user.name; });
+    const studentInitials = (user.first_name?.[0] || "") + (user.last_name?.[0] || "");
+    app.querySelectorAll(".dash-avatar, .dash-sidebar-avatar").forEach(element => { element.textContent = studentInitials; });
     updateStudentNotificationBell();
     if (!content) {
       app.querySelector("#dashboard-title").textContent = user.name + "!";
@@ -5629,12 +5631,10 @@ function dashboard({ content = null, active = "dashboard", titleId = "recollecti
       const destination = control.matches("a")
         ? control.getAttribute("href")
         : studentNavigationRoutes[action];
-      const wasProfileAction = profileMenu.contains(control);
       if (destination) event.preventDefault();
       if (compact.matches && shell.classList.contains("dash-nav-open")) closeNavigation();
-      closeProfile();
       if (action === "logout") {
-        openLogoutModal(wasProfileAction ? profileButton : compact.matches ? menuButton : control);
+        openLogoutModal(compact.matches ? menuButton : control);
         return;
       }
       if (action === "notifications") {
@@ -5660,7 +5660,6 @@ function dashboard({ content = null, active = "dashboard", titleId = "recollecti
       }
       const notice = notices[action];
       if (!notice) return;
-      if (wasProfileAction) profileButton.focus();
       showNotice(...notice);
     },
     options,

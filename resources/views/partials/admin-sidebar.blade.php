@@ -8,7 +8,7 @@
         $badges = \App\Services\AdminNavigation::badges();
     @endphp
     <nav aria-label="Main navigation" data-nav-badges="{{ url('/api/admin/nav-badges') }}" data-badges="{{ json_encode($badges) }}">
-        @foreach(config('admin_navigation') as $group => $items)
+        @foreach(\App\Services\AdminNavigation::itemsFor(auth()->user()) as $group => $items)
             @if($group !== '')<div class="nav-group">{{ $group }}</div>@endif
             @foreach($items as $key => $item)
                 @php
@@ -26,7 +26,7 @@
     </nav>
     <div class="sidebar-footer">
         <span class="avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 2)) }}</span>
-        <a class="sidebar-profile-link" href="{{ url('/admin') }}#admin-settings" title="Profile and settings"><strong>{{ auth()->user()->name }}</strong><small>Administrator</small></a>
+        <a class="sidebar-profile-link" href="{{ url('/admin') }}#admin-settings" title="Profile and settings"><strong>{{ auth()->user()->name }}</strong><small>{{ auth()->user()->roleLabel() }}</small></a>
         <form method="post" action="{{ url('/api/logout') }}" id="registration-logout">@csrf<button aria-label="Log out">@include('partials.admin-icon', ['name' => 'logout'])</button></form>
     </div>
 </aside>

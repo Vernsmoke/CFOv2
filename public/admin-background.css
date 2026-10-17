@@ -17,7 +17,7 @@ body.admin-background {
     --admin-stat-orange: #FFC15A;
     --admin-stat-red: #FF8DAB;
 
-    --admin-background-image: url("./images/admin-campus-bg.png");
+    --admin-background-image: url("./images/cfo/cfo-system-background.webp");
     --admin-background-fallback: #f4f7f9;
     --admin-background-position: center;
     --admin-background-panel: rgba(255, 255, 255, .96);

@@ -88,9 +88,9 @@
     ['Announcements', 'announcements'], ['Certificate', 'certificate'], ['My profile', 'my-profile'],
   ];
   function buildContext({role, user, state = {}, route, params = new URLSearchParams(), rows, recoveryStatus}) {
-    const admin = role === 'Admin', student = role === 'Student';
+    const admin = ['CFOStaff','SuperAdmin','Admin'].includes(role), student = role === 'Student';
     if (!admin && !student) return null;
-    const pages = admin ? adminPages : studentPages;
+    const pages = admin ? (role === 'CFOStaff' ? adminPages.filter(([,route]) => !['admin-activity','admin-course-year','admin-certificate-template'].includes(route)) : adminPages) : studentPages;
     let title = pages.find(p => p[1] === route)?.[0];
     if (admin && route === 'admin-add-new-recollection-schedule') title = 'Recollection schedule form';
     if (!title) return null;
@@ -214,7 +214,7 @@
     host.hidden = false;
     if (host._cfoSearch?.key === context.key) { host._cfoSearch.update(context, select); return; }
     const id = 'cfo-search-' + (++serial);
-    const categories = !context.key.startsWith('Admin:');
+    const categories = !/^(Admin|SuperAdmin|CFOStaff):/.test(context.key);
     const draft = drafts.get(context.key) || {query: '', group: ''};
     if (!categories) draft.group = '';
     drafts.set(context.key, draft);

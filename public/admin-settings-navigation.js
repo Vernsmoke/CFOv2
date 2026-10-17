@@ -1,11 +1,13 @@
 /* Keep Settings navigation available while its individual pages are rendered. */
 (function (root) {
   'use strict';
-  const destinations = [
+  const allDestinations = [
     ['office','Office information','#admin-settings?tab=office'],
     ['phone','Phone access &amp; QR','#admin-lan-access'],
-    ['admins','Admin accounts','#admin-settings?tab=admins']
+    ['admins','Staff accounts','#admin-settings?tab=admins']
   ];
+  const isSuperAdmin = () => ['SuperAdmin','Admin'].includes(root.CFO_BACKEND?.user?.role);
+  const destinations = () => isSuperAdmin() ? allDestinations : [];
   function selection(route, params = new URLSearchParams()) {
     if (route === 'admin-lan-access') return 'phone';
     if (route !== 'admin-settings') return null;
@@ -13,7 +15,7 @@
     return ['office','admins'].includes(tab) ? tab : 'profile';
   }
   function navigationHtml() {
-    return destinations.map(([key,label,href])=>`<a class="btn" data-settings-page="${key}" href="${href}">${label}</a>`).join('');
+    return destinations().map(([key,label,href])=>`<a class="btn" data-settings-page="${key}" href="${href}">${label}</a>`).join('');
   }
   function mount(doc = root.document) {
     const main = doc.querySelector('#main-content');
@@ -25,7 +27,7 @@
     main.appendChild(nav);
     const links = [...nav.querySelectorAll('[data-settings-page]')];
     const sync = (route, params) => {
-      const active = selection(route,params); nav.hidden = active === null;
+      const active = selection(route,params); nav.hidden = active === null || !isSuperAdmin();
       links.forEach(link => {
         const current = link.dataset.settingsPage === active;
         link.classList.toggle('primary',current);
@@ -33,7 +35,7 @@
       });
       if (active !== null) {
         const pageActions = doc.querySelector('#page-actions');
-        if (pageActions) pageActions.innerHTML = active === 'profile' ? '' : '<a class="btn" href="#admin-settings">Administrator Profile</a>';
+        if (pageActions) pageActions.innerHTML = active === 'profile' ? '' : '<a class="btn" href="#admin-settings">Office Profile</a>';
       }
     };
     main.cfoSettingsNavigation = {sync,nav};
