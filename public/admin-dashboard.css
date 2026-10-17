@@ -1,0 +1,245 @@
+/* Student theme mapped to the admin Dashboard's existing components only. */
+@media screen {
+  body.admin-background:has(#main-content > #page > .dashboard-overview) {
+    --ad-navy: #062542;
+    --ad-panel: #082b49;
+    --ad-line: #214c70;
+    --ad-blue: #087df0;
+    --ad-green: #00bd83;
+    --ad-yellow: #ffd84d;
+    --ad-text: var(--cfo-text);
+    --ad-muted: var(--cfo-text-muted);
+    --admin-background-image: linear-gradient(135deg, #041d35, #0a4778);
+    --admin-background-fallback: var(--ad-navy);
+    --admin-dashboard-overlay: transparent;
+  }
+
+  /* Keep the admin scroll frame, sidebar and header controls in place. */
+  body.admin-background:has(#main-content > #page > .dashboard-overview) .shell > .admin-header {
+    width: calc(100% - 36px);
+    max-width: 1564px;
+    min-height: 52px;
+    margin: 14px auto 0;
+    padding: 0 18px;
+    border: 1px solid #214d72;
+    border-radius: 9px;
+    background: var(--ad-yellow);
+    color: #17334d;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .16);
+    font-family: var(--admin-font-family);
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) .admin-header :is(#admin-header-title, #admin-header-name) {
+    color: #17334d;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) .admin-header :is(#admin-header-breadcrumb, #admin-header-role) {
+    color: #17334d;
+    font-size: 11px;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) .admin-header :is(button, .account) {
+    color: #17334d;
+    font-family: inherit;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) .admin-header .admin-header-control {
+    border: 1px solid #34516c;
+    border-radius: 8px;
+    background: #ffe77e;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) .admin-header :is(button, .account):hover {
+    background: #ffe77e;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) .admin-header #live-status {
+    color: #17334d;
+    background: #ffe77e;
+    border-color: #34516c;
+    font-size: 10px;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) .admin-header #admin-header-avatar {
+    background: #173b59;
+    color: white;
+    font-size: 14px;
+  }
+
+  /* The header, hero, cards and footer share the same content edges. */
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content {
+    --admin-title-size: 20px;
+    --admin-panel-title-size: 15px;
+    --admin-metric-label-size: 11px;
+    --admin-metric-value-size: 16px;
+    --admin-body-size: 14px;
+    --admin-hint-size: 11px;
+    --admin-button-size: 11px;
+    --admin-badge-size: 10px;
+    --admin-text: var(--ad-text);
+    --admin-muted: var(--ad-muted);
+    --admin-content-text: var(--ad-text);
+    --admin-container-border: #214d72;
+    --admin-container-gap: 12px;
+    --admin-card-radius: 9px;
+    --admin-border-width: 1px;
+    --admin-stat-blue: #42b7ff;
+    --admin-stat-green: var(--ad-green);
+    --admin-stat-orange: var(--ad-yellow);
+    --admin-stat-red: #f47d8f;
+    --admin-dashboard-dark-text: var(--ad-text);
+    --admin-dashboard-dark-secondary: var(--ad-muted);
+    --admin-dashboard-dark-card: rgba(3, 31, 55, .96);
+    --admin-dashboard-dark-border: var(--ad-line);
+    --admin-dashboard-dark-solid: #0b2b49;
+    --admin-dashboard-dark-control-border: #557795;
+    --admin-dashboard-dark-control-hover: var(--ad-panel);
+    --admin-dashboard-dark-control-hover-border: #479dff;
+    --admin-dashboard-dark-primary: #00a970;
+    --admin-dashboard-dark-primary-hover: #007e60;
+    --admin-dashboard-dark-accent: #42d8ac;
+    --admin-dashboard-dark-accent-hover: var(--ad-text);
+    --admin-dashboard-dark-shadow: none;
+    --accent-sky: var(--ad-text);
+    --accent-sky-hover: var(--ad-text);
+    width: calc(100% - 36px);
+    max-width: 1564px;
+    margin: 14px auto 0;
+    padding: 0 0 90px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--ad-text);
+    box-shadow: none;
+    font: 14px/1.5 var(--admin-font-family);
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content > .page-heading {
+    margin: 0 0 12px;
+    padding: 15px 18px;
+    gap: 12px;
+    border: 0;
+    border-radius: 9px;
+    background: linear-gradient(100deg, #0877f2, #267ff1);
+    color: var(--ad-text);
+    box-shadow: none;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content > .page-heading .eyebrow {
+    margin: 0;
+    color: #052e58;
+    font: bold 10px var(--admin-font-family);
+    letter-spacing: 1px;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page-title {
+    margin: 5px 0;
+    color: var(--ad-text);
+    font: bold 20px/1.25 var(--admin-font-family);
+    letter-spacing: normal;
+    overflow-wrap: anywhere;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page-description {
+    margin: 0;
+    color: var(--ad-text);
+    font-size: 12px;
+  }
+
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .dashboard-overview { gap: 12px; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metrics { gap: 9px; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page :is(.metric, .panel) {
+    border-radius: 9px;
+    background: rgba(3, 31, 55, .96);
+    color: var(--ad-text);
+    box-shadow: none;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric:nth-child(4n + 1) { --ad-tone: var(--admin-stat-blue); }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric:nth-child(4n + 2) { --ad-tone: var(--admin-stat-green); }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric:nth-child(4n + 3) { --ad-tone: var(--admin-stat-orange); }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric:nth-child(4n + 4) { --ad-tone: var(--admin-stat-red); }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metrics > .metric {
+    padding: 10px;
+    border: 2px solid var(--ad-tone);
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric-top { color: var(--ad-muted); }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric-top > span:first-child {
+    color: var(--ad-muted);
+    font-size: 11px;
+    font-weight: bold;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric-icon {
+    border-radius: 50%;
+    background: var(--ad-tone);
+    color: #07385f;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric > strong {
+    color: var(--ad-text);
+    font-size: 16px;
+    letter-spacing: normal;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric > :is(a, p) { font-size: 11px; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric > a { color: var(--ad-text); }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .panel { border: 1px solid #214d72; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .panel-head {
+    padding: 12px 12px 10px;
+    gap: 9px;
+    border-bottom: 1px solid var(--ad-line);
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .panel-head h2 {
+    color: var(--ad-text);
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: normal;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .panel-body { padding: 12px; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .dashboard-schedule-row {
+    padding-block: 9px;
+    border-color: #1a4264;
+    font-size: 11px;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .dashboard-schedule-row dt { color: #b7cadd; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .dashboard-schedule-row dd { color: var(--ad-text); font-weight: bold; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .ms-course-group { border-color: var(--ad-line); }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .ms-course-group-name { color: var(--ad-text); font-size: 11px; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page :is(.ms-section-chip, .dashboard-schedule-status) {
+    padding: 5px 8px;
+    border: 0;
+    border-radius: 14px;
+    background: #0969c7;
+    color: var(--ad-text);
+    font-size: 10px;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .dashboard-schedule-status { background: #007e60; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .dashboard-schedule-status.is-closed { background: #fff0f1; color: #a52b42; }
+
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content .btn {
+    padding: 9px 11px;
+    border: 1px solid #557795;
+    border-radius: 6px;
+    background: #0b2b49;
+    color: #eef7ff;
+    font-size: 11px;
+    font-weight: bold;
+    box-shadow: none;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content .btn:hover:not(:disabled) { background: var(--ad-panel); color: var(--ad-text); border-color: #479dff; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .panel-head .btn { background: var(--ad-blue); border-color: #479dff; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content .btn.primary { background: #00a970; border-color: #42d8ac; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content .btn.primary:hover:not(:disabled) { background: #007e60; }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content > .page-foot {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid #214d72;
+    border-radius: 9px;
+    background: rgba(3, 31, 55, .96);
+    color: var(--ad-muted);
+    box-shadow: none;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  body.admin-background:has(#main-content > #page > .dashboard-overview) .shell > .admin-header {
+    width: calc(100% - 16px);
+    margin-top: 10px;
+    padding-inline: 8px;
+    gap: 8px;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content {
+    width: calc(100% - 16px);
+    margin-top: 10px;
+    padding-bottom: 145px;
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page-title { font-size: 18px; }
+}

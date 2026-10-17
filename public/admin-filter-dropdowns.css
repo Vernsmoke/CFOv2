@@ -1,0 +1,32 @@
+/* The select keeps its existing shape; only its open filter menu is shared. */
+.cfo-filter-dropdown {
+  position: fixed;
+  inset: auto;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 2px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  z-index: 100000;
+  border: 1px solid #8ca7c4;
+  border-radius: 4px;
+  background: #f3f7fd;
+  color: #000;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 24%);
+  scrollbar-width: thin;
+  scrollbar-color: #9ba8b5 #f3f7fd;
+  text-align: left;
+}
+.cfo-filter-option {
+  box-sizing: border-box;
+  min-height: 34px;
+  padding: 7px 12px;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.cfo-filter-option[data-active="true"] { background: #1265d8; color: #fff; }
+.cfo-filter-option[aria-selected="true"] { font-weight: 700; }
+.cfo-filter-option[aria-disabled="true"] { color: #667587; cursor: default; }
+@media print { .cfo-filter-dropdown { display: none !important; } }

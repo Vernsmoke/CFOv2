@@ -1,0 +1,54 @@
+/* Screen-only scrollbars shared by both admin layouts and their scroll panels. */
+@media screen {
+    html.admin-background-root,
+    body.admin-background {
+        --admin-scrollbar-thumb: #ffffff;
+        --admin-scrollbar-thumb-hover: #c7c7c7;
+    }
+
+    :is(html.admin-background-root, body.admin-background, body.admin-background *) {
+        scrollbar-width: thin;
+        scrollbar-color: var(--admin-scrollbar-thumb) transparent;
+    }
+
+    :is(html.admin-background-root, body.admin-background, body.admin-background *)::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+        background: transparent;
+    }
+
+    :is(html.admin-background-root, body.admin-background, body.admin-background *)::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    :is(html.admin-background-root, body.admin-background, body.admin-background *)::-webkit-scrollbar-button {
+        display: none;
+        width: 0;
+        height: 0;
+    }
+
+    :is(html.admin-background-root, body.admin-background, body.admin-background *)::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
+    :is(html.admin-background-root, body.admin-background, body.admin-background *)::-webkit-scrollbar-thumb {
+        background: var(--admin-scrollbar-thumb);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+    :is(html.admin-background-root, body.admin-background, body.admin-background *)::-webkit-scrollbar-thumb:hover {
+        background: var(--admin-scrollbar-thumb-hover);
+        background-clip: padding-box;
+    }
+
+    /* Blink/WebKit's native standard scrollbars can retain arrow buttons.
+       Let the custom pseudo-elements control them wherever supported. */
+    @supports selector(::-webkit-scrollbar) {
+        :is(html.admin-background-root, body.admin-background, body.admin-background *) {
+            scrollbar-width: auto;
+            scrollbar-color: auto;
+        }
+    }
+}

@@ -1,0 +1,35 @@
+/* Admin page actions share the Create Schedule footer; controls keep their DOM owners. */
+@media screen {
+  body.admin-background #main-content.cfo-has-bottom-actions {
+    padding-bottom: calc(var(--cfo-action-bar-height) + 24px) !important;
+    scroll-padding-bottom: calc(var(--cfo-action-bar-height) + 24px);
+  }
+  body.admin-background .cfo-action-bar-background {
+    position: fixed; right: 0; bottom: 0; z-index: 20;
+    background: #041F38F2; border-top: 1px solid var(--cfo-navy-hover);
+    pointer-events: none;
+  }
+  body.admin-background .cfo-action-bar-background[hidden] { display: none; }
+  body.admin-background .cfo-bottom-action-group {
+    z-index: 21 !important; box-sizing: border-box;
+    max-height: none; min-width: 0; flex-shrink: 0;
+  }
+  body.admin-background .cfo-bottom-action-group:not(button,a) {
+    gap: 8px; flex-wrap: wrap;
+  }
+  body.admin-background .cfo-bottom-action-group :is(button,a,select) { flex-shrink: 0; }
+  body.admin-background .cfo-bottom-action-group :is(button,a) { max-width: 100%; }
+  body.admin-background #main-content .cfo-bottom-action-group :is(.pagination,.entries) select,
+  body.admin-background #main-content .cfo-bottom-action-group:is(.pagination,.entries) select {
+    width: 72px !important; min-width: 72px;
+  }
+  body.admin-background .toast { bottom: calc(var(--cfo-action-bar-height, 60px) + 12px); }
+  body.admin-background :is(dialog,.ms-modal) :is(.dialog-footer,.ms-modal-foot,.registration-dialog-footer,.sb-dialog-actions) {
+    position: sticky; bottom: 0; z-index: 6;
+    background: #041F38F2 !important; border-top: 1px solid var(--cfo-navy-hover);
+    padding: 10px 18px !important;
+  }
+}
+@media print {
+  .cfo-action-bar-background, .cfo-bottom-action-group { display: none !important; }
+}

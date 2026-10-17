@@ -1,0 +1,21 @@
+.student-email-input { position:relative; min-width:0; width:100%; }
+.student-email-input input { padding-right:48px !important; }
+.student-email-toggle { display:inline-flex; align-items:center; justify-content:center; border:1px solid #c8d8d1; border-radius:7px; background:#f0f7f3; color:#07543f; width:40px; height:40px; padding:8px; flex-shrink:0; cursor:pointer; }
+.student-email-input .student-email-toggle { position:absolute; right:4px; top:50%; transform:translateY(-50%); }
+.student-email-toggle .icon { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.7; }
+.student-email-display { display:inline-flex; align-items:center; gap:8px; max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+.student-email-display [data-email-value] { min-width:0; }
+.student-email-toggle:focus-visible { outline:3px solid #398c73; outline-offset:2px; }
+.student-change-card { border:1px solid #dce7e1; border-radius:12px; padding:16px; margin-top:14px; background:#fff; overflow-wrap:anywhere; }
+.student-change-card-head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.student-change-card p { margin-top:8px; white-space:pre-wrap; font-size:14px; line-height:1.55; }
+.student-change-status { display:inline-block; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700; }
+.student-change-status.pending { background:#fff3d9; color:#755310; }
+.student-change-status.approved { background:#e6f4ed; color:#18573c; }
+.student-change-status.rejected { background:#fcebed; color:#963543; }
+.student-change-response { padding:12px; border-radius:8px; background:#f5f8f6; }
+.dash-notification-item.is-unviewed .dash-notification-copy { font-weight:600; }
+.dash-notification-copy time { font-weight:400; }
+#student-notification-count { background:#146b61; color:#fff; }
+.dash-notification-unread { background:#146b61; }
+@media(max-width:600px) { .student-change-card { padding:14px; } .student-email-display { gap:6px; } }

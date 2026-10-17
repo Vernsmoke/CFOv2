@@ -1,0 +1,109 @@
+/* Shared student logo on Create Account and Forgot Password. */
+.registration-shell .brand-panel.auth-brand-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 0;
+  padding: 80px 24px 36px;
+  color: #fff;
+  text-align: center;
+  font-family: Georgia, "Times New Roman", serif;
+  background: linear-gradient(180deg, #185b4a 44%, #185b4ac9 75%, #185b4aab),
+    url("images/admin-campus-bg.png") center bottom / auto 65% no-repeat;
+}
+
+.registration-shell .auth-brand-panel .auth-seal {
+  position: static;
+  display: block;
+  flex: 0 0 auto;
+  width: 180px;
+  height: 180px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.registration-shell .auth-university {
+  margin: 20px 0 0;
+  font-size: clamp(24px, 2.3vw, 32px);
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.registration-shell .auth-university strong {
+  font-weight: 600;
+}
+
+.registration-shell .auth-product {
+  margin: 12px 0 0;
+  font-size: 26px;
+}
+
+.registration-shell .auth-quote {
+  margin: 52px 0 64px;
+  font-size: 23px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.registration-shell .auth-motto {
+  margin: auto 0 0;
+  font-size: 19px;
+  line-height: 1.45;
+}
+
+@media (max-width: 1100px) {
+  .registration-shell .brand-panel.auth-brand-panel {
+    padding: 62px 18px 30px;
+  }
+
+  .registration-shell .auth-brand-panel .auth-seal {
+    width: 150px;
+    height: 150px;
+  }
+
+  .registration-shell .auth-quote {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .registration-shell .brand-panel.auth-brand-panel {
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    padding: 18px 22px;
+    background: #185b4a;
+  }
+
+  .registration-shell .auth-brand-panel .auth-seal {
+    width: 72px;
+    height: 72px;
+  }
+
+  .registration-shell .auth-university {
+    margin: 0;
+    min-width: 0;
+    font-size: 22px;
+    text-align: left;
+  }
+
+  .registration-shell :is(.auth-product, .auth-quote, .auth-motto) {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .registration-shell .brand-panel.auth-brand-panel {
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .registration-shell .auth-brand-panel .auth-seal {
+    width: 64px;
+    height: 64px;
+  }
+
+  .registration-shell .auth-university {
+    font-size: 18px;
+  }
+}

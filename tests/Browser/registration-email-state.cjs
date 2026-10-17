@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const sandbox={module:{exports:{}}};vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../../public/cfo-registration-email.js'),'utf8'),sandbox);const email=sandbox.module.exports;
+for(const value of ['person@gmail.com','Person.Name+tag@GMAIL.COM',' person@gmail.com '])assert.equal(email.valid(value),true,value);
+for(const value of ['', '@gmail.com','person@@gmail.com','person@yahoo.com','person@outlook.com','person@googlemail.com','person@gmail.com.example','person@notgmail.com','a'.repeat(181)+'@gmail.com'])assert.equal(email.valid(value),false,value);
+assert.equal(email.valid(null),false);
+const pattern=new RegExp('^(?:'+email.pattern+')$');assert.equal(pattern.test('person@gmail.com'),true);assert.equal(pattern.test('Person@GmAiL.CoM'),true);assert.equal(pattern.test('person@yahoo.com'),false);
+const input={value:'',attributes:{},events:{},setAttribute(key,value){this.attributes[key]=value;},setCustomValidity(message){this.message=message;},addEventListener(event,handler){this.events[event]=handler;},removeEventListener(event,handler){if(this.events[event]===handler)delete this.events[event];}};
+const cleanup=email.bind(input);assert.equal(input.placeholder,'username@gmail.com');assert.equal(input.attributes.maxlength,'190');assert.equal(input.attributes.pattern,email.pattern);assert.equal(input.message,'');
+input.value='person@outlook.com';input.events.input();assert.equal(input.message,email.message);input.value='Person@GMAIL.COM';input.events.input();assert.equal(input.message,'');input.value='';input.events.input();assert.equal(input.message,'');cleanup();assert.deepEqual(input.events,{});
+console.log('PASS: Gmail-only suffix, email shape, case handling, native pattern, placeholder, custom validation and cleanup.');

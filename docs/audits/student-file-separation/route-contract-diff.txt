@@ -1,0 +1,7 @@
+PASS: All 65 route contracts retained.
+PASS: Full route URL/method/name/middleware comparison: no differences.
+PASS: Exactly 10 protected student routes before and after.
+PASS: Student route URL/method/name/middleware comparison: no differences.
+PASS: Student middleware order: web -> auth -> cfo -> cfo:Student.
+PASS: Legacy redirect remains outside authentication (web only).
+PASS: No physical public/student directory to shadow the /student route on Apache.

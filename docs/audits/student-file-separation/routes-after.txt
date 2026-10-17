@@ -1,0 +1,69 @@
+﻿
+  GET|HEAD  / ................................................................................... PageController@login
+  GET|HEAD  admin ................................................................................ PageController@page
+  ANY       admin-panel.html ................................................. Illuminate\Routing › RedirectController
+  GET|HEAD  admin/recollection-registrations .... admin.registrations.index › RecollectionRegistrationController@index
+  GET|HEAD  admin/recollection-registrations/export admin.registrations.export › RecollectionRegistrationController@e…
+  GET|HEAD  admin/recollection-registrations/{registration} admin.registrations.show › RecollectionRegistrationContro…
+  GET|HEAD  admin/schedules/{id}/edit ............................. admin.schedules.edit › PageController@scheduleEdit
+  POST      api/admin/academic-options ...................................................... AdminController@academic
+  PATCH     api/admin/academic-options/{id} ........................................... AdminController@updateAcademic
+  DELETE    api/admin/academic-options/{id} ........................................... AdminController@deleteAcademic
+  POST      api/admin/announcements ..................................................... AdminController@announcement
+  POST      api/admin/announcements/drafts ..................................... AdminController@saveAnnouncementDraft
+  PUT       api/admin/announcements/{announcement} ............................. AdminController@saveAnnouncementDraft
+  DELETE    api/admin/announcements/{announcement} ................................ AdminController@deleteAnnouncement
+  POST      api/admin/announcements/{announcement}/publish .................. AdminController@publishAnnouncementDraft
+  POST      api/admin/certificate-template/preview ............................. CertificateTemplateController@preview
+  PATCH     api/admin/change-requests/{change} ................................................ AdminController@change
+  POST      api/admin/course-year-sections ......................................... AdminController@courseYearSection
+  DELETE    api/admin/course-year-sections/{id} .............................. AdminController@deleteCourseYearSection
+  GET|HEAD  api/admin/events .............................................................. LiveController@adminEvents
+  GET|HEAD  api/admin/nav-badges .................................................................. NavBadgeController
+  PATCH     api/admin/password-resets/{reset} ............................................... AdminController@recovery
+  PATCH     api/admin/registrations/{registration} ...................................... AdminController@registration
+  POST      api/admin/registrations/{registration}/attendance ..................... BatchWorkflowController@attendance
+  POST      api/admin/registrations/{registration}/certificate ........................... AdminController@certificate
+  POST      api/admin/registrations/{registration}/schedule ........................... BatchWorkflowController@assign
+  POST      api/admin/schedules ............................................................. AdminController@schedule
+  PUT       api/admin/schedules/{schedule} .................................................. AdminController@schedule
+  DELETE    api/admin/schedules/{schedule} ............................................ AdminController@deleteSchedule
+  POST      api/admin/schedules/{schedule}/archive ................................... BatchWorkflowController@archive
+  PATCH     api/admin/schedules/{schedule}/status ..................................... AdminController@scheduleStatus
+  POST      api/admin/settings/{key} ........................................................ AdminController@settings
+  GET|HEAD  api/admin/state .................................................................... AdminController@state
+  PATCH     api/admin/users/{user} .............................................................. AdminController@user
+  POST      api/admin/users/{user}/password-reset ............................... AdminController@resetStudentPassword
+  PATCH     api/admin/users/{user}/review-admin .......................................... AdminController@reviewAdmin
+  POST      api/change-requests ..................................................... Student\StudentController@change
+  PATCH     api/change-requests/{change}/cancel ............................... Student\StudentController@cancelChange
+  POST      api/force-password .......................................................... AuthController@forcePassword
+  POST      api/forgot-password ................................................................ AuthController@forgot
+  GET|HEAD  api/history/{registration} .................................................. PageController@historyRecord
+  GET|HEAD  api/live/versions ................................................................ LiveController@versions
+  POST      api/login ........................................................................... AuthController@login
+  POST      api/logout ......................................................................... AuthController@logout
+  PUT       api/profile ....................................................................... AuthController@profile
+  GET|HEAD  api/receipts/{registration} ....................................................... PageController@receipt
+  GET|HEAD  api/recovery ............................................................... AuthController@recoveryStatus
+  POST      api/recovery/verify ........................................................ AuthController@verifyRecovery
+  POST      api/register ..................................................................... AuthController@register
+  POST      api/registrations ..................................................... Student\StudentController@register
+  PATCH     api/registrations/{registration} ............................ Student\StudentController@updateRegistration
+  POST      api/registrations/{registration}/receipt ............................... Student\StudentController@receipt
+  POST      api/registrations/{registration}/retry ....................... Student\StudentController@retryRegistration
+  POST      api/registrations/{registration}/schedule ....................... Student\StudentController@chooseSchedule
+  POST      api/reset-password .......................................................... AuthController@resetPassword
+  GET|HEAD  api/student .............................................................. Student\StudentController@state
+  POST      api/student/notifications/viewed ............................. Student\StudentController@viewNotifications
+  GET|HEAD  certificates/{certificate} .................................................... PageController@certificate
+  GET|HEAD  force-password .............................................................. PageController@forcePassword
+  GET|HEAD  login ....................................................................... login › PageController@login
+  GET|HEAD  storage/{path} storage.uploads › vendor/laravel/framework/src/Illuminate/Filesystem/FilesystemServiceProv…
+  PUT       storage/{path} storage.uploads.upload › vendor/laravel/framework/src/Illuminate/Filesystem/FilesystemServ…
+  GET|HEAD  student ................................................................... Student\StudentController@page
+  ANY       student-panel.html ............................................... Illuminate\Routing › RedirectController
+  GET|HEAD  up ........... vendor/laravel/framework/src/Illuminate/Foundation/Configuration/ApplicationBuilder.php:219
+
+                                                                                                   Showing [65] routes
+

@@ -1,0 +1,44 @@
+diff --git a/docs/audits/student-file-separation/routes-before.txt b/docs/audits/student-file-separation/routes-after.txt
+index 6aac461..8ee6d16 100644
+--- a/docs/audits/student-file-separation/routes-before.txt
++++ b/docs/audits/student-file-separation/routes-after.txt
+@@ -35,8 +35,8 @@
+   PATCH     api/admin/users/{user} .............................................................. AdminController@user
+   POST      api/admin/users/{user}/password-reset ............................... AdminController@resetStudentPassword
+   PATCH     api/admin/users/{user}/review-admin .......................................... AdminController@reviewAdmin
+-  POST      api/change-requests ............................................................. StudentController@change
+-  PATCH     api/change-requests/{change}/cancel ....................................... StudentController@cancelChange
++  POST      api/change-requests ..................................................... Student\StudentController@change
++  PATCH     api/change-requests/{change}/cancel ............................... Student\StudentController@cancelChange
+   POST      api/force-password .......................................................... AuthController@forcePassword
+   POST      api/forgot-password ................................................................ AuthController@forgot
+   GET|HEAD  api/history/{registration} .................................................. PageController@historyRecord
+@@ -48,20 +48,20 @@
+   GET|HEAD  api/recovery ............................................................... AuthController@recoveryStatus
+   POST      api/recovery/verify ........................................................ AuthController@verifyRecovery
+   POST      api/register ..................................................................... AuthController@register
+-  POST      api/registrations ............................................................. StudentController@register
+-  PATCH     api/registrations/{registration} .................................... StudentController@updateRegistration
+-  POST      api/registrations/{registration}/receipt ....................................... StudentController@receipt
+-  POST      api/registrations/{registration}/retry ............................... StudentController@retryRegistration
+-  POST      api/registrations/{registration}/schedule ............................... StudentController@chooseSchedule
++  POST      api/registrations ..................................................... Student\StudentController@register
++  PATCH     api/registrations/{registration} ............................ Student\StudentController@updateRegistration
++  POST      api/registrations/{registration}/receipt ............................... Student\StudentController@receipt
++  POST      api/registrations/{registration}/retry ....................... Student\StudentController@retryRegistration
++  POST      api/registrations/{registration}/schedule ....................... Student\StudentController@chooseSchedule
+   POST      api/reset-password .......................................................... AuthController@resetPassword
+-  GET|HEAD  api/student ...................................................................... StudentController@state
+-  POST      api/student/notifications/viewed ..................................... StudentController@viewNotifications
++  GET|HEAD  api/student .............................................................. Student\StudentController@state
++  POST      api/student/notifications/viewed ............................. Student\StudentController@viewNotifications
+   GET|HEAD  certificates/{certificate} .................................................... PageController@certificate
+   GET|HEAD  force-password .............................................................. PageController@forcePassword
+   GET|HEAD  login ....................................................................... login › PageController@login
+   GET|HEAD  storage/{path} storage.uploads › vendor/laravel/framework/src/Illuminate/Filesystem/FilesystemServiceProv…
+   PUT       storage/{path} storage.uploads.upload › vendor/laravel/framework/src/Illuminate/Filesystem/FilesystemServ…
+-  GET|HEAD  student .............................................................................. PageController@page
++  GET|HEAD  student ................................................................... Student\StudentController@page
+   ANY       student-panel.html ............................................... Illuminate\Routing › RedirectController
+   GET|HEAD  up ........... vendor/laravel/framework/src/Illuminate/Foundation/Configuration/ApplicationBuilder.php:219
+ 

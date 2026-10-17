@@ -1,0 +1,251 @@
+/* Schedules reuse the Create Schedule palette, cards, controls and spacing. */
+@media screen {
+    body.admin-background #main-content:has(.my-schedules) {
+        --ms-footer-space: 76px;
+        background: var(--cfo-info);
+        padding: 16px;
+        padding-bottom: var(--ms-footer-space) !important;
+        min-width: 0;
+        width: 100% !important;
+        max-width: none !important;
+    }
+    body.admin-background #main-content #page.my-schedules {
+        --ms-navy: var(--cfo-navy);
+        --ms-navy2: var(--cfo-navy-hover);
+        --ms-blue: var(--cfo-info);
+        --ms-yellow: var(--cfo-yellow);
+        --ms-green: var(--cfo-success);
+        --ms-red: var(--cfo-danger);
+        --ms-white: var(--cfo-text);
+        --ms-muted: var(--cfo-text-muted);
+        --ms-line: var(--cfo-container-border);
+        --ms-panel: var(--cfo-panel);
+        --ms-panel2: var(--cfo-navy);
+        --ms-shadow: 0 10px 28px rgba(4,27,49,.2);
+        color: var(--ms-white);
+        font-family: var(--admin-font-family);
+        font-size: 13px;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        min-width: 0;
+        max-width: 100%;
+    }
+    .my-schedules *, .my-schedules *::before, .my-schedules *::after { box-sizing: border-box; }
+    body.admin-background #main-content #page.my-schedules :is(button, input, select, textarea) {
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .my-schedules .ms-shell { display: grid; gap: 11px; }
+    body.admin-background #main-content #page.my-schedules .ms-shell > :is(.ms-page-head,.ms-summary-grid,.ms-search-panel,.ms-filter-panel,.ms-table-panel,.ms-calendar-panel) { margin: 0 !important; }
+    body.admin-background #main-content #page.my-schedules .ms-summary-grid .ms-summary { margin: 0 !important; }
+    .my-schedules button { cursor: pointer; }
+    .my-schedules button:disabled { cursor: default; opacity: .5; }
+    .my-schedules [hidden] { display: none !important; }
+    .my-schedules .ms-search-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+    .my-schedules :focus-visible { outline: 3px solid var(--ms-blue); outline-offset: 3px; }
+    .my-schedules .ms-page-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px 18px; border: 0; border-radius: 9px; background: var(--ms-navy); }
+    .my-schedules .ms-page-head > div { min-width: 0; }
+    .my-schedules .ms-kicker { font-size: 12px; font-weight: 700; letter-spacing: 1.4px; color: var(--ms-muted); }
+    body.admin-background #main-content #page.my-schedules .ms-page-head h1 { margin: 5px 0 2px; font-size: 30px; line-height: 1.2; color: var(--ms-white); font-weight: 700; }
+    body.admin-background #main-content #page.my-schedules .ms-page-head p { margin: 0; color: var(--ms-white); font-size: 13px; font-weight: 500; }
+    body.admin-background #main-content #page.my-schedules .ms-primary { background: var(--ms-yellow); color: var(--ms-navy); border: 1px solid var(--ms-yellow); border-radius: 6px; padding: 9px 11px; font-weight: 700; white-space: nowrap; }
+    .my-schedules .ms-primary:hover:not(:disabled) { filter: none; }
+    .my-schedules .ms-summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+    .my-schedules .ms-summary { background: var(--ms-panel); border: 1px solid var(--ms-line); border-radius: 9px; padding: 12px; }
+    .my-schedules .ms-summary span { display: block; color: var(--ms-muted); font-size: 11px; }
+    .my-schedules .ms-summary strong { display: block; font-size: 23px; margin-top: 4px; font-weight: 700; }
+    .my-schedules :is(.ms-search-panel,.ms-filter-panel,.ms-table-panel,.ms-calendar-panel) { min-width: 0; background: var(--ms-panel); border: 1px solid var(--ms-line); border-radius: 10px; margin-top: 10px; box-shadow: 0 5px 18px rgba(0,0,0,.08); }
+    .my-schedules :is(.ms-search-panel,.ms-filter-panel) { padding: 12px 14px; }
+    .my-schedules .ms-panel-title { font-size: 15px; font-weight: 700; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--ms-line); }
+    .my-schedules .ms-search-row { display: flex; gap: 9px; }
+    body.admin-background #main-content #page.my-schedules :is(input,select,textarea) { min-width: 0; width: 100%; background: var(--ms-navy); color: var(--ms-white); border: 1px solid var(--cfo-border); border-radius: 7px; padding: 10px 11px; outline: none; }
+    .my-schedules input::placeholder, .my-schedules textarea::placeholder { color: var(--ms-muted); }
+    body.admin-background #main-content #page.my-schedules :is(input,select,textarea):focus { border-color: var(--ms-blue); box-shadow: 0 0 0 2px rgba(146,189,243,.16); }
+    .my-schedules :is(.ms-search-row button,.ms-filter-actions button,.ms-secondary) { background: var(--ms-navy); color: var(--ms-white); border: 1px solid var(--cfo-border); border-radius: 7px; padding: 10px 13px; }
+    .my-schedules .ms-search-row button { white-space: nowrap; }
+    .my-schedules :is(.ms-helper,.ms-muted) { font-size: 12px; color: var(--ms-muted); margin-top: 7px; }
+    .my-schedules .ms-filters { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) repeat(3, minmax(0, 1fr)) auto auto; gap: 10px; align-items: end; }
+    .my-schedules .ms-field { min-width: 0; }
+    body.admin-background #main-content #page.my-schedules .ms-filters :is(input[type="search"],select) { box-sizing: border-box; height: 42px; min-height: 42px; }
+    body.admin-background #main-content #page.my-schedules :is(.ms-field label,.ms-field > span,.ms-detail label,.ms-course-label) { display: block; font-size: 12px; font-weight: 700; color: var(--ms-white); margin-bottom: 6px; }
+    .my-schedules .ms-filter-actions { display: flex; gap: 6px; }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel { width: 100%; max-width: 100%; padding: 0 !important; overflow: hidden; }
+    body.admin-background #main-content #page.my-schedules .ms-table-head { padding: 12px !important; margin-bottom: 0; border-bottom: 1px solid var(--ms-line); display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+    body.admin-background #main-content #page.my-schedules :is(.ms-table-head h2,.ms-calendar-head h2) { font-size: 17px; margin: 0; color: var(--ms-white); font-weight: 600; }
+    body.admin-background #main-content #page.my-schedules .ms-table-head small { display: block; color: var(--ms-muted); margin-top: 4px; font-size: 12px; }
+    .my-schedules .ms-export { background: var(--ms-navy); color: var(--ms-white); border: 1px solid var(--cfo-border); border-radius: 7px; padding: 9px 13px; }
+    .my-schedules .ms-table-note { padding: 9px 14px; border-top: 1px solid var(--ms-line); border-bottom: 1px solid var(--ms-line); font-size: 12px; color: var(--ms-muted); }
+    .my-schedules .ms-table-wrap { overflow-x: auto; overflow-y: hidden; width: 100%; max-width: 100%; height: auto; max-height: none; scrollbar-width: auto; scrollbar-color: #8a8a8a rgba(255,255,255,.18); }
+    .my-schedules .ms-table-wrap::-webkit-scrollbar { width: 0; height: 12px; }
+    .my-schedules .ms-table-wrap::-webkit-scrollbar-track:horizontal { background: rgba(255,255,255,.18); }
+    .my-schedules .ms-table-wrap::-webkit-scrollbar-track:vertical { background: transparent; }
+    .my-schedules .ms-table-wrap::-webkit-scrollbar-thumb { background: #8a8a8a; border: 2px solid transparent; border-radius: 999px; background-clip: padding-box; }
+    .my-schedules .ms-table-wrap::-webkit-scrollbar-thumb:hover { background-color: #6f6f6f; }
+    .my-schedules .ms-table-wrap::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel table { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; min-width: 980px; font-size: 12px; }
+    .my-schedules .ms-table-panel .ms-col-date-time { width: 20%; }
+    .my-schedules .ms-table-panel .ms-col-courses { width: 26%; }
+    .my-schedules .ms-table-panel .ms-col-venue { width: 12%; }
+    .my-schedules .ms-table-panel .ms-col-status { width: 15%; }
+    .my-schedules .ms-table-panel .ms-col-registration { width: 13%; }
+    .my-schedules .ms-table-panel .ms-col-actions { width: 14%; }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel :is(th,td) { padding: 9px 8px; border-bottom: 1px solid rgba(206,225,245,.17); text-align: left; font-size: 12px; font-weight: 500; line-height: 1.4; vertical-align: middle; min-width: 0; overflow-wrap: anywhere; }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel th { position: sticky; top: 0; z-index: 2; background: var(--ms-navy); color: var(--ms-white); font-size: 12px; letter-spacing: 0; white-space: normal; }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel th button { border: 0; background: none; color: inherit; padding: 0; font-size: 12px; font-weight: 700; white-space: normal; text-align: left; line-height: 1.4; }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel td { color: var(--ms-white); background: var(--ms-panel); }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel tbody tr { background: var(--ms-panel); }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel tbody tr:hover td { background: var(--ms-navy2); }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel :is(th,td):last-child { position: sticky; right: 0; z-index: 1; box-shadow: none; }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel th:last-child { z-index: 3; }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel td.ms-empty { position: static; box-shadow: none; }
+    .my-schedules .ms-table-panel .ms-date-time time { display: block; font-weight: 700; }
+    .my-schedules .ms-table-panel :is(.ms-time-line,.ms-weekday,.ms-status-description) { margin-top: 1px; font-size: 12px; font-weight: 500; line-height: 1.4; }
+    .my-schedules .ms-table-panel .ms-time-line { white-space: nowrap; letter-spacing: -.15px; }
+    :is(.my-schedules, .dashboard-schedule-summary) .ms-course-groups { margin: 0; padding: 0; list-style: none; }
+    :is(.my-schedules, .dashboard-schedule-summary) .ms-course-group { padding: 8px 0; border-bottom: 1px solid rgba(206,225,245,.17); }
+    :is(.my-schedules, .dashboard-schedule-summary) .ms-course-group:first-child { padding-top: 0; }
+    :is(.my-schedules, .dashboard-schedule-summary) .ms-course-group:last-child { padding-bottom: 0; border-bottom: 0; }
+    :is(.my-schedules, .dashboard-schedule-summary) .ms-course-group-name { display: block; color: var(--cfo-text); font-size: 12px; font-weight: 700; line-height: 1.5; overflow-wrap: anywhere; }
+    :is(.my-schedules, .dashboard-schedule-summary) .ms-section-chips { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 6px; }
+    :is(.my-schedules, .dashboard-schedule-summary) .ms-section-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 35px; padding: 3px 10px; border: 1px solid #366c92; border-radius: 999px; background: #235779; color: #e6f4ff; font-size: 11px; font-weight: 700; line-height: 1.3; }
+    .my-schedules .ms-badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 5px 9px; font-size: 12px; font-weight: 700; }
+    .my-schedules .ms-attention-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; max-width: 250px; }
+    .my-schedules .ms-attention-badge { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--ms-yellow); border-radius: 999px; padding: 4px 8px; background: var(--ms-yellow); color: var(--ms-navy); font-size: 12px; font-weight: 600; line-height: 1.4; }
+    .my-schedules .ms-attention-badge.ms-attention-full { border-color: var(--cfo-error-text); background: var(--ms-panel); color: var(--cfo-error-text); }
+    .my-schedules .ms-attention-badge.ms-attention-pending { border-color: var(--ms-blue); background: var(--ms-navy2); color: var(--ms-white); }
+    body.admin-background #main-content #page.my-schedules tbody tr.ms-needs-attention td:first-child { border-left: 3px solid var(--ms-yellow); }
+    body.admin-background #main-content #page.my-schedules tbody tr.ms-needs-attention.ms-attention-full td:first-child { border-left-color: var(--cfo-error-text); }
+    body.admin-background #main-content #page.my-schedules tbody tr.ms-needs-attention.ms-attention-pending td:first-child { border-left-color: var(--ms-blue); }
+    body.admin-background #main-content #page.my-schedules tbody tr.ms-terminal-row td { color: var(--ms-muted); }
+    .my-schedules .ms-edit-reason { display: block; max-width: 210px; margin-top: 6px; color: var(--ms-muted); font-size: 12px; font-weight: 500; line-height: 1.4; white-space: normal; }
+    .my-schedules .ms-open { background: rgba(30,174,126,.2); border: 1px solid #49bd98; color: #9ce8cf; }
+    .my-schedules .ms-draft { background: rgba(247,190,55,.18); border: 1px solid #e6c467; color: var(--ms-navy); }
+    .my-schedules .ms-closed { background: rgba(151,169,190,.18); border: 1px solid #8ea3ba; color: #d4dce6; }
+    .my-schedules .ms-completed { background: rgba(67,137,224,.2); border: 1px solid var(--ms-blue); color: var(--ms-white); }
+    .my-schedules .ms-cancelled { background: rgba(202,75,104,.18); border: 1px solid var(--cfo-error-text); color: var(--cfo-error-text); }
+    .my-schedules .ms-table-panel .ms-badge { padding: 3px 8px; font-size: 12px; line-height: 1.25; white-space: nowrap; }
+    .my-schedules .ms-table-panel :is(.ms-open,.ms-completed) { background: #087f68; border-color: #2eb89a; color: #fff; }
+    .my-schedules .ms-table-panel .ms-closed { background: #ffd444; border-color: #ffe482; color: #133458; }
+    .my-schedules .ms-table-panel .ms-draft { background: #225985; border-color: #5e8fba; color: #f4f7fb; }
+    .my-schedules .ms-table-panel .ms-cancelled { background: #8b3049; border-color: var(--cfo-error-text); color: #ffe1e8; }
+    .my-schedules .ms-table-panel .ms-attention-badges { gap: 3px; margin-top: 4px; }
+    .my-schedules .ms-table-panel .ms-attention-badge { padding: 2px 5px; line-height: 1.3; }
+    .my-schedules .ms-actions { display: flex; gap: 6px; white-space: nowrap; }
+    body.admin-background #main-content #page.my-schedules .ms-action { padding: 7px 9px; border-radius: 7px; background: var(--ms-navy); color: var(--ms-white); border: 1px solid var(--cfo-border); font-size: 12px; }
+    .my-schedules .ms-action.ms-delete { border-color: var(--ms-red); color: var(--cfo-error-text); }
+    body.admin-background #main-content #page.my-schedules .ms-more { font-size: 16px; line-height: 1; }
+    .my-schedules .ms-registration { min-width: 0; }
+    .my-schedules .ms-registration small { display: block; font-size: 12px; color: var(--ms-muted); margin-top: 4px; }
+    .my-schedules .ms-registration-meter { display: flex; align-items: center; gap: 7px; margin-top: 4px; }
+    .my-schedules .ms-registration-percent { flex: 0 0 auto; min-width: 34px; text-align: right; color: var(--ms-muted); font-size: 12px; font-weight: 500; }
+    .my-schedules .ms-progress { flex: 1 1 auto; min-width: 0; height: 8px; background: var(--ms-navy); border-radius: 999px; overflow: hidden; }
+    .my-schedules .ms-progress i { display: block; height: 100%; background: var(--ms-blue); border-radius: inherit; }
+    .my-schedules .ms-table-panel .ms-actions { gap: 5px; }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel .ms-action { padding: 7px 8px; border-radius: 5px; }
+    body.admin-background #main-content #page.my-schedules .ms-table-panel .ms-more { padding: 7px; }
+    body.admin-background #main-content #page.my-schedules .ms-table-footer {
+        --at-button-background: var(--ms-navy); --at-button-text: var(--ms-white); --at-button-border: var(--cfo-border);
+        --at-control-background: var(--cfo-input); --at-control-text: var(--cfo-text-on-bright); --at-control-border: var(--cfo-input-border); --at-control-scheme: light;
+        display: flex; align-items: center; flex-wrap: wrap;
+        width: auto; max-width: none; color: var(--ms-white); font-size: 11px; font-weight: 700;
+        box-shadow: none;
+    }
+    .my-schedules .ms-pagination { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+    .my-schedules .ms-pagination .ms-search-label {
+        position: static; width: auto; height: auto; margin: 0; overflow: visible; clip-path: none;
+        color: inherit; font-size: 11px; white-space: nowrap;
+    }
+    body.admin-background #main-content #page.my-schedules .ms-pagination :is(select,.ms-page-btn,.ms-page-number) {
+        box-sizing: border-box; height: 36px !important; min-height: 36px !important; line-height: 1 !important;
+    }
+    body.admin-background #main-content #page.my-schedules .ms-pagination select { width: 72px; min-width: 72px; padding: 8px 10px !important; }
+    body.admin-background #main-content #page.my-schedules .ms-pagination .ms-page-btn {
+        display: inline-flex; align-items: center; justify-content: center; width: 36px; padding: 0 !important; flex-shrink: 0;
+    }
+    .my-schedules .ms-pagination .ms-page-btn:hover:not(:disabled) { --at-button-background: var(--ms-navy); --at-button-text: var(--ms-white); }
+    .my-schedules .ms-table-footer .ms-pagination :is(button,select):focus-visible { outline: 2px solid var(--ms-white); outline-offset: 2px; }
+    .my-schedules .ms-page-btn { background: var(--ms-navy); color: var(--ms-white); border: 1px solid var(--cfo-border); border-radius: 7px; padding: 7px 10px; }
+    .my-schedules .ms-page-number {
+        display: inline-flex; align-items: center; justify-content: center; min-width: 56px; padding: 0 10px;
+        background: var(--ms-navy2); border: 1px solid var(--ms-blue); border-radius: 6px;
+        color: var(--ms-white); font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+    .my-schedules .ms-view-switch { display: flex; gap: 6px; }
+    .my-schedules .ms-view-switch button { padding: 8px 11px; border-radius: 7px; border: 1px solid var(--cfo-border); background: var(--ms-navy); color: #d8e6f4; }
+    .my-schedules .ms-view-switch .ms-active { background: var(--ms-navy2); border-color: var(--ms-blue); }
+    .my-schedules .ms-calendar-panel { padding: 12px; overflow: hidden; }
+    .my-schedules .ms-calendar-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; }
+    .my-schedules .ms-calendar-controls { display: flex; gap: 6px; }
+    .my-schedules .ms-calendar-scroll { overflow: auto; max-width: 100%; }
+    .my-schedules .ms-calendar-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); border: 1px solid var(--ms-line); border-radius: 8px; overflow: hidden; }
+    .my-schedules .ms-day-name { padding: 9px; background: var(--ms-navy2); text-align: center; font-size: 12px; font-weight: 700; }
+    .my-schedules .ms-day { min-width: 0; min-height: 115px; background: var(--ms-navy); border-right: 1px solid var(--ms-line); border-top: 1px solid var(--ms-line); padding: 7px; }
+    .my-schedules .ms-day:nth-child(7n) { border-right: 0; }
+    .my-schedules .ms-day-num { font-size: 12px; color: var(--ms-muted); margin-bottom: 6px; }
+    .my-schedules .ms-day.ms-outside .ms-day-num { opacity: .5; }
+    .my-schedules .ms-day.ms-today .ms-day-num { color: #fff; font-weight: 700; }
+    body.admin-background #main-content #page.my-schedules .ms-event { display: block; width: 100%; text-align: left; background: var(--ms-navy2); border: 1px solid var(--ms-blue); border-radius: 6px; padding: 6px; margin-bottom: 5px; font-size: 12px; white-space: normal; overflow-wrap: anywhere; color: var(--ms-white); }
+    .my-schedules .ms-event strong { display: block; color: inherit; margin-bottom: 2px; font-weight: 700; }
+    .my-schedules .ms-event span { color: inherit; }
+    body.admin-background #main-content #page.my-schedules .ms-open-event { background: var(--ms-green); border-color: var(--ms-green); color: var(--ms-navy); }
+    body.admin-background #main-content #page.my-schedules .ms-draft-event { background: var(--ms-yellow); border-color: var(--ms-yellow); color: var(--ms-navy); }
+    .my-schedules .ms-day-more { border: 0; padding: 4px; color: var(--ms-white); background: transparent; }
+    .my-schedules .ms-menu { position: fixed; z-index: 90; min-width: 180px; max-width: calc(100vw - 24px); padding: 5px; background: var(--ms-navy); border: 1px solid var(--cfo-border); border-radius: 8px; box-shadow: var(--ms-shadow); }
+    .my-schedules .ms-menu button { width: 100%; display: block; text-align: left; border: 0; border-radius: 5px; color: var(--ms-white); background: transparent; padding: 10px; }
+    .my-schedules .ms-menu button:hover, .my-schedules .ms-menu button:focus { background: var(--ms-navy2); }
+    .my-schedules .ms-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.62); display: none; align-items: center; justify-content: center; z-index: 100; padding: 18px; }
+    .my-schedules .ms-modal-backdrop.ms-show { display: flex; }
+    .my-schedules .ms-modal { width: min(760px,100%); max-height: 92vh; max-height: 92dvh; overflow: auto; background: var(--ms-navy); color: var(--ms-white); border: 1px solid var(--cfo-border); border-radius: 13px; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+    .my-schedules .ms-modal.ms-small { width: min(470px,100%); }
+    .my-schedules .ms-modal-head { padding: 16px; border-bottom: 1px solid var(--ms-line); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    body.admin-background #main-content #page.my-schedules .ms-modal-head h3 { margin: 0; font-size: 18px; font-weight: 600; color: var(--ms-white); }
+    body.admin-background #main-content #page.my-schedules .ms-close { border: 0; background: transparent; color: var(--ms-white); font-size: 23px; padding: 0 4px; }
+    .my-schedules .ms-modal-body { padding: 16px; }
+    .my-schedules .ms-detail-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .my-schedules .ms-detail { min-width: 0; background: var(--ms-navy); border: 1px solid rgba(190,215,240,.18); border-radius: 8px; padding: 11px; overflow-wrap: anywhere; }
+    .my-schedules .ms-detail > span { display: block; color: #9fb3c8; font-size: 12px; margin-bottom: 5px; }
+    .my-schedules .ms-detail strong { font-size: 13px; white-space: pre-wrap; }
+    .my-schedules .ms-full { grid-column: 1/-1; }
+    .my-schedules .ms-course-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .my-schedules .ms-course-chip { padding: 6px 9px; background: #1b5689; border: 1px solid #6ea5d9; border-radius: 999px; font-size: 12px; }
+    .my-schedules .ms-modal-foot { padding: 12px 16px; border-top: 1px solid var(--ms-line); display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .my-schedules .ms-danger { background: #7d2943 !important; border-color: #d47b93 !important; color: var(--cfo-error-text); }
+    .my-schedules .ms-notice { background: var(--ms-panel); border: 1px solid var(--ms-line); padding: 10px; border-radius: 8px; color: var(--ms-white); font-size: 12px; margin-bottom: 10px; }
+    .my-schedules .ms-detail-grid + .ms-notice { margin-top: 10px; }
+    .my-schedules :is(.ms-modal-feedback,.ms-page-feedback):empty { display: none; }
+    .my-schedules :is(.ms-modal-feedback,.ms-page-feedback):not(:empty) { color: var(--cfo-error-text); background: var(--ms-panel); border: 1px solid var(--cfo-error-text); border-radius: 7px; padding: 10px; margin-top: 10px; white-space: pre-wrap; font-size: 12px; }
+    .my-schedules .ms-menu .ms-menu-danger { color: var(--cfo-error-text); }
+    .my-schedules .ms-empty { text-align: center; color: var(--ms-muted); padding: 28px; }
+}
+@media screen and (max-width: 1050px) {
+    .my-schedules .ms-filters { grid-template-columns: repeat(3,minmax(0,1fr)); }
+    .my-schedules .ms-summary-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media screen and (max-width: 720px) {
+    body.admin-background #main-content:has(.my-schedules) { --ms-footer-space: 100px; padding: 10px; padding-bottom: var(--ms-footer-space) !important; }
+    .my-schedules .ms-page-head { align-items: flex-start; flex-direction: column; }
+    body.admin-background #main-content #page.my-schedules .ms-page-head h1 { font-size: 25px; }
+    .my-schedules .ms-primary { width: 100%; }
+    .my-schedules .ms-filters { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .my-schedules .ms-filter-actions { grid-column: 1/-1; }
+    .my-schedules .ms-search-row { flex-direction: column; }
+    .my-schedules .ms-detail-grid { grid-template-columns: minmax(0,1fr); }
+    .my-schedules .ms-full { grid-column: auto; }
+    body.admin-background #main-content #page.my-schedules .ms-table-head { align-items: flex-start; flex-direction: column; }
+    .my-schedules .ms-modal-foot .ms-primary { width: auto; white-space: normal; }
+    body.admin-background #main-content #page.my-schedules :is(input,select,textarea) { font-size: 16px; }
+}
+@media screen and (max-width: 470px) {
+    body.admin-background #main-content:has(.my-schedules) { --ms-footer-space: 126px; }
+    .my-schedules .ms-summary-grid { grid-template-columns: minmax(0,1fr); }
+    .my-schedules .ms-filters { grid-template-columns: minmax(0,1fr); }
+    .my-schedules .ms-pagination { display: grid; grid-template-columns: minmax(72px,1fr) 36px 56px 36px; }
+    .my-schedules .ms-pagination .ms-search-label { grid-column: 1 / -1; }
+    body.admin-background #main-content #page.my-schedules .ms-pagination select { width: 100%; }
+    .my-schedules .ms-day { min-height: 90px; padding: 5px; }
+    body.admin-background #main-content #page.my-schedules .ms-event { font-size: 12px; padding: 4px; }
+    .my-schedules .ms-calendar-grid { min-width: 650px; }
+    .my-schedules .ms-calendar-head { align-items: flex-start; flex-direction: column; }
+    .my-schedules .ms-modal-backdrop { padding: 10px; }
+}

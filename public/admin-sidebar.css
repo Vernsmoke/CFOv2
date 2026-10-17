@@ -1,0 +1,316 @@
+body.admin-background {
+    /* Shared admin sidebar theme: adjust these values to change its appearance. */
+    --sidebar: 280px;
+    --sidebar-panel-gap: 0px;
+    --sidebar-panel-radius: 0px;
+    --sidebar-bg-color: var(--admin-sidebar);
+    --sidebar-border: rgba(242, 246, 250, .22);
+    --sidebar-divider: rgba(242, 246, 250, .14);
+    --sidebar-text: var(--admin-text);
+    --sidebar-muted: var(--admin-muted);
+    --sidebar-hover-bg: rgba(255, 255, 255, .08);
+    --sidebar-active-bg: var(--admin-text);
+    --sidebar-active-text: var(--sidebar-bg-color);
+    --sidebar-active-icon: var(--sidebar-active-text);
+    --sidebar-accent: var(--admin-topbar);
+    --sidebar-accent-hover: var(--admin-topbar-hover);
+    --sidebar-accent-text: var(--admin-sidebar);
+    --sidebar-avatar-bg: rgba(242, 246, 250, .13);
+    --sidebar-inset-bg: rgba(11, 27, 51, .15);
+    --sidebar-shadow: rgba(11, 27, 51, .2);
+    --sidebar-collapse-bg: var(--admin-sidebar);
+    --sidebar-collapse-border: var(--admin-text);
+    --sidebar-collapse-text: var(--admin-text);
+    /* Do not fade readable navigation text into the footer surface. */
+    --sidebar-menu-fade-height: 0px;
+}
+
+/* Only the shared admin navigation panel is themed here. */
+body.admin-background .sidebar {
+    inset: var(--sidebar-panel-gap) auto var(--sidebar-panel-gap) var(--sidebar-panel-gap);
+    width: calc(var(--sidebar) - var(--sidebar-panel-gap));
+    border: 1px solid var(--sidebar-border);
+    border-radius: var(--sidebar-panel-radius);
+    color: var(--sidebar-text);
+    background-color: var(--sidebar-bg-color);
+    background-image: none;
+    box-shadow: 0 12px 32px var(--sidebar-shadow), inset 0 1px 0 var(--sidebar-border);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    z-index: 40;
+}
+body.admin-background .sidebar .sidebar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    padding: 0;
+}
+body.admin-background .sidebar .sidebar-logo img {
+    display: block;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    max-width: 100%;
+    object-fit: contain;
+}
+body.admin-background .sidebar .brand {
+    flex-shrink: 0;
+    gap: 12px;
+    padding: 18px 18px 16px;
+    color: var(--sidebar-text);
+    font-size: 16px;
+    border-radius: var(--sidebar-panel-radius) var(--sidebar-panel-radius) 0 0;
+}
+body.admin-background .sidebar .avatar {
+    color: var(--sidebar-text);
+    background: var(--sidebar-avatar-bg);
+    border: 1px solid var(--sidebar-border);
+}
+body.admin-background .sidebar .sidebar-profile-avatar {
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    border-radius: 50%;
+    font-size: 19px;
+    font-weight: 600;
+}
+body.admin-background .sidebar .sidebar-profile-copy { min-width: 0; }
+body.admin-background .sidebar .brand small {
+    display: block;
+    margin: 0 0 5px;
+    color: var(--sidebar-muted);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    line-height: 1.4;
+}
+body.admin-background .sidebar .brand strong {
+    display: block;
+    min-width: 0;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+body.admin-background .sidebar .brand .sidebar-school-name {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -.3px;
+}
+body.admin-background .sidebar .workspace-label {
+    margin: 0 18px 6px;
+    padding: 9px 12px;
+    border: 1px solid var(--sidebar-divider);
+    border-radius: 10px;
+    color: var(--sidebar-muted);
+    background: var(--sidebar-inset-bg);
+    font-size: 11px;
+    line-height: 1.5;
+}
+body.admin-background .sidebar nav {
+    min-height: 0;
+    padding: 0 13px 12px;
+}
+body.admin-background .sidebar .nav-group {
+    padding: 15px 12px 8px;
+    color: var(--sidebar-muted);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1.4;
+}
+body.admin-background .sidebar .nav-link + .nav-group {
+    margin-top: 13px;
+    padding-top: 17px;
+    border-top: 1px solid var(--sidebar-divider);
+}
+body.admin-background .sidebar .nav-link {
+    gap: 11px;
+    min-height: 42px;
+    margin: 3px 0;
+    padding: 9px 12px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: var(--sidebar-text);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+body.admin-background .sidebar .nav-link .icon {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke-width: 1.6;
+    flex-shrink: 0;
+}
+body.admin-background .sidebar .nav-link:hover {
+    background-color: var(--sidebar-hover-bg);
+    border-color: var(--sidebar-divider);
+    color: var(--sidebar-text);
+}
+body.admin-background .sidebar .nav-link.active,
+body.admin-background .sidebar .nav-link[aria-current="page"] {
+    background: var(--sidebar-active-bg);
+    border-color: var(--sidebar-border);
+    color: var(--sidebar-active-text);
+    box-shadow: 0 4px 12px var(--sidebar-shadow);
+    font-weight: 700;
+}
+body.admin-background .sidebar .nav-link.active .icon,
+body.admin-background .sidebar .nav-link[aria-current="page"] .icon { color: var(--sidebar-active-icon); }
+body.admin-background .sidebar :is(a, button):focus-visible {
+    outline: 2px solid var(--sidebar-accent);
+    outline-offset: 3px;
+}
+body.admin-background .sidebar .sidebar-shortcut {
+    flex-shrink: 0;
+    margin: 4px 18px 15px;
+    padding: 13px;
+    border: 1px solid var(--sidebar-divider);
+    border-radius: 13px;
+    background: var(--sidebar-hover-bg);
+}
+body.admin-background .sidebar .sidebar-shortcut strong { display: block; font-size: 12px; font-weight: 600; }
+body.admin-background .sidebar .sidebar-shortcut p { margin: 5px 0 12px; font-size: 11px; color: var(--sidebar-muted); }
+body.admin-background .sidebar .sidebar-shortcut a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid var(--sidebar-accent);
+    border-radius: 9px;
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-text);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 650;
+}
+body.admin-background .sidebar .sidebar-shortcut a:hover { background: var(--sidebar-accent-hover); border-color: var(--sidebar-accent-hover); }
+body.admin-background .sidebar .sidebar-footer {
+    position: relative;
+    flex-shrink: 0;
+    grid-template-columns: 34px minmax(0, 1fr) 34px;
+    gap: 10px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--sidebar-divider);
+    color: var(--sidebar-text);
+}
+body.admin-background .sidebar .sidebar-footer .avatar { width: 34px; height: 34px; font-size: 12px; }
+body.admin-background .sidebar .sidebar-footer strong { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+body.admin-background .sidebar .sidebar-footer small { color: var(--sidebar-muted); font-size: 10px; }
+body.admin-background .sidebar .sidebar-footer form { margin: 0; }
+body.admin-background .sidebar .sidebar-footer button {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--sidebar-divider);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--sidebar-text);
+}
+body.admin-background .sidebar .sidebar-footer button:hover { background: var(--sidebar-hover-bg); }
+body.admin-background .sidebar .sidebar-footer button .icon { width: 19px; height: 19px; }
+
+/* The existing close control also collapses the panel on desktop. */
+body.admin-background .sidebar .nav-close {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 27px;
+    right: -15px;
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--sidebar-collapse-border);
+    border-radius: 50%;
+    color: var(--sidebar-collapse-text);
+    background: var(--sidebar-collapse-bg);
+    box-shadow: 0 3px 10px var(--sidebar-shadow);
+}
+body.admin-background .sidebar .nav-close:hover { background: var(--admin-surface-raised); }
+body.admin-background .sidebar .sidebar-collapse-icon { width: 16px; height: 16px; }
+body.admin-background .sidebar .sidebar-close-symbol { display: none; }
+
+/* Anchor the fade above the footer without changing navigation scrolling. */
+@media screen {
+    body.admin-background .sidebar .sidebar-footer::before {
+        content: '';
+        position: absolute;
+        inset-inline: 0;
+        bottom: 100%;
+        height: var(--sidebar-menu-fade-height);
+        background: linear-gradient(to bottom, transparent, var(--sidebar-bg-color));
+        pointer-events: none;
+        z-index: 1;
+    }
+    body.admin-background .sidebar nav:is(:hover, :focus-within) + .sidebar-footer::before { opacity: 0; }
+}
+
+@media (max-width: 1000px) {
+    body.admin-background .sidebar {
+        width: min(290px, calc(100vw - 36px));
+        transform: translateX(calc(-100% - 28px));
+    }
+    body.nav-open .sidebar { transform: translateX(0); }
+    body.admin-background .sidebar .brand { padding-right: 42px; }
+    body.admin-background .sidebar .nav-close { top: 10px; right: 10px; box-shadow: none; }
+    body.admin-background .sidebar .sidebar-collapse-icon { display: none; }
+    body.admin-background .sidebar .sidebar-close-symbol { display: block; font-size: 24px; line-height: 1; }
+}
+@media (max-height: 720px) {
+    body.admin-background .sidebar .brand { padding-top: 14px; padding-bottom: 12px; }
+    body.admin-background .sidebar .workspace-label, .sidebar .sidebar-shortcut { display: none; }
+    body.admin-background .sidebar .nav-group { padding-top: 12px; }
+    body.admin-background .sidebar .nav-link + .nav-group { margin-top: 9px; padding-top: 13px; }
+    body.admin-background .sidebar .sidebar-footer { padding-top: 10px; padding-bottom: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.admin-background .sidebar .nav-link { transition: none; }
+}
+
+/* Sidebar badges: how many items are waiting for an administrator. */
+body.admin-background .sidebar .nav-link .nav-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    margin-left: auto;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-text);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+body.admin-background .sidebar .nav-link .nav-badge[hidden] { display: none; }
+body.admin-background .sidebar .nav-link.active .nav-badge,
+body.admin-background .sidebar .nav-link[aria-current="page"] .nav-badge {
+    background: var(--sidebar-active-text);
+    color: var(--sidebar-active-bg);
+}
+
+/* Name and role in the footer open the profile and settings page. */
+body.admin-background .sidebar .sidebar-footer .sidebar-profile-link {
+    display: block;
+    min-width: 0;
+    border-radius: 8px;
+    color: inherit;
+    text-decoration: none;
+}
+body.admin-background .sidebar .sidebar-footer .sidebar-profile-link:hover strong { text-decoration: underline; }

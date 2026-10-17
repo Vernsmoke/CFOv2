@@ -1,0 +1,18 @@
+/* Decorative search icons for both portals, including dynamically rendered fields. */
+@layer cfo-search-icons {
+  @media screen {
+    :is(body.admin-background,body.dashboard-mode) input[type="search"] {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10.8' cy='10.8' r='6.8'/%3E%3Cpath d='m16 16 4.5 4.5'/%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: 12px center !important;
+      background-size: 18px 18px !important;
+      padding-left: 40px !important;
+    }
+    body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #app .dash-content input[type="search"] {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='10.8' cy='10.8' r='6.8'/%3E%3Cpath d='m16 16 4.5 4.5'/%3E%3C/svg%3E") !important;
+    }
+    :is(body.admin-background,body.dashboard-mode) :is(.search,.search-input,.history-search-input):has(> input[type="search"]) > :is(.icon,[data-icon="search"]) {
+      display: none !important;
+    }
+  }
+}

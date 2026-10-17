@@ -1,0 +1,10 @@
+PASS: 12 files recorded as Git renames.
+PASS: Every tracked edit exactly matches the recorded namespace, page-handler, routing and path replacements.
+PASS: Existing PHP/Blade line-ending styles preserved.
+PASS: LiveController unchanged; resource version logic has no moved-asset paths.
+PASS: Shared public/.htaccess unchanged.
+PASS: No .env, database or migration changes.
+PASS: Apache /student route has no physical public/student directory collision.
+PASS: All 9 student JS/CSS references resolve; 7 existing filemtime versions and 2 existing unversioned security URLs preserved.
+PASS: Student theme resolves the unchanged shared campus background.
+PASS: Student-only dashboard image reference resolves.

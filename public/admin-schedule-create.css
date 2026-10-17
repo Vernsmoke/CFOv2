@@ -1,0 +1,1616 @@
+/* The schedule reference design is scoped to this form and its course dialog. */
+@media screen {
+    .schedule-builder,
+    .schedule-course-dialog {
+        --sb-text: var(--cfo-text);
+        --sb-muted: var(--cfo-text-muted);
+        --sb-line: var(--cfo-navy-hover);
+        --sb-input: var(--cfo-navy);
+        --sb-input-text: var(--cfo-navy);
+        --sb-input-border: var(--cfo-border);
+        --sb-blue: var(--cfo-info);
+        --sb-green: var(--cfo-success);
+        --sb-required: var(--cfo-error-text);
+        min-width: 0;
+        color: var(--sb-text);
+        font-family: var(--admin-font-family, "Inter", system-ui, "Segoe UI", Roboto, Arial, sans-serif);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.45;
+    }
+
+    .schedule-builder *,
+    .schedule-course-dialog * {
+        box-sizing: border-box;
+        min-width: 0;
+    }
+
+    body.admin-background #main-content .schedule-builder form {
+        background: transparent;
+        color: var(--sb-text);
+    }
+
+    .schedule-builder .sb-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 86px;
+        margin-bottom: 10px;
+        padding: 18px 16px;
+        border-radius: 9px;
+        background: linear-gradient(100deg, var(--cfo-navy-hover), var(--cfo-navy-hover));
+        box-shadow: 0 10px 28px rgba(4,27,49,.2);
+    }
+
+    .schedule-builder .sb-banner .sb-kicker {
+        margin-bottom: 5px;
+        color: var(--cfo-text);
+        font-size: 12px;
+        font-weight: 600 !important;
+        letter-spacing: .5px;
+    }
+
+    .schedule-builder .sb-banner p {
+        margin: 0;
+        color: var(--cfo-text);
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+
+    .schedule-builder .sb-content {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 365px;
+        align-items: start;
+        gap: 12px;
+    }
+
+    .schedule-builder :is(.sb-left, .sb-right) {
+        min-width: 0;
+    }
+
+    .schedule-builder .sb-card {
+        margin-bottom: 10px;
+        padding: 14px;
+        border: 1px solid var(--cfo-navy-hover);
+        border-radius: 9px;
+        background: linear-gradient(180deg, var(--cfo-panel), var(--cfo-panel));
+        box-shadow: 0 10px 28px rgba(4,27,49,.2);
+    }
+
+    .schedule-builder .sb-card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        padding-bottom: 9px;
+        border-bottom: 1px solid var(--sb-line);
+    }
+
+    .schedule-builder .sb-step {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--cfo-info);
+        font-size: 19px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .schedule-builder :is(.sb-card-title, .sb-summary-head) h2 {
+        margin: 0 0 3px;
+        color: var(--sb-text);
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 1.35;
+    }
+
+    .schedule-builder .sb-card-title p {
+        margin: 0;
+        color: var(--sb-muted);
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+
+    /* Shared Create and Edit controls reuse the existing schedule palette. */
+    .schedule-builder.sb-grouped .sb-content {
+        grid-template-columns: minmax(0, 2fr) minmax(280px, .9fr);
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group {
+        margin-bottom: 12px;
+        padding: 12px;
+        border: 2px solid var(--sb-line);
+        border-radius: 9px;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group-head {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--sb-line);
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group-number {
+        display: grid;
+        width: 36px;
+        height: 36px;
+        flex: 0 0 36px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--sb-blue);
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group-title {
+        flex: 1 1 220px;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-choice {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-choice select {
+        flex: 1 1 150px;
+        width: auto;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.25fr);
+        gap: 12px;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group :is(.sb-options, .sb-groups) {
+        min-height: 125px;
+        max-height: 155px;
+    }
+
+    .schedule-builder.sb-grouped .sb-add-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 12px;
+        border: 1px dashed var(--sb-line);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--sb-text);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .schedule-builder.sb-grouped .sb-add-group > span:first-child {
+        display: grid;
+        width: 36px;
+        height: 36px;
+        flex: 0 0 36px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--sb-blue);
+        font-size: 24px;
+    }
+
+    .schedule-builder.sb-grouped .sb-add-group strong {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .schedule-builder.sb-grouped .sb-remove-group:disabled {
+        cursor: not-allowed;
+    }
+
+    .schedule-builder.sb-grouped .sb-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 5;
+        margin-top: 8px;
+        padding: 12px;
+        border-top: 1px solid var(--sb-line);
+        background: linear-gradient(180deg, var(--cfo-panel), var(--cfo-panel));
+    }
+
+    .schedule-builder[data-edit-schedule-id] .sb-group-badge {
+        display: inline-block;
+        margin-left: 5px;
+        padding: 2px 5px;
+        border: 1px solid currentColor;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.3;
+        white-space: normal;
+    }
+
+    .schedule-builder[data-edit-schedule-id] .sb-option {
+        flex-wrap: wrap;
+    }
+
+    .schedule-builder[data-edit-schedule-id] .sb-option .sb-group-badge {
+        margin-left: 24px;
+    }
+
+    .schedule-builder[data-edit-schedule-id] .sb-section-options {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .schedule-builder[data-edit-schedule-id] .sb-section-options .sb-option {
+        display: grid;
+        grid-template-columns: 16px minmax(0, 1fr);
+    }
+
+    .schedule-builder[data-edit-schedule-id] .sb-section-options .sb-group-badge {
+        grid-column: 1 / -1;
+        justify-self: start;
+        max-width: 100%;
+        margin-left: 0;
+        overflow-wrap: normal;
+        word-break: normal;
+    }
+
+    .schedule-builder[data-edit-schedule-id] .sb-add-section {
+        margin-top: 6px;
+        margin-bottom: 12px;
+    }
+
+    .schedule-builder[data-edit-schedule-id] .sb-edit-extra {
+        margin-top: 12px;
+    }
+
+    .schedule-builder[data-edit-schedule-id] .sb-edit-extra summary {
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+
+    .schedule-builder[data-edit-schedule-id] :is(input, button):disabled {
+        cursor: not-allowed;
+    }
+
+    :is(.schedule-builder, .schedule-course-dialog) .sb-field {
+        display: block;
+        color: var(--sb-text);
+        font-size: 12px !important;
+        font-weight: 700 !important;
+    }
+
+    :is(.schedule-builder, .schedule-course-dialog) :is(.sb-label, .sb-field > label) {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--sb-text);
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        overflow-wrap: anywhere;
+    }
+
+    .schedule-builder .sb-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 7px;
+    }
+
+    .schedule-builder .sb-label-row :is(.sb-label, label) {
+        margin-bottom: 0;
+    }
+
+    :is(.schedule-builder, .schedule-course-dialog) :is(.sb-required, .cfo-required) {
+        display: inline;
+        margin-left: 0;
+        color: var(--sb-required);
+    }
+
+    body.admin-background #main-content .schedule-builder .cfo-required,
+    body.admin-background .schedule-course-dialog .cfo-required {
+        color: var(--sb-required);
+    }
+
+    .schedule-builder .sb-optional {
+        color: var(--cfo-text-muted);
+        font-weight: 600;
+    }
+
+    body.admin-background #main-content .schedule-builder :is(input:not([type=checkbox]), select, textarea),
+    body.admin-background .schedule-course-dialog :is(input:not([type=checkbox]), select, textarea) {
+        width: 100%;
+        height: 38px;
+        min-height: 38px;
+        margin: 0;
+        padding: 0 12px;
+        border: 1px solid var(--sb-input-border);
+        border-radius: 5px;
+        background: var(--sb-input);
+        color: var(--sb-input-text);
+        color-scheme: light;
+        font-family: inherit;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        line-height: normal;
+    }
+
+    body.admin-background #main-content .schedule-builder textarea,
+    body.admin-background .schedule-course-dialog textarea {
+        height: auto;
+        min-height: 90px;
+        padding-block: 10px;
+        resize: vertical;
+    }
+
+    body.admin-background #main-content .schedule-builder label.sb-field > :is(input, select, textarea),
+    body.admin-background .schedule-course-dialog label.sb-field > :is(input, select, textarea) {
+        display: block;
+        margin-top: 7px;
+    }
+
+    body.admin-background #main-content .schedule-builder :is(input, textarea)::placeholder,
+    body.admin-background .schedule-course-dialog :is(input, textarea)::placeholder {
+        color: var(--cfo-text-muted);
+        opacity: 1;
+    }
+
+    :is(.schedule-builder, .schedule-course-dialog) :is(input, select, textarea):focus {
+        border-color: var(--cfo-info);
+        box-shadow: 0 0 0 2px rgba(58,134,255,.2);
+    }
+
+    :is(.schedule-builder, .schedule-course-dialog) :is(a, button, input, select, textarea):focus-visible {
+        outline: 3px solid var(--cfo-yellow) !important;
+        outline-offset: 3px;
+    }
+
+    :is(.schedule-builder, .schedule-course-dialog) :is(input, select, textarea):focus-visible {
+        outline-color: var(--cfo-info) !important;
+    }
+
+    .schedule-builder .sb-options {
+        max-height: 250px;
+        padding: 7px 8px;
+        overflow: auto;
+        border-radius: 5px;
+        background: var(--sb-input);
+        color: var(--sb-input-text);
+    }
+
+    .schedule-builder .sb-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 3px;
+        color: var(--sb-input-text);
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        overflow-wrap: anywhere;
+        cursor: pointer;
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-option input:is([type=checkbox], [type=radio]) {
+        width: 16px;
+        height: 16px;
+        min-height: 0;
+        flex: 0 0 16px;
+        margin: 0;
+        padding: 0;
+        accent-color: var(--cfo-info);
+        cursor: pointer;
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-option input[type=radio] {
+        appearance: none;
+        border: 1px solid var(--cfo-text-muted);
+        border-radius: 3px;
+        background: var(--cfo-navy);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 12px 12px;
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-option input[type=radio]:checked {
+        border-color: var(--cfo-info);
+        background-color: var(--cfo-navy-hover);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 8 3 3 7-7' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+
+    .schedule-builder .sb-options .sb-hint {
+        color: var(--cfo-text-muted);
+    }
+
+    .schedule-builder .sb-section-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .schedule-builder .sb-groups {
+        display: flex;
+        flex-direction: column;
+        max-height: 250px;
+        overflow: auto;
+        gap: 8px;
+    }
+
+    .schedule-builder .sb-groups-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .schedule-builder .sb-group-count {
+        padding: 4px 9px;
+        border: 1px solid var(--cfo-navy-hover);
+        border-radius: 14px;
+        background: var(--cfo-navy);
+        font-size: 12px;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .schedule-builder .sb-group {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 6px;
+        padding: 9px 11px;
+        border: 1px solid var(--cfo-navy-hover);
+        border-radius: 6px;
+        background: var(--cfo-panel);
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .schedule-builder .sb-remove,
+    .schedule-builder .sb-group > button {
+        display: grid;
+        width: 26px;
+        height: 26px;
+        flex: 0 0 26px;
+        padding: 0;
+        place-items: center;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: var(--cfo-text);
+        font-size: 20px !important;
+        font-weight: 600 !important;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .schedule-builder .sb-remove:hover,
+    .schedule-builder .sb-group > button:hover {
+        background: rgba(239,247,255,.078);
+    }
+
+    .schedule-builder .sb-date-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .schedule-builder :is(.sb-settings-grid, .sb-metadata-grid) {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .schedule-builder .sb-field-full {
+        grid-column: 1 / -1;
+    }
+
+    .schedule-builder :is(.sb-venue-row, .sb-venue) {
+        margin-top: 11px;
+    }
+
+    :is(.schedule-builder, .schedule-course-dialog) .sb-hint,
+    .schedule-builder .sb-empty {
+        display: block;
+        margin: 5px 0 0;
+        color: var(--sb-muted);
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        overflow-wrap: anywhere;
+    }
+
+    .schedule-builder .sb-conflict {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 11px;
+        padding: 10px;
+        border: 1px solid var(--cfo-success);
+        border-radius: 7px;
+        background: rgba(0,189,131,.11);
+    }
+
+    .schedule-builder .sb-conflict-icon {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        place-items: center;
+        border-radius: 7px;
+        background: var(--cfo-success);
+        color: var(--cfo-navy);
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .schedule-builder .sb-conflict :is(b, strong) {
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .schedule-builder .sb-conflict > div :is(span, p) {
+        display: block;
+        margin: 3px 0 0;
+        color: var(--cfo-text-muted);
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        overflow-wrap: anywhere;
+    }
+
+    .schedule-builder .sb-conflict.is-invalid {
+        border-color: var(--cfo-error-text);
+        background: rgba(244,125,143,.102);
+    }
+
+    .schedule-builder .sb-conflict.is-invalid .sb-conflict-icon {
+        background: var(--cfo-error-text);
+        color: var(--cfo-navy);
+    }
+
+    .schedule-builder .sb-conflict.is-pending {
+        border-color: var(--cfo-navy-hover);
+        background: var(--cfo-panel);
+    }
+
+    .schedule-builder .sb-conflict.is-pending .sb-conflict-icon {
+        background: var(--cfo-navy-hover);
+        color: var(--sb-text);
+    }
+
+    .schedule-builder .sb-conflict.is-warning {
+        border-color: var(--cfo-yellow);
+        background: rgba(255,212,68,.078);
+    }
+
+    .schedule-builder .sb-conflict.is-warning .sb-conflict-icon {
+        background: var(--cfo-yellow);
+        color: var(--cfo-navy);
+    }
+
+    .schedule-builder .sb-conflict.is-warning > div p {
+        color: var(--cfo-yellow);
+    }
+
+    .schedule-builder .sb-conflict-icon svg {
+        display: block;
+        width: 20px;
+        height: 20px;
+    }
+
+    .schedule-builder .sb-summary-head {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 8px;
+        padding-bottom: 11px;
+        border-bottom: 1px solid var(--sb-line);
+    }
+
+    .schedule-builder .sb-summary-head h2 {
+        flex: 1 1 120px;
+        margin: 0;
+    }
+
+    .schedule-builder .sb-summary-icon {
+        display: grid;
+        width: 39px;
+        height: 39px;
+        flex: 0 0 39px;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--cfo-info);
+        color: var(--cfo-page-bg);
+        font-size: 19px;
+    }
+
+    .schedule-builder .sb-summary-icon.is-validation,
+    .schedule-builder .sb-summary-icon.sb-validation-icon {
+        background: var(--cfo-success);
+        color: var(--cfo-navy);
+    }
+
+    .schedule-builder .sb-summary-status {
+        padding: 7px 10px;
+        border-radius: 7px;
+        background: var(--cfo-danger);
+        color: var(--cfo-error-text);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .schedule-builder .sb-summary-card .sb-summary-head {
+        margin-bottom: 4px;
+        padding-bottom: 10px;
+    }
+
+    .schedule-builder .sb-summary-card .sb-summary-head h2 {
+        font-size: 14px !important;
+    }
+
+    .schedule-builder .sb-summary-card .sb-summary-icon {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+    }
+
+    .schedule-builder .sb-summary-card .sb-summary-status {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+
+    .schedule-builder .sb-summary-list,
+    .schedule-builder .sb-summary-value {
+        margin: 0;
+    }
+
+    .schedule-builder .sb-summary-courses {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .schedule-builder .sb-summary-course {
+        padding: 9px 0;
+        border-bottom: 1px solid rgba(139,139,148,.169);
+    }
+
+    .schedule-builder .sb-summary-course:first-child {
+        padding-top: 0;
+    }
+
+    .schedule-builder .sb-summary-course:last-child {
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+    .schedule-builder .sb-summary-course-name {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .schedule-builder .sb-summary-sections {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+        margin-top: 6px;
+    }
+
+    .schedule-builder .sb-summary-section {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 35px;
+        padding: 3px 10px;
+        border: 1px solid var(--cfo-border);
+        border-radius: 999px;
+        background: var(--cfo-navy-hover);
+        color: var(--cfo-text);
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+
+    .schedule-builder .sb-summary-empty {
+        color: var(--sb-muted);
+        font-weight: 500;
+    }
+
+    .schedule-builder .sb-summary-row {
+        display: grid;
+        grid-template-columns: 112px minmax(0, 1fr);
+        align-items: start;
+        gap: 9px;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(139,139,148,.169);
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .schedule-builder .sb-summary-row:last-child {
+        border-bottom: 0;
+    }
+
+    .schedule-builder .sb-summary-label,
+    .schedule-builder .sb-summary-row > span:first-child {
+        color: var(--cfo-text-muted);
+    }
+
+    .schedule-builder .sb-summary-value,
+    .schedule-builder .sb-summary-row > div {
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .schedule-builder .sb-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .schedule-builder .sb-tag {
+        padding: 5px 9px;
+        border: 1px solid var(--cfo-border);
+        border-radius: 14px;
+        background: var(--cfo-panel);
+        font-size: 12px;
+    }
+
+    .schedule-builder .sb-status-pill {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 14px;
+        background: var(--cfo-success);
+        color: var(--cfo-navy);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .schedule-builder .sb-status-pill.is-closed,
+    .schedule-builder .sb-status-pill.is-draft {
+        background: var(--cfo-danger);
+        color: var(--cfo-error-text);
+    }
+
+    .schedule-builder .sb-checks {
+        margin: 10px 0 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .schedule-builder .sb-check {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 0;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        overflow-wrap: anywhere;
+    }
+
+    .schedule-builder .sb-check-icon {
+        display: grid;
+        width: 20px;
+        height: 20px;
+        flex: 0 0 20px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--cfo-navy-hover);
+        color: var(--sb-text);
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .schedule-builder .sb-check.is-valid .sb-check-icon {
+        background: var(--cfo-success);
+        color: var(--cfo-navy);
+    }
+
+    .schedule-builder .sb-check.is-invalid .sb-check-icon {
+        background: var(--cfo-error-text);
+        color: var(--cfo-navy);
+    }
+
+    .schedule-builder .sb-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding-top: 10px;
+    }
+
+    .schedule-builder .sb-actions-right {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-btn,
+    body.admin-background .schedule-course-dialog .sb-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 38px;
+        padding: 11px 16px;
+        border: 1px solid var(--cfo-border);
+        border-radius: 6px;
+        background: var(--cfo-panel);
+        color: var(--cfo-text) !important;
+        font-family: inherit;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        line-height: 1.3;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: normal;
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-btn-blue,
+    body.admin-background .schedule-course-dialog .sb-btn-blue {
+        border-color: var(--cfo-info);
+        background: var(--sb-blue);
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-btn-green {
+        border-color: var(--cfo-success);
+        background: var(--sb-green);
+        color: var(--cfo-navy) !important;
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-back,
+    body.admin-background #main-content .schedule-builder .sb-banner > .sb-btn {
+        flex: 0 0 auto;
+        padding: 10px 18px;
+        border-color: var(--cfo-border);
+        border-radius: 7px;
+        background: var(--cfo-panel);
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-add-course {
+        min-height: 29px;
+        padding: 6px 10px;
+        border-color: var(--cfo-info);
+        border-radius: 6px;
+        background: var(--sb-blue);
+        white-space: nowrap;
+    }
+
+    :is(.schedule-builder, .schedule-course-dialog) .sb-btn:hover:not(:disabled) {
+        filter: none;
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-btn:hover:not(:disabled),
+    body.admin-background .schedule-course-dialog .sb-btn:hover:not(:disabled) {
+        background: var(--cfo-navy-hover);
+    }
+
+    body.admin-background #main-content .schedule-builder :is(.sb-btn-blue, .sb-add-course):hover:not(:disabled),
+    body.admin-background .schedule-course-dialog .sb-btn-blue:hover:not(:disabled) {
+        background: var(--cfo-navy-hover);
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-btn-green:hover:not(:disabled) {
+        background: var(--cfo-success);
+    }
+
+    :is(.schedule-builder, .schedule-course-dialog) .sb-btn:disabled {
+        opacity: .6;
+        cursor: wait;
+    }
+
+    .schedule-builder .sb-btn svg,
+    .schedule-course-dialog .sb-btn svg,
+    .schedule-builder .sb-summary-icon svg,
+    .schedule-builder .sb-search-icon svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+
+    :is(.schedule-builder, .schedule-course-dialog) .sb-form-error {
+        margin: 8px 0 0;
+        color: var(--sb-required);
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        overflow-wrap: anywhere;
+    }
+
+    body.admin-background .schedule-course-dialog {
+        width: min(470px, calc(100vw - 36px));
+        max-width: none;
+        max-height: calc(100dvh - 36px);
+        padding: 18px;
+        overflow: auto;
+        border: 1px solid var(--cfo-border);
+        border-radius: 10px;
+        background: var(--cfo-panel);
+        color: var(--sb-text);
+        box-shadow: 0 20px 60px rgba(4,27,49,.467);
+    }
+
+    .schedule-course-dialog::backdrop {
+        background: rgba(4,27,49, .72);
+    }
+
+    .schedule-course-dialog :is(.sb-dialog-head, .sb-course-dialog-heading) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--sb-line);
+    }
+
+    .schedule-course-dialog :is(h2, h3) {
+        margin: 0;
+        color: var(--sb-text);
+        font-size: 17px !important;
+        font-weight: 600 !important;
+    }
+
+    .schedule-course-dialog .sb-dialog-close {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        flex: 0 0 30px;
+        padding: 0;
+        place-items: center;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: var(--sb-text);
+        font-size: 24px !important;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .schedule-course-dialog p {
+        margin: 0 0 14px;
+        color: var(--sb-muted);
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+
+    .schedule-course-dialog :is(.sb-dialog-actions, .sb-actions-right) {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+    }
+}
+
+@media screen and (max-width: 1100px) {
+    .schedule-builder .sb-content {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .schedule-builder .sb-right {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+        gap: 10px;
+    }
+
+    .schedule-builder .sb-checks {
+        margin-top: 0;
+    }
+}
+
+@media screen and (max-width: 1050px) {
+    .schedule-builder.sb-grouped .sb-content {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group-combinations {
+        grid-column: 1 / -1;
+    }
+
+    .schedule-builder.sb-grouped .sb-right {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media screen and (min-width: 701px) {
+    .schedule-builder.sb-grouped .sb-date-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .schedule-builder.sb-grouped .sb-settings-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media screen and (max-width: 850px) {
+    .schedule-builder :is(.sb-date-grid, .sb-settings-grid, .sb-metadata-grid) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .schedule-builder .sb-right {
+        display: block;
+    }
+
+    .schedule-builder .sb-checks {
+        margin-top: 10px;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    body.admin-background #main-content .schedule-builder :is(input:not([type=checkbox]), select, textarea),
+    body.admin-background .schedule-course-dialog :is(input:not([type=checkbox]), select, textarea) {
+        font-size: 16px !important;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .schedule-builder.sb-grouped .sb-right {
+        display: block;
+    }
+
+    .schedule-builder.sb-grouped .sb-banner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group-combinations {
+        grid-column: auto;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group-head {
+        align-items: flex-start;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-group-title {
+        flex-basis: calc(100% - 46px);
+    }
+
+    .schedule-builder.sb-grouped .sb-actions-right {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 560px) {
+    .schedule-builder .sb-banner {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    body.admin-background #main-content .schedule-builder .sb-back,
+    body.admin-background #main-content .schedule-builder .sb-banner > .sb-btn {
+        padding: 8px 10px;
+    }
+
+    .schedule-builder .sb-card {
+        padding: 11px;
+    }
+
+    .schedule-builder .sb-actions,
+    .schedule-builder .sb-actions-right {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .schedule-builder .sb-actions-right {
+        width: 100%;
+    }
+
+    .schedule-builder .sb-actions .sb-btn {
+        width: 100%;
+    }
+
+    .schedule-builder .sb-summary-row {
+        grid-template-columns: minmax(0, 100px) minmax(0, 1fr);
+    }
+}
+
+/* Exact reference values mapped to the existing Create/Edit Schedule classes. */
+@media screen {
+    body.admin-background :is(.schedule-builder, .schedule-course-dialog) {
+        --sb-text: var(--cfo-text);
+        --sb-muted: var(--cfo-text-muted);
+        --sb-line: var(--cfo-navy-hover);
+        --sb-input: var(--cfo-navy);
+        --sb-input-text: var(--cfo-navy);
+        --sb-input-border: var(--cfo-border);
+        --sb-blue: var(--cfo-info);
+        --sb-green: var(--cfo-success);
+        font: 14px var(--admin-font-family);
+        color: var(--sb-text);
+    }
+    body.admin-background #main-content .schedule-builder .sb-banner {
+        max-width: none; width: 100%; margin: 0 0 12px;
+        padding: 15px 18px; min-height: 0; gap: 12px;
+        background: linear-gradient(100deg,var(--cfo-navy-hover),var(--cfo-navy-hover));
+        border: 0; border-radius: 9px; box-shadow: none;
+    }
+    body.admin-background #main-content .schedule-builder .sb-banner .sb-kicker {
+        margin: 0; color: var(--cfo-navy); font-size: 10px !important;
+        font-weight: bold !important; letter-spacing: 1px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-banner p {
+        margin: 0; font-size: 12px !important; font-weight: normal !important;
+        color: var(--sb-text);
+    }
+    body.admin-background #main-content .schedule-builder .sb-content {
+        grid-template-columns: minmax(0,2fr) minmax(280px,.9fr); gap: 12px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-right { display: block; }
+    body.admin-background #main-content .schedule-builder .sb-card {
+        background: var(--cfo-panel); border: 1px solid var(--cfo-navy-hover);
+        border-radius: 9px; padding: 12px; margin-bottom: 11px; box-shadow: none;
+    }
+    body.admin-background #main-content .schedule-builder .sb-card-title {
+        gap: 10px; padding-bottom: 10px; margin-bottom: 10px;
+        border-bottom: 1px solid var(--sb-line);
+    }
+    body.admin-background #main-content .schedule-builder .sb-step {
+        width: 40px; height: 40px; flex-basis: 40px;
+        background: var(--sb-blue); font-size: 20px; font-weight: bold;
+    }
+    body.admin-background #main-content .schedule-builder :is(.sb-card-title,.sb-summary-head) h2 {
+        margin: 0 0 4px; font-size: 15px !important; font-weight: bold !important;
+        line-height: normal; letter-spacing: normal;
+    }
+    body.admin-background #main-content .schedule-builder .sb-card-title p {
+        margin: 0; color: var(--sb-muted); font-size: 11px !important; font-weight: normal !important;
+    }
+    body.admin-background #main-content .schedule-builder .sb-course-group {
+        border: 2px solid var(--cfo-info); border-radius: 9px;
+        padding: 10px; margin-bottom: 10px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-course-group:nth-child(even) { border-color: var(--sb-green); }
+    body.admin-background #main-content .schedule-builder .sb-course-group-head {
+        gap: 10px; padding-bottom: 8px; margin-bottom: 9px;
+        border-bottom: 1px solid var(--sb-line);
+    }
+    body.admin-background #main-content .schedule-builder .sb-course-group-number {
+        width: 36px; height: 36px; flex-basis: 36px;
+        background: var(--cfo-info); color: var(--cfo-page-bg); font-size: 14px; font-weight: bold;
+    }
+    body.admin-background #main-content .schedule-builder .sb-course-group:nth-child(even) .sb-course-group-number { background: var(--sb-green); }
+    body.admin-background #main-content .schedule-builder .sb-course-group-title { flex: 1; }
+    body.admin-background #main-content .schedule-builder .sb-course-group-grid {
+        grid-template-columns: 1fr 1fr 1.25fr; gap: 9px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-label-row {
+        gap: 4px; margin-bottom: 6px; font-size: 12px; font-weight: bold;
+    }
+    body.admin-background :is(.schedule-builder,.schedule-course-dialog) :is(.sb-field,.sb-label,.sb-field > label) {
+        color: var(--sb-text); font-size: 11px !important; font-weight: bold !important;
+    }
+    body.admin-background :is(.schedule-builder,.schedule-course-dialog) :is(.sb-label,.sb-field > label) { margin-bottom: 5px; }
+    body.admin-background #main-content .schedule-builder :is(input:not([type=checkbox]):not([type=radio]),select,textarea),
+    body.admin-background .schedule-course-dialog :is(input:not([type=checkbox]):not([type=radio]),select,textarea) {
+        width: 100%; height: auto; min-height: 0;
+        padding: 9px; color-scheme: var(--at-control-scheme,light);
+        background: var(--at-control-background,var(--cfo-navy)); color: var(--at-control-text,var(--cfo-navy));
+        border: 1px solid var(--at-control-border,var(--cfo-border)); border-radius: 6px;
+        font: 14px var(--admin-font-family) !important;
+    }
+    body.admin-background #main-content .schedule-builder :is(.sb-options,.sb-groups) {
+        background: var(--cfo-navy); color: var(--cfo-navy); border-radius: 6px;
+        padding: 7px 9px; min-height: 125px; max-height: 155px; overflow: auto;
+    }
+    body.admin-background #main-content .schedule-builder .sb-options .sb-option {
+        gap: 8px; padding: 5px 1px; color: var(--cfo-navy);
+        font-size: 12px !important; font-weight: normal !important;
+    }
+    body.admin-background #main-content .schedule-builder .sb-option input:is([type=checkbox],[type=radio]) {
+        accent-color: var(--cfo-info); width: 16px; height: 16px; margin: 0;
+    }
+    body.admin-background #main-content .schedule-builder .sb-option input[type=radio] {
+        appearance: auto; border: initial; background: initial;
+    }
+    body.admin-background #main-content .schedule-builder .sb-option input[type=radio]:checked {
+        background-image: none; background-color: initial; border-color: initial;
+    }
+    body.admin-background #main-content .schedule-builder .sb-groups { display: block; }
+    body.admin-background #main-content .schedule-builder .sb-group {
+        background: var(--cfo-navy); color: var(--cfo-navy); border: 0;
+        border-radius: 5px; padding: 8px; margin-bottom: 5px; font-size: 11px;
+    }
+    body.admin-background #main-content .schedule-builder :is(.sb-remove,.sb-group > button) {
+        border: 0; background: none; color: var(--cfo-text-muted);
+        font-size: 18px !important; font-weight: normal !important;
+    }
+    body.admin-background #main-content .schedule-builder .sb-empty { font-size: 11px; color: var(--cfo-text-muted); padding: 8px; }
+    body.admin-background #main-content .schedule-builder .sb-add-group {
+        background: var(--cfo-panel); border: 1px dashed var(--cfo-info);
+        border-radius: 8px; padding: 12px; gap: 10px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-add-group > span:first-child {
+        width: 36px; height: 36px; flex-basis: 36px;
+        background: var(--cfo-navy-hover); color: var(--cfo-page-bg); font-size: 24px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-add-group strong { font-size: 14px; font-weight: bold; }
+    body.admin-background #main-content .schedule-builder :is(.sb-date-grid,.sb-settings-grid,.sb-metadata-grid) {
+        grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-venue-row { margin-top: 10px; }
+    body.admin-background :is(.schedule-builder,.schedule-course-dialog) .sb-hint { font-size: 10px !important; color: var(--sb-muted); font-weight: normal !important; margin-top: 5px; }
+    body.admin-background #main-content .schedule-builder .sb-options .sb-hint { color: var(--cfo-text-muted); }
+
+    body.admin-background #main-content .schedule-builder .sb-summary-head {
+        gap: 9px; border-bottom: 1px solid var(--sb-line);
+        padding-bottom: 10px; margin-bottom: 6px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-summary-head h2 { flex: 1; margin: 0; }
+    body.admin-background #main-content .schedule-builder .sb-summary-icon {
+        width: auto; height: auto; flex: 0 0 auto; background: var(--sb-blue);
+        color: var(--cfo-page-bg); border-radius: 7px; padding: 10px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-summary-status {
+        padding: 6px 8px; border-radius: 5px;
+        background: var(--cfo-danger); color: var(--cfo-error-text); font-size: 10px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-summary-row {
+        grid-template-columns: 38% 62%; gap: 5px;
+        padding: 9px 0; border-bottom: 1px solid var(--cfo-navy-hover); font-size: 11px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-summary-row:last-child { border: 0; }
+    body.admin-background #main-content .schedule-builder .sb-summary-label { color: var(--cfo-text-muted); }
+    body.admin-background #main-content .schedule-builder .sb-summary-value { font-weight: bold; overflow-wrap: anywhere; }
+    body.admin-background #main-content .schedule-builder .sb-summary-course { border-color: var(--cfo-navy-hover); }
+    body.admin-background #main-content .schedule-builder .sb-summary-course-name { font-size: 11px; font-weight: bold; }
+    body.admin-background #main-content .schedule-builder :is(.sb-summary-sections,.sb-tags) { gap: 5px; }
+    body.admin-background #main-content .schedule-builder :is(.sb-summary-section,.sb-tag,.sb-group-count,.sb-status-pill) {
+        background: var(--cfo-navy-hover); color: var(--sb-text); padding: 5px 8px;
+        min-width: 0; border: 0; border-radius: 14px; font-size: 10px; font-weight: normal;
+    }
+    body.admin-background #main-content .schedule-builder :is(.sb-summary-section,.sb-tag):nth-child(even) { background: var(--cfo-success); }
+    body.admin-background #main-content .schedule-builder .sb-status-pill { background: var(--cfo-success); }
+    body.admin-background #main-content .schedule-builder :is(.sb-status-pill.is-closed,.sb-status-pill.is-draft) { background: var(--cfo-danger); color: var(--cfo-error-text); }
+    body.admin-background #main-content .schedule-builder .sb-checks { margin: 0; padding: 0; }
+    body.admin-background #main-content .schedule-builder .sb-check {
+        gap: 8px; padding: 0; margin: 10px 0;
+        font-size: 11px !important; font-weight: normal !important;
+    }
+    body.admin-background #main-content .schedule-builder .sb-check-icon {
+        width: 17px; height: 17px; flex-basis: 17px;
+        border-radius: 50%; background: var(--cfo-error-text); color: var(--cfo-navy); font-weight: bold;
+    }
+    body.admin-background #main-content .schedule-builder .sb-check.is-valid .sb-check-icon { background: var(--sb-green); color: var(--cfo-navy); }
+    body.admin-background #main-content .schedule-builder .sb-check.is-invalid .sb-check-icon { background: var(--cfo-error-text); color: var(--cfo-navy); }
+    body.admin-background #main-content .schedule-builder .sb-conflict {
+        background: var(--cfo-panel); border: 1px solid var(--sb-line); border-radius: 9px;
+    }
+    body.admin-background #main-content .schedule-builder .sb-conflict :is(b,strong) { font-size: 11px; }
+    body.admin-background #main-content .schedule-builder .sb-conflict > div :is(span,p) {
+        color: var(--sb-muted); font-size: 11px !important; font-weight: normal !important;
+    }
+    body.admin-background #main-content .schedule-builder .sb-conflict-icon { background: var(--sb-green); color: var(--cfo-navy); }
+    body.admin-background #main-content .schedule-builder .sb-conflict.is-invalid { background: var(--cfo-danger); border-color: var(--cfo-danger); color: var(--cfo-error-text); }
+    body.admin-background #main-content .schedule-builder .sb-conflict.is-invalid > div :is(span,p) { color: var(--cfo-error-text); }
+    body.admin-background #main-content .schedule-builder .sb-conflict.is-invalid .sb-conflict-icon { background: var(--cfo-error-text); color: var(--cfo-navy); }
+    body.admin-background #main-content .schedule-builder .sb-conflict.is-pending .sb-conflict-icon { background: var(--sb-blue); color: var(--cfo-page-bg); }
+    body.admin-background #main-content .schedule-builder .sb-conflict.is-warning .sb-conflict-icon { background: var(--cfo-yellow); color: var(--cfo-navy); }
+
+    body.admin-background #main-content :is(.schedule-builder .sb-actions,#page.my-schedules .ms-table-footer) {
+        position: fixed; bottom: 0; left: var(--sidebar); right: 0;
+        background: rgba(4,27,49,.949); border: 0; border-top: 1px solid var(--cfo-navy-hover);
+        padding: 10px 18px !important; margin: 0; gap: 8px; z-index: 5;
+        justify-content: space-between; border-radius: 0;
+        backdrop-filter: none; -webkit-backdrop-filter: none;
+    }
+    body.admin-background.nav-collapsed #main-content :is(.schedule-builder .sb-actions,#page.my-schedules .ms-table-footer) { left: 0; }
+    body.admin-background #main-content .schedule-builder .sb-actions-left { display: flex; align-items: center; gap: 8px; }
+    body.admin-background #main-content .schedule-builder .sb-actions-right { flex-direction: row; gap: 7px; }
+    body.admin-background #main-content .schedule-builder .sb-btn,
+    body.admin-background .schedule-course-dialog .sb-btn {
+        min-height: 0; padding: 9px 11px;
+        border: 1px solid var(--cfo-border); border-radius: 6px;
+        background: var(--cfo-navy); color: var(--cfo-text) !important;
+        font: bold 11px var(--admin-font-family) !important;
+    }
+    body.admin-background #main-content .schedule-builder .sb-btn-blue,
+    body.admin-background .schedule-course-dialog .sb-btn-blue { background: var(--cfo-navy-hover); border-color: var(--cfo-info); }
+    body.admin-background #main-content .schedule-builder .sb-btn-green { background: var(--cfo-success); border-color: var(--cfo-success); color: var(--cfo-navy) !important; }
+    body.admin-background #main-content .schedule-builder .sb-remove-group { background: var(--cfo-danger); color: var(--cfo-error-text) !important; border-color: var(--cfo-danger); }
+    body.admin-background #main-content .schedule-builder :is(.sb-add-course,.sb-add-section) {
+        background: var(--sb-blue); color: var(--cfo-page-bg) !important;
+        border: 1px solid var(--cfo-info); border-radius: 5px;
+        padding: 5px 7px; font-size: 10px !important;
+    }
+    body.admin-background #main-content .schedule-builder .sb-btn:hover:not(:disabled),
+    body.admin-background .schedule-course-dialog .sb-btn:hover:not(:disabled) { filter: none; background: var(--cfo-navy); }
+    body.admin-background #main-content .schedule-builder :is(.sb-btn-blue,.sb-add-course,.sb-add-section):hover:not(:disabled),
+    body.admin-background .schedule-course-dialog .sb-btn-blue:hover:not(:disabled) { background: var(--cfo-navy-hover); }
+    body.admin-background #main-content .schedule-builder .sb-btn-green:hover:not(:disabled) { background: var(--cfo-success); }
+    body.admin-background #main-content .schedule-builder .sb-remove-group:hover:not(:disabled) { background: var(--cfo-danger); }
+    body.admin-background .schedule-course-dialog {
+        width: min(430px,calc(100% - 36px)); padding: 18px;
+        background: var(--cfo-panel); border: 1px solid var(--cfo-border);
+        border-radius: 10px; box-shadow: none;
+    }
+    body.admin-background .schedule-course-dialog::backdrop { background: rgba(4,27,49,.6); backdrop-filter: none; }
+    body.admin-background .schedule-course-dialog :is(h2,h3) { margin: 0 0 8px; font-size: 16.38px !important; font-weight: bold !important; }
+    body.admin-background .schedule-course-dialog p { font-size: 12px !important; color: var(--cfo-text-muted); }
+    body.admin-background .schedule-course-dialog :is(.sb-dialog-actions,.sb-actions-right) { justify-content: flex-end; gap: 8px; }
+
+    /* Create and Edit share the reference palette without changing their workflows. */
+    body.admin-background #main-content :is(.schedule-builder:is(.sb-create,[data-edit-schedule-id]),:is(.sb-create,[data-edit-schedule-id]) .schedule-course-dialog) {
+        --sb-text: var(--cfo-text);
+        --sb-muted: var(--cfo-text-muted);
+        --sb-blue: #087df0;
+        --sb-required: var(--cfo-text);
+        --sb-input: #f4f8fd;
+        --sb-input-text: var(--cfo-text-on-bright);
+        --sb-input-border: #b4c7d8;
+        --sb-box: #f3f7fc;
+        --sb-box-text: var(--cfo-text-on-bright);
+        --sb-input-muted: var(--cfo-text-on-bright);
+        --at-control-scheme: light;
+        color-scheme: light;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) > #connected-schedule-form {
+        background: transparent;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(input,select,textarea):not([type=checkbox],[type=radio],[type=hidden]) {
+        --at-control-background: var(--sb-input);
+        --at-control-text: var(--sb-input-text);
+        --at-control-border: var(--sb-input-border);
+        --at-control-scheme: light;
+        color-scheme: light;
+        font-weight: 600 !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-course-choice select {
+        --sb-input-text: var(--cfo-text-on-bright);
+        --sb-input-border: #477795;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-options,.sb-groups) {
+        background: var(--sb-box); color: var(--sb-box-text);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-options .sb-option {
+        color: var(--sb-box-text);
+        font-weight: 600 !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-group {
+        background: #dcecff; color: var(--sb-box-text);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-remove,.sb-group > button) {
+        background: none; color: var(--cfo-text-on-bright) !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-empty,.sb-options .sb-hint) {
+        color: var(--sb-input-muted);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-groups .sb-hint {
+        color: var(--sb-box-text);
+        font-weight: 600 !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(input,textarea)::placeholder {
+        color: var(--sb-input-muted) !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(input,select,textarea):focus-visible {
+        outline-color: var(--cfo-info) !important;
+    }
+    body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) .shell {
+        background: transparent !important;
+    }
+    body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) .admin-header {
+        background: #ffd84d !important; color: var(--cfo-text-on-bright) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,.16) !important;
+    }
+    body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) .admin-header :is(#admin-header-title,#admin-header-breadcrumb,#admin-header-name,#admin-header-role,.admin-header-account,.admin-header-control,.icon,#live-status) {
+        color: var(--cfo-text-on-bright) !important;
+    }
+    body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) .admin-header :is(.admin-header-control,#live-status),
+    body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) .admin-header :is(button,.account):hover:not(:disabled) {
+        background: #ffe77e !important; color: var(--cfo-text-on-bright) !important;
+    }
+    body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) .admin-header #admin-header-avatar {
+        background: #173b59 !important; color: #fff !important;
+    }
+    body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) #main-content .page-heading {
+        background: linear-gradient(100deg,#0877f2,#267ff1) !important;
+        color: var(--cfo-text);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-banner {
+        background: #062542 !important;
+        color: var(--cfo-text);
+        border: 1px solid #fff;
+    }
+    body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) #main-content .page-heading :is(h1,p) {
+        color: var(--cfo-text-on-bright) !important;
+    }
+    body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) #main-content .page-heading .eyebrow {
+        color: var(--cfo-text-on-bright) !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-banner .sb-kicker {
+        color: var(--sb-muted) !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-card {
+        background: rgba(3,31,55,.96);
+    }
+    /* Container outlines only; page banners and the action bar keep their borders. */
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-card,.sb-course-group,.sb-add-group,.sb-conflict,.sb-form-error,.sb-course-error,.schedule-course-dialog) {
+        border-color: #fff !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-step,.sb-summary-icon) {
+        background: #087df0; color: var(--cfo-text);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-validation-icon {
+        background: #00b981;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-course-group-number {
+        background: #72bfff; color: var(--cfo-text-on-bright);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-course-group:nth-child(even) .sb-course-group-number {
+        background: #00bd83;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-add-group {
+        background: #052543; color: var(--cfo-text);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-add-group > span:first-child {
+        background: #72bfff; color: var(--cfo-text-on-bright);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-group-count {
+        background: #254d71; color: var(--cfo-text);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-required,.cfo-required) {
+        color: var(--cfo-text) !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-option input:is([type=checkbox],[type=radio]) {
+        accent-color: #087df0;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-btn,
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-btn:hover:not(:disabled) {
+        background: #0b2b49; color: var(--sb-text) !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-btn-blue,.sb-add-course,.sb-add-section,[data-sb-draft]),
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-btn-blue,.sb-add-course,.sb-add-section,[data-sb-draft]):hover:not(:disabled) {
+        background: #087df0; color: var(--cfo-text-on-bright) !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-add-course,
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-add-course:hover:not(:disabled) {
+        color: var(--cfo-text-on-bright) !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-btn-green,
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-btn-green:hover:not(:disabled) {
+        background: #00a970; color: var(--cfo-text-on-bright) !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-btn-red,.sb-remove-group),
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-btn-red,.sb-remove-group):hover:not(:disabled) {
+        background: #fff0f1; color: #a52b42 !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-summary-status {
+        background: #fff0f1; color: #a52b42;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-summary-label {
+        color: var(--sb-muted);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-summary-section,.sb-tag) {
+        background: #0969c7; color: var(--cfo-text);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-summary-section,.sb-tag):nth-child(even) {
+        background: #007e60;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-status-pill {
+        background: transparent !important; color: var(--cfo-text) !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-check-icon {
+        background: #f47d8f; color: var(--cfo-text-on-bright);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-check.is-valid .sb-check-icon {
+        background: #00bd83; color: var(--cfo-text-on-bright);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-check.is-invalid .sb-check-icon {
+        background: #f47d8f; color: var(--cfo-text-on-bright);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-conflict {
+        background: rgba(3,31,55,.96); color: var(--cfo-text);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-conflict-icon {
+        background: #00bd83; color: var(--cfo-text-on-bright);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-conflict.is-invalid,.sb-form-error,.sb-course-error) {
+        background: #fff0f1; color: #a52b42;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-conflict.is-invalid > div :is(span,p) {
+        color: #a52b42;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-conflict.is-invalid .sb-conflict-icon {
+        background: #f47d8f; color: var(--cfo-text-on-bright);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-actions {
+        background: #041f38f2 !important;
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .schedule-course-dialog {
+        background: #082b49 !important; color: var(--cfo-text);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .schedule-course-dialog p {
+        color: var(--sb-muted);
+    }
+    body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .schedule-course-dialog::backdrop {
+        background: #0009;
+    }
+    body.admin-background:has(.schedule-builder:is(.sb-create,[data-edit-schedule-id])) #toast {
+        background: #063e35; color: var(--cfo-text);
+    }
+}
+@media screen and (max-width: 1000px) {
+    body.admin-background #main-content :is(.schedule-builder .sb-actions,#page.my-schedules .ms-table-footer) { left: 0; }
+}
+@media screen and (max-width: 1050px) {
+    body.admin-background #main-content .schedule-builder .sb-content { grid-template-columns: 1fr; }
+    body.admin-background #main-content .schedule-builder .sb-course-group-grid { grid-template-columns: 1fr 1fr; }
+    body.admin-background #main-content .schedule-builder .sb-course-group-combinations { grid-column: 1 / -1; }
+    body.admin-background #main-content .schedule-builder .sb-right { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    body.admin-background #main-content .schedule-builder .sb-right .sb-card { margin-bottom: 0; }
+}
+@media screen and (max-width: 700px) {
+    body.admin-background #main-content .schedule-builder .sb-banner { align-items: flex-start; flex-direction: column; }
+    body.admin-background #main-content .schedule-builder .sb-content,
+    body.admin-background #main-content .schedule-builder .sb-right { display: block; }
+    body.admin-background #main-content .schedule-builder .sb-right .sb-card { margin-bottom: 10px; }
+    body.admin-background #main-content .schedule-builder :is(.sb-course-group-grid,.sb-date-grid,.sb-settings-grid,.sb-metadata-grid) { grid-template-columns: 1fr; }
+    body.admin-background #main-content .schedule-builder :is(.sb-course-group-combinations,.sb-field-full) { grid-column: auto; }
+    body.admin-background #main-content .schedule-builder .sb-course-group-head { flex-wrap: wrap; }
+    body.admin-background #main-content .schedule-builder .sb-course-group-head .sb-btn { font-size: 10px !important; }
+    body.admin-background #main-content :is(.schedule-builder .sb-actions,#page.my-schedules .ms-table-footer) { flex-direction: column; align-items: stretch; padding: 8px !important; }
+    body.admin-background #main-content .schedule-builder .sb-actions-left { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+    body.admin-background #main-content .schedule-builder .sb-actions-right { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+}
+
+/* Schedule controls use the same palette in both Create and Edit. */
+@media screen {
+  body.admin-background :is(.schedule-builder,.schedule-course-dialog) {
+    --sb-input: var(--cfo-navy); --sb-input-text: var(--cfo-text); --sb-input-border: var(--cfo-border);
+    --sb-required: var(--cfo-error-text);
+  }
+  body.admin-background #main-content .schedule-builder .sb-banner { background: var(--cfo-navy); }
+  body.admin-background #main-content .schedule-builder .sb-banner .sb-kicker { color: var(--cfo-text-muted); }
+  body.admin-background #main-content .schedule-builder :is(.sb-options,.sb-groups,.sb-group) {
+    background: var(--cfo-navy); color: var(--cfo-text);
+  }
+  body.admin-background #main-content .schedule-builder .sb-options .sb-option { color: var(--cfo-text); }
+  body.admin-background #main-content .schedule-builder :is(.sb-summary-section,.sb-tag) {
+    background: var(--cfo-navy-hover); color: var(--cfo-text);
+  }
+  body.admin-background #main-content .schedule-builder :is(.sb-btn-blue,.sb-add-course,.sb-add-section),
+  body.admin-background .schedule-course-dialog .sb-btn-blue {
+    background: var(--cfo-navy-hover); color: var(--cfo-text) !important; border-color: var(--cfo-info);
+  }
+  body.admin-background #main-content .schedule-builder .sb-btn-green {
+    background: var(--cfo-yellow); color: var(--cfo-navy) !important; border-color: var(--cfo-yellow);
+  }
+  body.admin-background #main-content .schedule-builder .sb-btn-green:hover:not(:disabled) { background: var(--cfo-yellow); }
+  body.admin-background #main-content .schedule-builder :is(.sb-remove,.sb-group > button,.sb-btn-red,.sb-remove-group),
+  body.admin-background #main-content .schedule-builder .sb-remove-group:hover:not(:disabled) {
+    background: var(--cfo-danger); color: var(--cfo-text) !important; border-color: var(--cfo-danger);
+  }
+  body.admin-background #main-content .schedule-builder .sb-status-pill { background: var(--cfo-success); color: var(--cfo-navy); }
+  body.admin-background #main-content .schedule-builder .sb-status-pill.is-draft { background: var(--cfo-yellow); color: var(--cfo-navy); }
+  body.admin-background #main-content .schedule-builder .sb-status-pill.is-closed { background: var(--cfo-danger); color: var(--cfo-text); }
+  body.admin-background #main-content .schedule-builder .sb-conflict.is-invalid {
+    background: var(--cfo-panel); color: var(--cfo-error-text); border-color: var(--cfo-error-text);
+  }
+  body.admin-background #main-content .schedule-builder .sb-conflict.is-invalid > div :is(span,p) { color: var(--cfo-error-text); }
+}

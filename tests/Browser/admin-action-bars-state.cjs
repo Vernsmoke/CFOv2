@@ -1,0 +1,17 @@
+const assert = require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm');
+const moduleShim={exports:{}};
+vm.runInThisContext('(function(module){'+fs.readFileSync(require('node:path').join(__dirname,'../../public/admin-action-bars.js'),'utf8')+'\n})')(moduleShim);
+const {layoutGroups}=moduleShim.exports;
+const desktop = layoutGroups([{id:0,width:120,height:34},{id:1,width:200,height:34},{id:2,width:700,height:38,full:true}],700);
+assert.equal(desktop.height,100);
+assert.deepEqual(desktop.items.map(({id,x,bottom})=>({id,x,bottom})),[{id:2,x:0,bottom:10},{id:0,x:0,bottom:56},{id:1,x:128,bottom:56}]);
+const mobile = layoutGroups([{id:0,width:180,height:34},{id:1,width:180,height:34},{id:2,width:500,height:70,full:true}],300);
+assert.equal(mobile.height,174);
+assert.ok(mobile.items.every(item=>item.width<=300));
+for (const a of mobile.items) for (const b of mobile.items) if(a.id!==b.id) assert.ok(a.bottom+a.height<=b.bottom || b.bottom+b.height<=a.bottom || a.x+a.width<=b.x || b.x+b.width<=a.x);
+assert.deepEqual(layoutGroups([],300),{items:[],height:0});
+const aligned=layoutGroups([{id:0,width:90,height:34},{id:1,width:160,height:34,align:'end'}],600);
+assert.equal(aligned.items.find(item=>item.id===0).x,0);
+assert.equal(aligned.items.find(item=>item.id===1).x,440);
+console.log('PASS: footer groups fit desktop/mobile, preserve order, reserve content space, and do not overlap.');

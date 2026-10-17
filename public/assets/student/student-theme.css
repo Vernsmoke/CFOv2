@@ -1,0 +1,1162 @@
+/* Shared CFO palette: screen surfaces and semantic states only. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) {
+    --cfo-text: #EFF7FF;
+    --cfo-navy: #062542;
+    --cfo-panel: #0A3157;
+    --cfo-navy-hover: #123F6B;
+    --cfo-page-bg: #041B31;
+    --cfo-yellow: #FFD444;
+    --cfo-error-text: #F47D8F;
+    --cfo-danger: #A52B42;
+    --cfo-border: #8B8B94;
+    --cfo-text-muted: #B0C4D8;
+    --cfo-success: #00BD83;
+    --cfo-info: #3A86FF;
+    --navy-hover: var(--cfo-navy-hover);
+    --page-bg: var(--cfo-page-bg);
+    --error-text: var(--cfo-error-text);
+    --text-muted: var(--cfo-text-muted);
+    --success: var(--cfo-success);
+    --info: var(--cfo-info);
+  }
+}
+
+/* Student-only reference theme. Existing markup, grids, routes and behavior stay in their source files. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) {
+    --st-navy: var(--cfo-navy);
+    --st-panel: var(--cfo-panel);
+    --st-line: var(--cfo-navy-hover);
+    --st-blue: var(--cfo-info);
+    --st-green: var(--cfo-success);
+    --st-yellow: var(--cfo-yellow);
+    --st-text: var(--cfo-text);
+    --st-muted: var(--cfo-text-muted);
+    background: linear-gradient(135deg, var(--cfo-page-bg), var(--cfo-navy-hover));
+    color: var(--st-text);
+    font: 14px Arial, sans-serif;
+  }
+
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell {
+    font: 14px Arial, sans-serif;
+    color: var(--st-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell button,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell input,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell select {
+    font-family: inherit;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell button { cursor: pointer; }
+
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar {
+    background: var(--st-navy);
+    border-right: 1px solid var(--st-line);
+    color: var(--st-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar::before { background-image: none; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-brand,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar-quote { font-family: Arial, sans-serif; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-brand { padding: 18px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-brand-subtitle { font-size: 14px; color: var(--st-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav { gap: 7px; padding: 0 18px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav a,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav button,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-logout {
+    padding: 9px 11px;
+    gap: 10px;
+    border: 1px solid var(--cfo-border);
+    border-radius: 6px;
+    background: var(--cfo-navy);
+    color: var(--cfo-text);
+    font-size: 11px;
+    font-weight: bold;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav .is-active,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav a:hover,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav button:hover {
+    background: var(--st-blue);
+    border-color: var(--cfo-info);
+    box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-logout { margin: 18px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-logout:hover { background: var(--cfo-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar-quote { color: var(--st-muted); font-size: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-backdrop:not([hidden]) { background: rgba(4,27,49,.6); }
+
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar {
+    padding: 0 18px;
+    gap: 12px;
+    background: var(--st-yellow);
+    color: var(--cfo-navy);
+    border-bottom: 0;
+    box-shadow: 0 2px 8px rgba(4,27,49, .16);
+    font-weight: bold;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-icon-button:not(.dash-sidebar-close) {
+    padding: 8px 12px;
+    border: 1px solid var(--cfo-border);
+    border-radius: 8px;
+    background: var(--cfo-yellow);
+    color: var(--cfo-navy);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar-close {
+    background: var(--cfo-navy);
+    color: var(--st-text);
+    border-color: var(--cfo-border);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-user-tools { gap: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile { padding-left: 0; border-left: 0; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-button { gap: 10px; color: var(--cfo-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-avatar { background: var(--cfo-navy); color: var(--cfo-text); font-size: 14px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-name strong { font-size: 12px; font-weight: bold; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-name > span { font-size: 11px; color: var(--cfo-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-button > .icon { margin-left: 0; }
+
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content {
+    margin: auto;
+    padding: 14px 18px 90px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-welcome {
+    margin: 0 0 12px;
+    padding: 15px 18px;
+    gap: 12px;
+    border-radius: 9px;
+    background: linear-gradient(100deg, var(--cfo-navy-hover), var(--cfo-navy-hover));
+    color: var(--st-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-greeting { margin: 0; font: bold 10px Arial, sans-serif; letter-spacing: 1px; color: var(--cfo-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-welcome h1 { margin: 5px 0; color: var(--st-text); font: bold 20px/1.25 Arial, sans-serif; overflow-wrap: anywhere; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-subtitle { margin: 0; font-size: 12px; line-height: normal; color: var(--st-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-welcome blockquote { margin: 0; color: var(--st-text); font: 12px/1.5 Arial, sans-serif; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-welcome cite { margin-top: 5px; color: var(--st-text); font: 11px/1.5 Arial, sans-serif; }
+
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-status-grid { gap: 9px; margin-bottom: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-green { --tone: var(--st-green); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-gold { --tone: var(--st-yellow); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-blue,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-purple { --tone: var(--cfo-info); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-rose { --tone: var(--cfo-error-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-status {
+    padding: 10px;
+    border: 2px solid var(--tone, var(--cfo-info));
+    border-radius: 9px;
+    background: var(--cfo-panel);
+    color: var(--st-text);
+    box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-status > .dash-status-icon { padding: 8px; margin-bottom: 9px; border-radius: 50%; background: var(--tone, var(--st-blue)); color: var(--cfo-page-bg); stroke-width: 1.8; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-status h2 { margin: 0 0 5px; color: var(--st-muted); font-size: 11px; font-weight: bold; line-height: normal; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-status p { margin: 0; color: var(--st-text); font-size: 16px; line-height: normal; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-status-mark { margin-top: 9px; color: var(--st-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-status-mark.is-calendar { color: var(--tone); }
+
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-columns { gap: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-primary-column,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-secondary-column { gap: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-panel,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content > .panel,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #replace-receipt {
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--cfo-navy-hover);
+    border-radius: 9px;
+    background: var(--cfo-panel);
+    color: var(--st-text);
+    box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-panel h2,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content > .panel h2 { margin: 0 0 10px; padding-bottom: 10px; border-bottom: 1px solid var(--st-line); gap: 9px; color: var(--st-text); font-size: 15px; line-height: normal; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-panel h2 > .icon { padding: 8px; border-radius: 7px; background: var(--st-blue); color: var(--cfo-page-bg); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-panel-heading { gap: 9px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--st-line); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-panel-heading h2 { margin: 0; padding: 0; border: 0; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-event-grid { gap: 9px; margin-top: 0; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-chapel-image { border: 1px solid var(--st-line); border-radius: 6px; background: var(--st-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-chapel figcaption { margin-top: 9px; font: 12px/1.5 Arial, sans-serif; color: var(--st-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-chapel figcaption span { margin-top: 5px; font: 10px/1.5 Arial, sans-serif; color: var(--st-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-event-info dl { gap: 0; margin: 0 0 10px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-event-info dl > div { gap: 5px; padding: 9px 0; border-bottom: 1px solid var(--cfo-navy-hover); font-size: 11px; line-height: normal; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-event-info dl > div:last-child { border-bottom: 0; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-event-info dt { color: var(--cfo-text-muted); font-weight: normal; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-event-info dd { color: var(--st-text); font-weight: bold; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-event-info .icon { color: var(--st-muted); stroke-width: 1.8; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-scheduled { padding: 5px 8px; border-radius: 14px; background: var(--cfo-navy-hover); color: var(--st-text); font-size: 10px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-event-info dl > div:last-child dd:not(:has(.dash-scheduled)) { padding: 5px 8px; border-radius: 14px; background: var(--cfo-navy-hover); font-size: 10px; }
+
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-view-schedule,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-panel-heading > button,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-quick-grid button,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content > .panel .primary,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #replace-receipt .primary,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content > .note .outline {
+    padding: 9px 11px;
+    gap: 7px;
+    border: 1px solid var(--cfo-border);
+    border-radius: 6px;
+    background: var(--cfo-navy);
+    color: var(--cfo-text);
+    font-size: 11px !important;
+    font-weight: bold !important;
+    text-decoration: none;
+    line-height: normal;
+    box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-view-schedule { background: var(--st-blue); border-color: var(--cfo-info); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content > .panel .primary,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #replace-receipt .primary { background: var(--cfo-success); border-color: var(--cfo-success); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content > .panel p { font-size: 11px; color: var(--st-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content > .panel .field,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #replace-receipt label { font-size: 11px; font-weight: bold; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content > .panel select,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #replace-receipt input { padding: 9px; margin: 5px 0 10px; background: var(--cfo-navy); color: var(--cfo-navy); border: 1px solid var(--cfo-border); border-radius: 6px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content > .note { color: var(--st-muted); font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-view-schedule .icon { color: var(--cfo-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-quick-grid { gap: 7px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-quick-grid .dash-green { background: var(--cfo-success); border-color: var(--cfo-success); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-quick-grid .dash-blue,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-quick-grid .dash-purple { background: var(--st-blue); border-color: var(--cfo-info); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-quick-grid .dash-gold { border-color: var(--st-yellow); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-quick-grid .dash-rose { background: var(--cfo-danger); color: var(--cfo-error-text); border-color: var(--cfo-danger); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-quick-grid .icon { stroke-width: 1.8; }
+
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-announcement { gap: 10px; padding: 10px; border: 2px solid var(--cfo-info); border-radius: 9px; background: transparent; color: var(--st-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-announcement:nth-of-type(even) { border-color: var(--st-green); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-announcement h3 { margin: 0 0 3px; color: var(--st-text); font-size: 16px; line-height: normal; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-announcement p { margin: 0; color: var(--st-muted); font-size: 11px; line-height: normal; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-announcement time { color: var(--st-muted); font-size: 10px; line-height: normal; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-announcement > .icon { color: var(--st-blue); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-announcement a { margin-top: 7px; padding: 5px 7px; border: 1px solid var(--cfo-info); border-radius: 5px; background: var(--st-blue); color: var(--cfo-page-bg); font-size: 10px; font-weight: bold; text-decoration: none; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-announcements > p { color: var(--st-muted); font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-reflection { padding: 12px; gap: 10px; border: 1px dashed var(--cfo-info); border-radius: 8px; background: var(--cfo-panel); color: var(--st-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-reflection p { margin: 0 0 4px; font: 14px/1.5 Arial, sans-serif; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-reflection span:not(.dash-leaf) { color: var(--st-muted); font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-leaf { background: var(--cfo-navy-hover); color: var(--cfo-page-bg); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-reflection > .dash-leaf-decoration { color: var(--st-green); opacity: .12; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-preview-note { color: var(--st-muted); font-size: 10px; }
+
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-menu,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-panel { background: var(--st-panel); color: var(--st-text); border: 1px solid var(--cfo-border); border-radius: 10px; box-shadow: 0 2px 8px rgba(4,27,49, .16); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-menu button,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-menu a { padding: 9px 11px; font-size: 11px; font-weight: bold; color: var(--st-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-menu button:hover,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-profile-menu a:hover,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-item:hover,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-item.is-unviewed { background: var(--st-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-heading { border-color: var(--st-line); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-heading h2 { font-size: 15px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-heading span,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-copy time,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-empty { color: var(--st-muted); font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-item { color: var(--st-text); border-radius: 6px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-copy { font-size: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-icon { background: var(--st-blue); color: var(--cfo-page-bg); border-radius: 7px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notification-unread { background: var(--st-green); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-notifications span { background: var(--cfo-danger); color: var(--cfo-error-text); font-size: 10px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell button:hover { filter: none; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell :is(button, a):focus-visible,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-status:focus { outline: 2px solid var(--st-yellow); outline-offset: 3px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar :is(button, a):focus-visible { outline-color: var(--st-navy); }
+}
+
+@media screen and (max-width: 1050px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-secondary-column { gap: 10px; }
+}
+
+@media screen and (max-width: 700px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content { padding: 10px 8px 145px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-welcome h1 { font-size: 18px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-welcome blockquote { text-align: left; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-panel-heading { flex-wrap: wrap; }
+}
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) {
+    --green: var(--cfo-success);
+    --dark: var(--cfo-navy);
+    --border: var(--cfo-border);
+    --field: var(--cfo-navy);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-shell, .sp, .certificate-page, .student-change-page, dialog) {
+    font-family: Arial, sans-serif;
+    color: var(--st-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp {
+    --green: var(--cfo-success);
+    --green-dark: var(--cfo-navy);
+    --green-mid: var(--cfo-success);
+    --green-soft: var(--cfo-success);
+    --ink: var(--cfo-text);
+    --muted: var(--cfo-text-muted);
+    --line: var(--cfo-navy-hover);
+    --page: var(--cfo-navy);
+    --white: var(--cfo-text);
+    --blue: var(--cfo-navy-hover);
+    --blue-ink: var(--cfo-text);
+    --amber: var(--cfo-yellow);
+    --amber-ink: var(--cfo-navy);
+    --rose: var(--cfo-danger);
+    --rose-ink: var(--cfo-error-text);
+    font: 14px Arial, sans-serif;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content {
+    width: 100%; max-width: 1600px; margin: auto; padding: 14px 18px 90px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-content, .dash-content *, .dash-content *::before, .dash-content *::after) { box-sizing: border-box; }
+  /* Reference .hero mapped to each existing page heading, without wrapping or moving controls. */
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-welcome, .recollection-header, .schedule-change-heading, .sp .heading, .cert-heading) {
+    width: 100%; max-width: none; margin-left: 0; margin-right: 0; margin-bottom: 12px;
+    padding: 15px 18px; border: 0; border-radius: 9px; box-shadow: none;
+    background: linear-gradient(100deg, var(--cfo-navy-hover), var(--cfo-navy-hover)); color: var(--st-text); gap: 12px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-welcome h1, .recollection-header h1, .schedule-change-heading h1, .sp .heading h1, .cert-heading h1) {
+    margin: 5px 0; font: bold 20px/1.25 Arial, sans-serif; letter-spacing: normal; color: var(--st-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-subtitle, .recollection-header p, .schedule-change-heading p, .sp .heading p, .cert-heading p) {
+    margin: 0; font: 12px Arial, sans-serif; color: var(--st-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-greeting, .sp .eyebrow, .schedule-change-heading .student-change-eyebrow) {
+    margin: 0; font: bold 10px Arial, sans-serif; letter-spacing: 1px; color: var(--cfo-navy);
+  }
+  /* One certificate banner contains the heading and description. */
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .cert-heading :is(h1, p) {
+    padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .cert-heading h1:focus { outline: none; }
+  /* Reference .panel. Split header/body cards keep their existing containers and grid placement. */
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-panel, .dash-content > .panel, #replace-receipt, .recollection-form, .schedule-change-panel, .sp .panel, .sp .announcement-list-panel, .sp .announcement-detail, .cert-selector, .cert-selected, .cert-empty, .sp .profile-summary, .cfo-search, .cfo-search-results) {
+    background: var(--cfo-panel); border: 1px solid var(--cfo-navy-hover); border-radius: 9px;
+    color: var(--st-text); box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-form, .cert-selector, .sp .profile-summary, .cfo-search, .cfo-search-results) { padding: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-form, .schedule-change-panel, .sp .panel, .cert-selector) { margin-bottom: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .panel-head, .sp .detail-head, .cert-selected-head, .student-change-panel-head, .student-change-dialog-head, .sp .modal-head) {
+    padding: 12px; gap: 10px; border-bottom: 1px solid var(--st-line);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .panel-head h2, .sp .detail-head h2, .student-change-panel-head h2, .cert-selected-head h2, .recollection-section-heading h2, .student-change-dialog-head h2, .sp .modal-head h2, .recollection-dialog-heading h2, dialog h2) {
+    margin: 0 0 4px; font: bold 15px Arial, sans-serif; color: var(--st-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .panel-head p, .student-change-panel-head p, .cert-selected-head p, .recollection-section-heading p) {
+    margin: 0; font-size: 11px; color: var(--st-muted);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .panel-body, .sp .detail-content, .sp .modal-body, .student-change-dialog > p, .student-change-details, .student-change-tools, #cfo-change-form) { padding: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .panel, .sp .announcement-layout, .sp .profile-grid, .sp .form-grid, .recollection-grid, .recollection-academic-fields, .recollection-receipt-grid, .student-change-stats, .student-change-tools, .student-change-details) { gap: 9px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-form-footer, .form-actions, .sp .modal-foot, .student-change-dialog-actions) { gap: 7px; }
+  /* Reference .group / .ghead and .gnum. */
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-group, .sp .metric, .student-change-stat, .student-change-card) {
+    background: var(--cfo-panel); color: var(--st-text); border: 2px solid var(--cfo-info);
+    border-radius: 9px; box-shadow: none; margin-bottom: 10px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .metric, .student-change-stat, .student-change-card) { padding: 10px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-group, .sp .metric, .student-change-stat, .student-change-card):nth-of-type(even) { border-color: var(--st-green); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-group h3 {
+    background: transparent; border-bottom: 1px solid var(--st-line); padding: 10px;
+    gap: 10px; color: var(--st-text); font-size: 16px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-group h3 > .icon { color: var(--st-blue); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-group:nth-of-type(even) h3 > .icon { color: var(--st-green); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-group-body { padding: 10px; gap: 9px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .metric-icon, .student-change-stat-head > .icon) { background: var(--cfo-info); color: var(--cfo-page-bg); border-radius: 50%; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .metric, .student-change-stat):nth-of-type(even) :is(.metric-icon, .student-change-stat-head > .icon) { background: var(--st-green); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .metric-number, .student-change-stat-count) { color: var(--st-text); font-size: 20px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .metric-top, .student-change-stat-head) { color: var(--st-muted); font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .metric-note, .student-change-stat small) { color: var(--st-muted); font-size: 10px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-section-heading {
+    background: transparent; border-bottom: 1px solid var(--st-line); padding: 0 0 10px;
+    margin-bottom: 10px; gap: 10px; border-radius: 0;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-section-heading > .icon { padding: 8px; border-radius: 7px; background: var(--st-blue); color: var(--cfo-page-bg); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-steps li { color: var(--st-text); font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-steps li::before { background: var(--st-line); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-steps li > span { background: var(--cfo-info); color: var(--cfo-page-bg); font: bold 20px Arial, sans-serif; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-steps li.is-active { color: var(--st-text); font-weight: bold; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-steps li.is-active::before { background: var(--st-green); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-steps li.is-active > span { background: var(--st-green); color: var(--cfo-navy); }
+  /* Reference field controls. Icon/visibility-control padding stays reserved by existing wrappers. */
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-shell, .sp, dialog) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]), select, textarea) {
+    padding: 9px; background: var(--cfo-navy); color: var(--cfo-navy); border: 1px solid var(--cfo-border);
+    border-radius: 6px; font: 14px Arial, sans-serif; box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .input-wrap :is(input, select) { padding-left: 52px; padding-right: 40px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .input-wrap > .icon { color: var(--cfo-text-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-field select, .recollection-academic-field select):has(option:checked[value=""]) { color: var(--cfo-text-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-shell, .sp, dialog) :is(input, textarea)::placeholder { color: var(--cfo-text-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.field > label, .field:has(> select), .recollection-field > label, .recollection-academic-field legend, .recollection-sacraments legend, .student-change-field > label, .student-change-tool > label) {
+    color: var(--st-text); font-size: 11px; font-weight: bold;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-academic-field, .recollection-sacraments) { color: var(--st-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--cfo-info); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-consent, .checks label) { color: var(--st-text); font-size: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.student-change-field input[readonly], .student-change-fields:disabled textarea, input:disabled, select:disabled) { background: var(--cfo-navy); color: var(--cfo-text-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-shell, .sp, dialog) :is(input, select, textarea):focus-visible {
+    outline: 2px solid var(--st-blue); outline-offset: 2px; border-color: var(--cfo-info); box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(input, select, textarea)[aria-invalid="true"] { border-color: var(--cfo-danger); }
+  /* Reference neutral/blue/green/red buttons, retaining each existing control and action. */
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.primary, .outline, .sp .btn, .cfo-search button, .recollection-receipt-actions button, .student-change-actions button, .student-change-dialog-actions button, .student-change-dialog-head button, .sp .close, .recollection-preview-eye, #cancelLogout, #closeLogout) {
+    min-height: 0; padding: 9px 11px; border: 1px solid var(--cfo-border); border-radius: 6px;
+    background: var(--cfo-navy); color: var(--cfo-text); font: bold 11px Arial, sans-serif;
+    text-decoration: none; box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.primary, .sp .btn.primary, #replace-receipt .primary, .dash-content > .panel .primary) { background: var(--cfo-success); border-color: var(--cfo-success); color: var(--cfo-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .btn.soft, .student-change-actions button, #receipt-replace) { background: var(--cfo-navy-hover); border-color: var(--cfo-info); color: var(--cfo-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(#receipt-remove, #confirmLogout) { background: var(--cfo-danger); color: var(--cfo-error-text); border-color: var(--cfo-danger); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .student-email-toggle { background: var(--cfo-navy); color: var(--cfo-text); border-color: var(--cfo-border); border-radius: 6px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .reveal { background: transparent; color: var(--cfo-text-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.primary, .outline, .sp .btn, .cfo-search button, .student-email-toggle):hover { filter: none; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-shell, .sp, dialog) :is(button, a):focus-visible { outline: 2px solid var(--st-yellow); outline-offset: 3px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar :is(button, a):focus-visible { outline-color: var(--st-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) ::file-selector-button { padding: 9px 11px; border: 1px solid var(--cfo-border); border-radius: 6px; background: var(--cfo-navy); color: var(--cfo-text); font: bold 11px Arial, sans-serif; }
+  /* Reference .pill / .badge; the existing status distinctions remain visible. */
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .status, .cert-status, .student-change-status, .recollection-receipt-status, .sp .new-tag) {
+    padding: 5px 8px; border-radius: 14px; background: var(--cfo-navy-hover); color: var(--st-text); font-size: 10px; font-weight: bold;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .st-green, .cert-status, .student-change-status.approved, .student-change-status[data-status="Approved"], .sp .new-tag) { background: var(--cfo-success); color: var(--cfo-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.student-change-status.pending, .student-change-status[data-status="Pending"], .recollection-receipt-status.has-receipt) { background: var(--st-yellow); color: var(--cfo-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-receipt-status.has-receipt::before { background: var(--cfo-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .st-red, .student-change-status.rejected, .student-change-status[data-status="Not Approved"]) { background: var(--cfo-danger); color: var(--cfo-error-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .st-gray { background: var(--cfo-navy); color: var(--st-muted); border: 1px solid var(--cfo-border); }
+  /* Reference .row / .label / .value on current tables and record details. */
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp th, .sp td, .student-change-table th, .student-change-table td, .detail-row, .student-change-footer, .sp .table-foot, .sp .table-summary, .sp .detail-title-row, .student-change-tools) { border-color: var(--cfo-navy-hover); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp th, .student-change-table th) { padding: 9px; background: var(--st-panel); color: var(--cfo-text-muted); font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp td, .student-change-table td) { padding: 9px; color: var(--st-text); font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp thead, .sp tbody tr:hover, .student-change-table tbody tr:hover) { background: var(--st-panel); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .main-text, .sp .empty strong, .sp .announce-title, .sp .detail-title-row h3, .sp .profile-summary h2, .cert-meta dd, .student-change-empty strong, .detail-row dd, .detail-list dd, .student-change-details dd) { color: var(--st-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.detail-row, .sp .profile-line) { padding: 9px 0; font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.detail-row dt, .detail-list dt, .sp .profile-line label, .sp .detail-box label, .student-change-details dt, .cert-meta dt) { color: var(--cfo-text-muted); font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .detail-row dt::after { color: var(--cfo-text-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .profile-line, .sp .detail-box, .student-change-details > div, .details, .student-change-response) { background: var(--cfo-panel); border-color: var(--st-line); border-radius: 8px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .profile-line { padding: 9px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .sub-text, .sp .help, .sp .empty, .sp .blank-detail, .sp .announce-preview, .sp .announce-date, .sp .detail-title-row p, .sp .profile-summary p, .sp .table-foot, .sp .table-summary p, .student-change-subtext, .student-change-reason-meta, .student-change-footer, .student-change-empty p, .cert-help, .cert-meta dt, .cert-empty, .cert-empty p, .recollection-academic-hint, .recollection-academic-update, .recollection-upload-help, .recollection-filename, .recollection-local-note, .note, .field small, .cfo-search-scope, .cfo-search-help, .cfo-search-status, .cfo-search-result span, .cfo-search-list h3, .cfo-form-note, .cfo-filter-help, .cfo-breadcrumb) { color: var(--st-muted); font-size: 11px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .announcement-body { color: var(--st-text); font-size: 12px; }
+  /* Reference add/help panels and announcement group headers. */
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-drop, .sp .reminder, .recollection-next-note, .student-change-callout, .student-change-demo-note, .cert-notice, .banner, .reminder) {
+    padding: 12px; border: 1px dashed var(--cfo-info); border-radius: 8px; background: var(--cfo-panel);
+    color: var(--st-muted); font-size: 11px; box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .cert-notice { color: var(--st-muted) !important; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .reminder strong, .reminder strong, .banner strong, .recollection-next-note strong) { color: var(--st-text); font-size: 14px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-drop > .icon, .recollection-next-note > .icon, .reminder > .icon, .dialog-icon) { color: var(--st-blue); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-drop:hover, .recollection-drop.is-dragging) { border-color: var(--st-green); background: var(--cfo-panel); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-empty-receipt, .recollection-receipt-thumb) { border: 1px solid var(--st-line); border-radius: 6px; background: var(--cfo-panel); color: var(--st-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-preview-eye { border-radius: 50%; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .announcement-item { padding: 10px; background: transparent; color: var(--st-text); border-color: var(--st-line); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .announcement-item:hover { background: var(--st-panel); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .announcement-item.selected { background: var(--cfo-panel); box-shadow: inset 3px 0 var(--st-green); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .announcement-item .help { color: var(--st-blue) !important; font-size: 10px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .announce-title { font-size: 16px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .announce-icon { background: var(--st-blue); color: var(--cfo-page-bg); border-radius: 7px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .announcement-item:nth-of-type(even) .announce-icon { background: var(--cfo-success); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp .profile-summary .big-avatar { background: var(--cfo-navy); color: var(--cfo-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.cert-stage, .cfo-search .cfo-search-result:hover) { background: var(--st-navy); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .cert-meta { padding: 12px 12px 0; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .cert-selected .form-actions { padding: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .cfo-search .cfo-search-result { background: transparent; color: var(--st-text); border-radius: 6px; }
+  /* Reference modal colors, keeping modal sizes, open/close rules and certificate artwork untouched. */
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(dialog, .sp .modal) { background: var(--cfo-panel); color: var(--st-text); border: 1px solid var(--cfo-border); border-radius: 10px; box-shadow: none; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) dialog::backdrop { background: rgba(4,27,49,.6); backdrop-filter: none; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .sp.modal-backdrop { background: rgba(4,27,49,.6); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) dialog p { color: var(--cfo-text-muted); font-size: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .modal-foot, .student-change-dialog-actions) { padding: 12px; border-color: var(--st-line); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.logout-modal-icon, .sp .close) { background: var(--st-blue); color: var(--cfo-page-bg); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #logoutTitle { font: bold 15px Arial, sans-serif; color: var(--st-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #logoutDescription { color: var(--cfo-text-muted); font-size: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.error, .cfo-required) { color: var(--cfo-error-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .cfo-form-error { background: var(--cfo-danger); color: var(--cfo-error-text); border-color: var(--cfo-danger); border-radius: 8px; }
+}
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar { height: 52px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-icon-button:not(.dash-sidebar-close), .dash-avatar) { width: auto; height: auto; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-avatar { width: 36px; height: 36px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .metric-icon, .student-change-stat-head > .icon) { width: 36px; height: 36px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-section-heading > .icon { width: 34px; height: 34px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-academic-update:not(:empty) { background: var(--cfo-panel); border: 1px solid var(--cfo-navy-hover); border-radius: 8px; padding: 12px; color: var(--st-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .close, #closeLogout) { font-size: 18px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .recollection-preview-eye { padding: 4px; }
+}
+@media screen and (max-width: 700px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content { padding: 10px 8px 145px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-welcome h1, .recollection-header h1, .schedule-change-heading h1, .sp .heading h1, .cert-heading h1) { font-size: 18px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-welcome { gap: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.recollection-heading-row, .sp .heading, .student-change-tools, .student-change-stats, .sp .cards) { gap: 9px; }
+}
+
+/* Keep the dashboard shell dimensions consistent across student routes. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #app,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell {
+    width: 100%;
+    max-width: none;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell {
+    --sidebar-width: 307px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-main-pane {
+    width: calc(100% - var(--sidebar-width));
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav-hidden .dash-main-pane {
+    width: 100%;
+    margin-left: 0;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content {
+    min-height: calc(100vh - 52px);
+    min-height: calc(100dvh - 52px);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    height: 52px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-nav a, .dash-nav button, .dash-logout, .dash-profile-button) {
+    min-height: 40px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-nav .icon, .dash-logout .icon, .dash-icon-button .icon) {
+    width: 18px;
+    height: 18px;
+  }
+}
+@media screen and (min-width: 1101px) and (max-width: 1400px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell {
+    --sidebar-width: 264px;
+  }
+}
+@media screen and (max-width: 1100px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-main-pane {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+/* Sidebar measurements stay the same when only the active student route changes. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    height: 100vh;
+    height: 100dvh;
+    box-sizing: border-box;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-brand {
+    flex-shrink: 0;
+    padding: 18px;
+    font-family: Arial, sans-serif;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-brand-subtitle {
+    display: block;
+    margin-top: 6px;
+    height: 20px;
+    min-height: 20px;
+    max-width: 100%;
+    font: 14px/20px Arial, sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav {
+    margin: 0;
+    gap: 7px;
+    padding: 0 18px;
+    scrollbar-gutter: stable;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-nav a, .dash-nav button, .dash-logout) {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    min-height: 40px;
+    padding: 9px 11px;
+    gap: 10px;
+    font: bold 11px/1.4 Arial, sans-serif;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-logout {
+    margin: 18px;
+  }
+}
+
+/* Map the current admin-sidebar.css design to the existing student navigation. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-shell {
+    --sidebar-width: 280px;
+    --student-sidebar-gap: 12px;
+    --student-sidebar-radius: 22px;
+    --student-sidebar-bg: var(--cfo-navy);
+    --student-sidebar-text: var(--cfo-text);
+    --student-sidebar-muted: var(--cfo-text-muted);
+    --student-sidebar-border: rgba(239,247,255, .22);
+    --student-sidebar-divider: rgba(239,247,255, .14);
+    --student-sidebar-hover: rgba(239,247,255, .08);
+    --student-sidebar-shadow: rgba(4,27,49, .2);
+    --student-sidebar-font: "Inter", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar {
+    inset: var(--student-sidebar-gap) auto var(--student-sidebar-gap) var(--student-sidebar-gap);
+    width: calc(var(--sidebar-width) - var(--student-sidebar-gap));
+    height: calc(100vh - 24px);
+    height: calc(100dvh - 24px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid var(--student-sidebar-border);
+    border-radius: var(--student-sidebar-radius);
+    background: var(--student-sidebar-bg);
+    color: var(--student-sidebar-text);
+    box-shadow: 0 12px 32px var(--student-sidebar-shadow), inset 0 1px 0 var(--student-sidebar-border);
+    font: 500 14px/1.55 var(--student-sidebar-font);
+    z-index: 40;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: center;
+    padding: 18px;
+    text-align: center;
+    color: var(--student-sidebar-text);
+    font-family: var(--student-sidebar-font);
+    border-radius: var(--student-sidebar-radius) var(--student-sidebar-radius) 0 0;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-seal {
+    width: 114px;
+    height: 114px;
+    margin: 0 0 8px;
+    background-position: center;
+    background-size: contain;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-university,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-university strong {
+    font: 700 20px/1.2 var(--student-sidebar-font);
+    letter-spacing: -.3px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-university br { display: initial; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-brand-subtitle {
+    margin: 6px 0 0;
+    font: 400 14px/20px var(--student-sidebar-font);
+    color: var(--student-sidebar-muted);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+    gap: 0;
+    margin: 0;
+    padding: 0 13px 12px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--student-sidebar-muted) var(--student-sidebar-bg);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav :is(a, button) {
+    min-height: 42px;
+    margin: 3px 0;
+    padding: 9px 12px;
+    gap: 11px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--student-sidebar-text);
+    font: 500 15px/1.4 var(--student-sidebar-font);
+    box-shadow: none;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav :is(a, button):hover {
+    background: var(--student-sidebar-hover);
+    border-color: var(--student-sidebar-divider);
+    color: var(--student-sidebar-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav :is(a, button):is(.is-active, [aria-current="page"]) {
+    background: var(--student-sidebar-text);
+    border-color: var(--student-sidebar-border);
+    color: var(--student-sidebar-bg);
+    box-shadow: 0 4px 12px var(--student-sidebar-shadow);
+    font-weight: 500;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav .icon {
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.6;
+    color: inherit;
+    flex-shrink: 0;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-logout {
+    flex-shrink: 0;
+    min-height: 66px;
+    margin: 0;
+    padding: 14px 18px;
+    gap: 10px;
+    border: 0;
+    border-top: 1px solid var(--student-sidebar-divider);
+    border-radius: 0 0 var(--student-sidebar-radius) var(--student-sidebar-radius);
+    background: transparent;
+    color: var(--student-sidebar-text);
+    font: 500 14px/1.4 var(--student-sidebar-font);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-logout:hover { background: var(--student-sidebar-hover); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-logout .icon { width: 19px; height: 19px; stroke-width: 1.6; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar-quote { display: none; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar :is(a, button):focus-visible {
+    outline: 2px solid var(--cfo-yellow);
+    outline-offset: -3px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav-hidden .dash-sidebar {
+    transform: translateX(calc(-100% - 28px));
+  }
+}
+@media screen and (max-width: 1100px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar {
+    width: min(290px, calc(100vw - 36px));
+    transform: translateX(calc(-100% - 28px));
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav-open .dash-sidebar { transform: translateX(0); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-brand { padding-inline: 42px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar-close {
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--student-sidebar-text);
+    border-radius: 50%;
+    background: var(--student-sidebar-bg);
+    color: var(--student-sidebar-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-sidebar-close:hover { background: var(--cfo-navy-hover); }
+}
+@media screen and (max-height: 900px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-seal { width: 76px; height: 76px; }
+}
+@media screen and (max-height: 720px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-brand { padding-top: 14px; padding-bottom: 12px; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-logout { min-height: 58px; padding-top: 10px; padding-bottom: 10px; }
+}
+@media screen and (max-height: 500px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-seal { width: 48px; height: 48px; }
+}
+@media screen and (prefers-reduced-motion: reduce) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav :is(a, button) { transition: none; }
+}
+
+/* Align the shared top banner with the content inside the page container. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar {
+    box-sizing: border-box;
+    width: calc(100% - 36px);
+    max-width: 1564px;
+    margin: 14px auto 0;
+    top: 14px;
+    border: 1px solid var(--cfo-navy-hover);
+    border-radius: 9px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content {
+    min-height: calc(100vh - 66px);
+    min-height: calc(100dvh - 66px);
+  }
+}
+@media screen and (max-width: 700px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar {
+    width: calc(100% - 16px);
+    margin-top: 10px;
+    top: 10px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-content {
+    min-height: calc(100vh - 62px);
+    min-height: calc(100dvh - 62px);
+  }
+}
+
+/* Use the admin's campus photo behind every student route. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) {
+    --st-background-image: url("../../images/admin-campus-bg.png");
+    --st-background-position: center;
+    --st-background-fallback: var(--cfo-navy);
+    position: relative;
+    isolation: isolate;
+    background: transparent;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell)::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    height: 100vh;
+    height: 100dvh;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--st-background-fallback);
+    background-image: linear-gradient(rgba(4,27,49,.88),rgba(4,27,49,.88)), var(--st-background-image);
+    background-size: cover;
+    background-position: var(--st-background-position);
+    background-repeat: no-repeat;
+  }
+}
+@media screen and (max-width: 700px) {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) {
+    --st-background-position: 70% center;
+  }
+}
+
+/* Read-only submitted registration. The editable registration form is unchanged. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration {
+    --submitted-accent: var(--st-blue);
+    padding: 20px;
+    background: var(--cfo-panel);
+    color: var(--st-text);
+    border: 1px solid var(--st-line);
+    border-radius: 12px;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-header {
+    padding: 20px;
+    margin-bottom: 18px;
+    background: linear-gradient(100deg, var(--st-blue), var(--cfo-navy-hover));
+    border-radius: 9px;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-header h1 {
+    margin: 0;
+    color: var(--st-text);
+    font: bold 24px/1.25 Arial, sans-serif;
+    overflow-wrap: anywhere;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-header h1:focus { outline: none; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 12px 0 8px;
+    color: var(--st-text);
+    font-size: 13px;
+    font-weight: bold;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-note {
+    margin: 0;
+    color: var(--st-text);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration :is(.primary, .outline) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 10px 14px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-overview,
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-information {
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-overview { margin-bottom: 18px; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-overview.has-receipt {
+    grid-template-columns: minmax(0, 1.65fr) minmax(260px, 1fr);
+    align-items: start;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-information {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration :is(.submitted-registration-card, .recollection-preview-column) {
+    min-width: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    background: var(--st-panel);
+    border: 1px solid var(--st-line);
+    border-radius: 9px;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration :is(.submitted-registration-card, .recollection-preview-column) > h2 {
+    margin: 0;
+    padding: 14px 16px;
+    border-left: 4px solid var(--submitted-accent);
+    border-bottom: 1px solid var(--st-line);
+    background: var(--st-navy);
+    color: var(--st-text);
+    font: bold 15px/1.4 Arial, sans-serif;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-details:nth-child(even) { --submitted-accent: var(--st-green); }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-details.wide { grid-column: 1 / -1; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration dl { margin: 0; padding: 6px 16px; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration dt {
+    color: var(--st-muted);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration dd {
+    min-width: 0;
+    margin: 0;
+    color: var(--st-text);
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-review-row {
+    display: grid;
+    grid-template-columns: minmax(125px, .85fr) minmax(0, 1.15fr);
+    align-items: baseline;
+    gap: 14px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--st-line);
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-review-row:last-child { border-bottom: 0; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-details.wide dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-detail {
+    min-width: 0;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--st-line);
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-detail dt { margin-bottom: 4px; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-detail:last-child,
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-details.wide .submitted-registration-detail:nth-last-child(2) { border-bottom: 0; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border: 1px solid var(--st-line);
+    border-radius: 20px;
+    background: var(--st-navy);
+    color: var(--st-text);
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1.4;
+    white-space: normal;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-badge[data-status="Pending"] {
+    background: var(--st-yellow);
+    color: var(--cfo-navy);
+    border-color: var(--st-yellow);
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-badge[data-status="Approved"] {
+    background: var(--cfo-success);
+    border-color: var(--st-green);
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-badge[data-status="Rejected"] {
+    background: var(--cfo-danger);
+    color: var(--cfo-error-text);
+    border-color: var(--cfo-danger);
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-receipt-action { margin: 0; padding: 10px 16px 16px; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration .recollection-receipt-thumb {
+    width: calc(100% - 32px);
+    height: 220px;
+    margin: 16px 16px 12px;
+    padding: 8px;
+    background: var(--st-navy);
+    border-color: var(--st-line);
+    border-radius: 7px;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration .recollection-file-name {
+    margin: 0 16px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration .recollection-file-name a { color: var(--st-text); }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration .recollection-receipt-status {
+    margin: 0 16px 16px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+@media screen and (max-width: 800px) {
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration { padding: 12px; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-header { padding: 16px; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-header h1 { font-size: 20px; }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-overview.has-receipt,
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-information { grid-template-columns: minmax(0, 1fr); }
+}
+@media screen and (max-width: 600px) {
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-details.wide dl { grid-template-columns: minmax(0, 1fr); }
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-details.wide .submitted-registration-detail:nth-last-child(2) { border-bottom: 1px solid var(--st-line); }
+}
+@media screen and (max-width: 480px) {
+  body.dashboard-mode:not(.admin-mode) #recollection-root .submitted-registration-review-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5px;
+  }
+}
+
+/* Student dropdowns and filter controls use the shared admin control palette. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) {
+    --st-filter-background: var(--cfo-navy);
+    --st-filter-text: var(--cfo-text);
+    --st-filter-border: var(--cfo-border);
+    --st-filter-muted: var(--cfo-text-muted);
+    --st-filter-hover: var(--cfo-navy-hover);
+    --st-filter-hover-border: var(--cfo-border);
+    --st-filter-focus: var(--cfo-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #app .dash-content :is(select, input[type="search"], .sp .filters input:not([type="checkbox"]):not([type="radio"]), .student-change-tools input, .cfo-search input) {
+    color-scheme: dark;
+    background: var(--st-filter-background);
+    color: var(--st-filter-text);
+    border-color: var(--st-filter-border);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #app .dash-content :is(input[type="search"], .sp .filters input, .student-change-tools input, .cfo-search input)::placeholder {
+    color: var(--st-filter-muted);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #app .dash-content :is(.recollection-field select, .recollection-academic-field select):has(option:checked[value=""]) {
+    color: var(--st-filter-muted);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #app .dash-content :is(select, input[type="search"], .sp .filters input, .student-change-tools input, .cfo-search input):disabled {
+    color: var(--st-filter-muted);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #app .dash-content :is(.sp .filters, .student-change-tools, .cfo-search) :is(button, .btn):not(.primary, .soft, .danger) {
+    background: var(--st-filter-background);
+    color: var(--st-filter-text);
+    border-color: var(--st-filter-border);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #app .dash-content :is(.sp .filters, .student-change-tools, .cfo-search) :is(button, .btn):not(.primary, .soft, .danger):hover:not(:disabled) {
+    background: var(--st-filter-hover);
+    border-color: var(--st-filter-hover-border);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #app .dash-content :is(select, input[type="search"], .sp .filters input, .student-change-tools input, .cfo-search input, .sp .filters button, .student-change-tools button, .cfo-search button):focus-visible {
+    outline: 3px solid var(--st-filter-focus);
+    outline-offset: 3px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #app .dash-content :is(select, input[type="search"], .sp .filters input, .student-change-tools input, .cfo-search input)[aria-invalid="true"] {
+    border-color: var(--cfo-danger);
+  }
+}
+
+/* Match the schedule change form's two controls to the admin input colors. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #cfo-change-form :is(#change-current-schedule, #change-reason) {
+    color-scheme: dark;
+    background: var(--st-filter-background);
+    color: var(--st-filter-text);
+    border-color: var(--st-filter-border);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #cfo-change-form #change-reason::placeholder,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #cfo-change-form :is(#change-current-schedule, #change-reason):disabled {
+    color: var(--st-filter-muted);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #cfo-change-form #change-reason:focus-visible {
+    outline: 3px solid var(--st-filter-focus);
+    outline-offset: 3px;
+    border-color: var(--st-filter-border);
+    box-shadow: none;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) #cfo-change-form #change-reason[aria-invalid="true"] {
+    border-color: var(--cfo-danger);
+  }
+}
+
+/* Shared admin header appearance, retaining every student header dimension. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar {
+    --st-header-background: var(--cfo-yellow);
+    --st-header-hover: var(--cfo-yellow);
+    --st-header-ink: var(--student-sidebar-bg, var(--cfo-navy));
+    background: var(--st-header-background);
+    color: var(--st-header-ink);
+    border-color: var(--st-header-ink);
+    border-radius: 16px;
+    box-shadow: 0 2px 4px rgba(4,27,49, .35), 0 16px 40px rgba(4,27,49, .5);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar .dash-icon-button {
+    background: var(--st-header-background);
+    color: var(--st-header-ink);
+    border-color: var(--st-header-ink);
+    border-radius: 10px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar .dash-profile-button {
+    background: transparent;
+    color: var(--st-header-ink);
+    border-radius: 10px;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar .dash-profile-name,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar .dash-profile-name :is(strong, span) {
+    color: var(--st-header-ink);
+    opacity: 1;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar .dash-icon-button .icon,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar .dash-profile-button > .icon {
+    color: var(--st-header-ink);
+    stroke: currentColor;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar .dash-avatar {
+    background: var(--st-header-ink);
+    color: var(--st-header-background);
+    font-weight: 700;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar :is(.dash-icon-button, .dash-profile-button):hover:not(:disabled) {
+    background: var(--st-header-hover);
+    color: var(--st-header-ink);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar :is(.dash-icon-button, .dash-profile-button):focus-visible {
+    outline-color: var(--st-header-ink);
+  }
+}
+
+/* Palette roles retain all current student dimensions and page behavior. */
+@media screen {
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav :is(a,button):hover,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav :is(a,button):is(.is-active,[aria-current=page]) {
+    background: var(--cfo-navy-hover); color: var(--cfo-text); border-color: var(--cfo-border);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-nav :is(a,button):is(.is-active,[aria-current=page]) { box-shadow: inset 3px 0 var(--cfo-yellow); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-welcome,.recollection-header,.schedule-change-heading,.sp .heading,.cert-heading,.submitted-registration-header) {
+    background: var(--cfo-navy); color: var(--cfo-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-greeting,.sp .eyebrow,.student-change-eyebrow) { color: var(--cfo-text-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-status-mark:not(.is-calendar) { color: var(--cfo-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-content,dialog,.sp .modal) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=hidden]),select,textarea):not(.certificate *) {
+    background: var(--cfo-navy); color: var(--cfo-text); border-color: var(--cfo-border); color-scheme: dark;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(input,textarea)::placeholder { color: var(--cfo-text-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(input,select,textarea):disabled { color: var(--cfo-text-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(input,select,textarea)[aria-invalid=true] { border-color: var(--cfo-error-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .input-wrap > .icon,
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .reveal { color: var(--cfo-text-muted); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.primary,.sp .btn.primary,.dash-quick-grid .dash-green):not(.certificate *) {
+    background: var(--cfo-yellow); color: var(--cfo-navy); border-color: var(--cfo-yellow);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .btn.soft,.student-change-actions button,#receipt-replace,.dash-quick-grid .dash-blue,.dash-quick-grid .dash-purple,.dash-quick-grid .dash-gold) {
+    background: var(--cfo-navy-hover); color: var(--cfo-text); border-color: var(--cfo-info);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(#receipt-remove,#confirmLogout,.sp .btn.danger,.dash-quick-grid .dash-rose) {
+    background: var(--cfo-danger); color: var(--cfo-text); border-color: var(--cfo-danger);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .status,.cert-status,.student-change-status,.recollection-receipt-status,.sp .new-tag) {
+    background: var(--cfo-navy-hover); color: var(--cfo-text);
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .st-green,.cert-status,.student-change-status.approved,.student-change-status[data-status=Approved],.submitted-registration-badge[data-status=Approved],.sp .new-tag) {
+    background: var(--cfo-success) !important; color: var(--cfo-navy) !important; border-color: var(--cfo-success) !important;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.student-change-status.pending,.student-change-status[data-status=Pending],.recollection-receipt-status.has-receipt,.submitted-registration-badge[data-status=Pending]) {
+    background: var(--cfo-yellow) !important; color: var(--cfo-navy) !important; border-color: var(--cfo-yellow) !important;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .st-red,.student-change-status.rejected,.student-change-status[data-status="Not Approved"],.submitted-registration-badge[data-status=Rejected]) {
+    background: var(--cfo-danger) !important; color: var(--cfo-text) !important; border-color: var(--cfo-danger) !important;
+  }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp th,.student-change-table th) { background: var(--cfo-navy); color: var(--cfo-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp table,.student-change-table) { background: var(--cfo-panel); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp tbody tr:hover,.student-change-table tbody tr:hover) { background: var(--cfo-navy-hover); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.sp .announcement-item .help,.dash-announcement a) { color: var(--cfo-text) !important; }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.error,.cfo-required,.cfo-form-error) { color: var(--cfo-error-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .cfo-form-error { background: var(--cfo-panel); border-color: var(--cfo-error-text); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) :is(.dash-shell,.sp,dialog) :is(button,a,input,select,textarea):focus-visible { outline-color: var(--cfo-info); }
+  body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .dash-topbar :is(button,a):focus-visible { outline-color: var(--cfo-navy); }
+}

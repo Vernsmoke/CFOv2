@@ -1,0 +1,45 @@
+    function connectedRegistration(id) {
+      const r=cfoState.registrations.find(r=>String(r.id)===String(id));
+      const schedules=cfoState.schedules.filter(s=>s.active&&s.year===r.year);
+      showDialog('Registration review',details([['Student',r.user.name],['Year',r.year],['Status',r.status],['Receipt',r.receipt_status],['Attendance',r.attendance],...Object.entries(r.details)])+`<form id="review-registration">${selectField('Registration status','status',['Pending','Approved','Rejected'],r.status)}${field('Rejection reason','rejection_reason',r.rejection_reason||'')}<label class="field">Assign / reassign schedule<select name="schedule_id"><option value="">Keep current assignment</option>${schedules.map(s=>`<option value="${s.id}">${escapeHTML(s.title+' · '+s.date+' · '+s.registrations_count+'/'+s.capacity)}</option>`).join('')}</select></label><div class="form-actions"><button type="submit" class="btn primary">Save review</button></div></form>`,'',true);
+      $('#review-registration').onsubmit=e=>{e.preventDefault();const values=Object.fromEntries(new FormData(e.target));if(!values.schedule_id)delete values.schedule_id;saveConnected('/api/admin/registrations/'+id,'PATCH',values);};
+    }
+    function connectedCertificates() {
+      $('#page-actions').innerHTML=link('Certificate template','admin-certificate-template','primary');
+      connectedGrid({key:'certificates',title:'Certificate eligibility and issuance',rows:()=>cfoState.registrations,columns:[{label:'Student',html:connectedStudent},{label:'Year',get:r=>r.year},{label:'Attendance',get:r=>r.attendance},{label:'Verified',get:r=>r.attendance_verified_at?'Yes':'No'},{label:'Certificate',get:r=>r.certificate?.certificate_number||'Not issued'}],rowActions:r=>r.certificate?`<a class="btn compact" href="/certificates/${r.certificate.id}" target="_blank" rel="noopener">View / Print</a><a class="btn compact" href="/certificates/${r.certificate.id}?download=1">Download SVG</a>`:r.attendance==='Present'&&r.attendance_verified_at?button('Generate certificate','connected-certificate',r.id,'compact primary'):'Present and verified attendance required'});
+    }
+    function connectedTemplate() {
+      const t=cfoState.template;
+      $('#page-actions').innerHTML=link('Certificates','admin-certificate');
+      $('#page').innerHTML=panel('Certificate template',`<form id="certificate-template-form"><div class="form-grid">${field('Title','title',t.title,'text','required maxlength=190')}${field('Description','description',t.description,'text','required maxlength=500')}${field('Signatory','signatory',t.signatory,'text','required maxlength=190')}<label class="field">Background template (JPG/PNG, optional)<input type="file" name="image" accept="image/jpeg,image/png"></label><label class="check-label"><input type="checkbox" name="remove_image"> Remove background from future certificates</label></div><p>Changes apply to future certificates. Issued certificates retain their original details.</p><div class="form-actions"><button type="submit" class="btn primary">Save active template</button></div></form>`);
+      $('#certificate-template-form').onsubmit=e=>{e.preventDefault();const form=new FormData(e.target);form.set('remove_image',e.target.elements.remove_image.checked?'1':'0');if(!e.target.elements.image.files.length)form.delete('image');saveConnected('/api/admin/settings/certificate','POST',form);};
+    }
+    function connectedAcademic() {
+      connectedGrid({key:'academic',title:'Course, year level and section options',rows:()=>cfoState.academic_options,filters:[objectFilter('type','Type',cfoState.academic_options)],columns:[{label:'Type',get:r=>r.type},{label:'Name',get:r=>r.name}],rowActions:r=>button('Delete unused','connected-academic-delete',r.id,'compact danger')});
+      $('#page').insertAdjacentHTML('afterbegin',panel('Add reference option',`<form id="academic-form"><div class="form-grid">${selectField('Type','type',['course','year_level','section'],'course')}${field('Name','name','','text','required maxlength=190')}</div><div class="form-actions"><button class="btn primary" type="submit">Add option</button></div></form>`));
+      $('#academic-form').onsubmit=e=>{e.preventDefault();saveConnected('/api/admin/academic-options','POST',Object.fromEntries(new FormData(e.target)));};
+    }
+    function connectedRecovery() {
+      connectedGrid({key:'recovery',title:'Office password recovery',rows:()=>cfoState.resets,filters:[objectFilter('status','Status',cfoState.resets)],columns:[{label:'Name',get:r=>r.user.name},{label:'Registered email',get:r=>r.user.email},{label:'System username',get:r=>r.user.system_username},{label:'Requested',get:r=>r.created_at},{label:'Status',get:r=>r.status},{label:'Reviewed',get:r=>r.reviewed_at||'—'},{label:'Completed',get:r=>r.used_at||'—'}],rowActions:r=>r.status==='Pending'?button('Verify identity / Review','connected-recovery',r.id,'compact'):''});
+    }
+    function connectedRecoveryReview(id) {
+      const r=cfoState.resets.find(r=>String(r.id)===id);
+      showDialog('Office identity verification',details([['Name',r.user.name],['Student ID',r.user.student_id],['Email',r.user.email]])+`<form id="recovery-review">${selectField('Decision','status',['Approved','Rejected'],'Approved')}<label class="check-label"><input type="checkbox" name="identity_verified"> I verified this person’s identity in the office</label><p>After approval, the requesting browser can display a temporary password once. It expires after one minute.</p><div class="form-actions"><button class="btn primary" type="submit">Save decision</button></div></form>`,'');
+      $('#recovery-review').onsubmit=e=>{e.preventDefault();const values=Object.fromEntries(new FormData(e.target));if(values.status==='Approved')values.identity_verified=e.target.elements.identity_verified.checked;else delete values.identity_verified;saveConnected('/api/admin/password-resets/'+id,'PATCH',values);};
+    }
+    function connectedActivity() {
+      connectedGrid({key:'activity',title:'Activity log (latest 200)',rows:()=>cfoState.logs,columns:[{label:'Date',get:r=>r.created_at},{label:'Actor',get:r=>r.actor||'Public / system'},{label:'Action',get:r=>r.action},{label:'Record',get:r=>r.record_type+' '+(r.record_id||'')}]});
+    }
+    function connectedOffice() {
+      const r=cfoState.settings;
+      $('#page').innerHTML=panel('Office information',`<form id="office-form"><div class="form-grid">${field('Office name','name',r.name,'text','required')}${field('School','school',r.school,'text','required')}${field('Address','address',r.address||'')}${field('Office head','head',r.head||'')}</div><div class="form-actions">${link('Profile','admin-settings')}<button type="submit" class="btn primary">Save office information</button></div></form>`);
+      $('#office-form').onsubmit=e=>{e.preventDefault();saveConnected('/api/admin/settings/office','POST',Object.fromEntries(new FormData(e.target)));};
+    }
+    Object.assign(actions,{
+      'connected-delete-schedule':id=>{showDialog('Delete unused schedule?','<p>Schedules linked to registrations or requests cannot be deleted.</p>',button('Cancel','close-dialog')+button('Delete','connected-delete-schedule-confirm',id,'danger'));},
+      'connected-delete-schedule-confirm':id=>saveConnected('/api/admin/schedules/'+id,'DELETE'),
+      'connected-certificate':id=>saveConnected('/api/admin/registrations/'+id+'/certificate','POST',{}),
+      'connected-academic-delete':id=>showDialog('Delete unused option?','<p>Options used by profiles cannot be removed.</p>',button('Cancel','close-dialog')+button('Delete','connected-academic-delete-confirm',id,'danger')),
+      'connected-academic-delete-confirm':id=>saveConnected('/api/admin/academic-options/'+id,'DELETE'),
+      'connected-recovery':connectedRecoveryReview
+    });

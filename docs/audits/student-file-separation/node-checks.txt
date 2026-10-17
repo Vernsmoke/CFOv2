@@ -1,0 +1,22 @@
+PASS: student-certificates-state.cjs
+student certificates state: ok
+student certificates extended checks: ok
+PASS: student-change-request-state.cjs
+PASS: real student request page, read-only assignment, Unicode 10–1000 validation/counter, captured reason-only confirmation, busy/error/draft/navigation guards, successful mutations despite refresh failure, real-status stats, newest/search/filter/empty table, escaped details, queued native dialog focus/Esc/backdrop/scroll, Pending-only cancellation and demo path.
+PASS: student-notification-state.cjs
+PASS: dirty-form badge refresh, displayed-ID acknowledgement, new arrival preservation, stale-read protection and dropdown refresh guard.
+PASS: student-pages-state.cjs
+History: archive filtering, search/year/attendance, live refresh, details, full record, certificates and modal cleanup passed.
+Announcements: deep link, search, sort, selection, Close, escaping and persistent filters passed.
+My Profile: summary, email masking, edit review, save/error retention, refresh, password redirect and cleanup passed.
+PASS: student-registration-options-state.cjs
+PASS: all admin courses, unrestricted standard academic choices, missing-schedule inline and submit gates, case normalization, dirty live course updates, preserved receipt/consent, production rendering, and confirmed scalar submission.
+PASS: student-registration-state.cjs
+PASS: latest prefill, configured academic options and legacy drafts, mobile-number conversion/max11/fake/equality checks, phone input, inline validation, required Religion/disabled placeholder/error clearing, consent/receipt reset, unchanged source records, edit/retry preload, cancel and confirm.
+PASS: student-security-state.cjs
+PASS: default masking, input and display toggles, unchanged/edited email round-trip, readonly login address, and escaped schedule feedback.
+PASS: filter-dropdowns-state.cjs
+PASS: downward positioning, mobile bounds, live options, disabled choices, native input/change events, and all portal entry points.
+PASS: yearly-history-state.cjs
+PASS: History visible-column substring search with 300ms debounce, cancellation/stale guards, exact date AND filtering, accessible independent clears, counts/empty states, snapshots/live state, pagination/sort/CSV/details, immutable archives, unaffected other grids and year rollover.
+Node checks: 9 passed, 0 failed.

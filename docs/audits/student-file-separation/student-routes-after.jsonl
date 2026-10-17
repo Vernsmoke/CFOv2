@@ -1,0 +1,10 @@
+{"domain":null,"method":"POST","uri":"api/change-requests","name":null,"middleware":["web","auth","cfo","cfo:Student"]}
+{"domain":null,"method":"PATCH","uri":"api/change-requests/{change}/cancel","name":null,"middleware":["web","auth","cfo","cfo:Student"]}
+{"domain":null,"method":"POST","uri":"api/registrations","name":null,"middleware":["web","auth","cfo","cfo:Student"]}
+{"domain":null,"method":"PATCH","uri":"api/registrations/{registration}","name":null,"middleware":["web","auth","cfo","cfo:Student"]}
+{"domain":null,"method":"POST","uri":"api/registrations/{registration}/receipt","name":null,"middleware":["web","auth","cfo","cfo:Student"]}
+{"domain":null,"method":"POST","uri":"api/registrations/{registration}/retry","name":null,"middleware":["web","auth","cfo","cfo:Student"]}
+{"domain":null,"method":"POST","uri":"api/registrations/{registration}/schedule","name":null,"middleware":["web","auth","cfo","cfo:Student"]}
+{"domain":null,"method":"GET|HEAD","uri":"api/student","name":null,"middleware":["web","auth","cfo","cfo:Student"]}
+{"domain":null,"method":"POST","uri":"api/student/notifications/viewed","name":null,"middleware":["web","auth","cfo","cfo:Student"]}
+{"domain":null,"method":"GET|HEAD","uri":"student","name":null,"middleware":["web","auth","cfo","cfo:Student"]}

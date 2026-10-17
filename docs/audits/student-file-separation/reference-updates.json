@@ -1,0 +1,332 @@
+[
+  {
+    "file": "routes/web.php",
+    "before": "    Route::middleware('cfo:Student')->group(function () {\n        Route::get('/student', [PageController::class, 'page']);\n        Route::get('/api/student', [StudentController::class, 'state']);\n        Route::post('/api/student/notifications/viewed', [StudentController::class, 'viewNotifications']);\n        Route::post('/api/registrations', [StudentController::class, 'register']);\n        Route::post('/api/registrations/{registration}/retry', [StudentController::class, 'retryRegistration']);\n        Route::patch('/api/registrations/{registration}', [StudentController::class, 'updateRegistration']);\n        Route::post('/api/registrations/{registration}/receipt', [StudentController::class, 'receipt']);\n        Route::post('/api/change-requests', [StudentController::class, 'change']);\n        Route::patch('/api/change-requests/{change}/cancel', [StudentController::class, 'cancelChange']);\n        Route::post('/api/registrations/{registration}/schedule', [StudentController::class, 'chooseSchedule']);\n    });\n",
+    "after": "",
+    "count": 1
+  },
+  {
+    "file": "routes/web.php",
+    "before": "Route::redirect('/student-panel.html', '/student');\n",
+    "after": "",
+    "count": 1
+  },
+  {
+    "file": "routes/web.php",
+    "before": "{AdminController, AuthController, LiveController, PageController, StudentController}",
+    "after": "{AdminController, AuthController, LiveController, PageController}",
+    "count": 1
+  },
+  {
+    "file": "bootstrap/app.php",
+    "before": "        web: __DIR__.'/../routes/web.php',",
+    "after": "        web: [__DIR__.'/../routes/web.php', __DIR__.'/../routes/student.php'],",
+    "count": 1
+  },
+  {
+    "file": "app/Http/Controllers/PageController.php",
+    "before": "? 'admin' : 'student',",
+    "after": "? 'admin' : 'student.index',",
+    "count": 1
+  },
+  {
+    "file": "app/Http/Controllers/Student/StudentController.php",
+    "before": "namespace App\\Http\\Controllers;",
+    "after": "namespace App\\Http\\Controllers\\Student;\n\nuse App\\Http\\Controllers\\Controller;",
+    "count": 1
+  },
+  {
+    "file": "app/Http/Controllers/Student/StudentController.php",
+    "before": "    public function state(Request $request)",
+    "after": "    public function page(Request $request)\n    {\n        return response()->view('student.index', ['cfoBackend' => [\n            'user' => $request->user(),\n            'csrf_token' => csrf_token(),\n            'live_transport' => config('cfo.live_transport'),\n        ]])->header('Cache-Control', 'no-store');\n    }\n\n    public function state(Request $request)",
+    "count": 1
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "student-pages.js",
+    "after": "student/student-pages.js",
+    "count": 3
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "student-security.js",
+    "after": "student/student-security.js",
+    "count": 1
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "student-receipts.js",
+    "after": "student/student-receipts.js",
+    "count": 2
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "student-certificates.js",
+    "after": "student/student-certificates.js",
+    "count": 2
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "student-pages.css",
+    "after": "student/student-pages.css",
+    "count": 2
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "student-security.css",
+    "after": "student/student-security.css",
+    "count": 1
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "student-certificates.css",
+    "after": "student/student-certificates.css",
+    "count": 2
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "student-dashboard.css",
+    "after": "student/student-dashboard.css",
+    "count": 2
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "student-theme.css",
+    "after": "student/student-theme.css",
+    "count": 2
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "asset('images/dashboard-reference.webp')",
+    "after": "asset('student/images/dashboard-reference.webp')",
+    "count": 1
+  },
+  {
+    "file": "public/assets/student/student-theme.css",
+    "before": "url(\"./images/admin-campus-bg.png\")",
+    "after": "url(\"../images/admin-campus-bg.png\")",
+    "count": 1
+  },
+  {
+    "file": "public/assets/student/student-pages.js",
+    "before": "student.blade.php only calls",
+    "after": "student/index.blade.php only calls",
+    "count": 1
+  },
+  {
+    "file": "public/assets/student/student-certificates.js",
+    "before": "student.blade.php only calls",
+    "after": "student/index.blade.php only calls",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/filter-dropdowns-state.cjs",
+    "before": "resources/views/student.blade.php",
+    "after": "resources/views/student/index.blade.php",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-certificates-state.cjs",
+    "before": "resources/views/student.blade.php",
+    "after": "resources/views/student/index.blade.php",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-certificates-state.cjs",
+    "before": "public/student-certificates.js",
+    "after": "public/student/student-certificates.js",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-change-request-state.cjs",
+    "before": "resources/views/student.blade.php",
+    "after": "resources/views/student/index.blade.php",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-notification-state.cjs",
+    "before": "resources/views/student.blade.php",
+    "after": "resources/views/student/index.blade.php",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-pages-state.cjs",
+    "before": "public/student-pages.js",
+    "after": "public/student/student-pages.js",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-registration-options-state.cjs",
+    "before": "resources/views/student.blade.php",
+    "after": "resources/views/student/index.blade.php",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-registration-state.cjs",
+    "before": "resources/views/student.blade.php",
+    "after": "resources/views/student/index.blade.php",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-registration-state.cjs",
+    "before": "public/student-security.js",
+    "after": "public/student/student-security.js",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-registration-state.cjs",
+    "before": "public/student-receipts.js",
+    "after": "public/student/student-receipts.js",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-security-state.cjs",
+    "before": "public/student-security.js",
+    "after": "public/student/student-security.js",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/yearly-history-state.cjs",
+    "before": "resources/views/student.blade.php",
+    "after": "resources/views/student/index.blade.php",
+    "count": 1
+  },
+  {
+    "file": "tests/Feature/RenderedPageScriptTest.php",
+    "before": "'/student-certificates.js",
+    "after": "'/student/student-certificates.js",
+    "count": 1
+  },
+  {
+    "file": "tests/Feature/RenderedPageScriptTest.php",
+    "before": "public_path('student-certificates.js')",
+    "after": "public_path('student/student-certificates.js')",
+    "count": 1
+  },
+  {
+    "file": "tests/Feature/RenderedPageScriptTest.php",
+    "before": "'/student-certificates.css",
+    "after": "'/student/student-certificates.css",
+    "count": 1
+  },
+  {
+    "file": "tests/Feature/RenderedPageScriptTest.php",
+    "before": "public_path('student-certificates.css')",
+    "after": "public_path('student/student-certificates.css')",
+    "count": 1
+  },
+  {
+    "file": "tests/Feature/StudentRegistrationEditTest.php",
+    "before": "'/student-receipts.js",
+    "after": "'/student/student-receipts.js",
+    "count": 1
+  },
+  {
+    "file": "tests/Feature/StudentRegistrationEditTest.php",
+    "before": "public_path('student-receipts.js')",
+    "after": "public_path('student/student-receipts.js')",
+    "count": 1
+  },
+  {
+    "file": "tests/Feature/StudentPagesTest.php",
+    "before": "'student-pages.'",
+    "after": "'student/student-pages.'",
+    "count": 2
+  },
+  {
+    "file": "tests/Browser/student-image-assets-state.cjs",
+    "before": "pathname.startsWith('/images/')",
+    "after": "pathname.startsWith('/student/images/')",
+    "count": 1
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "'student/student-",
+    "after": "'assets/student/student-",
+    "count": 14
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "\"/student/student-",
+    "after": "\"/assets/student/student-",
+    "count": 2
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "public/student/student-pages.js",
+    "after": "public/assets/student/student-pages.js",
+    "count": 1
+  },
+  {
+    "file": "resources/views/student/index.blade.php",
+    "before": "asset('student/images/dashboard-reference.webp')",
+    "after": "asset('assets/student/images/dashboard-reference.webp')",
+    "count": 1
+  },
+  {
+    "file": "public/assets/student/student-theme.css",
+    "before": "url(\"../images/admin-campus-bg.png\")",
+    "after": "url(\"../../images/admin-campus-bg.png\")",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-certificates-state.cjs",
+    "before": "public/student/",
+    "after": "public/assets/student/",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-pages-state.cjs",
+    "before": "public/student/",
+    "after": "public/assets/student/",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-registration-state.cjs",
+    "before": "public/student/",
+    "after": "public/assets/student/",
+    "count": 2
+  },
+  {
+    "file": "tests/Browser/student-security-state.cjs",
+    "before": "public/student/",
+    "after": "public/assets/student/",
+    "count": 1
+  },
+  {
+    "file": "tests/Feature/RenderedPageScriptTest.php",
+    "before": "'student/student-",
+    "after": "'assets/student/student-",
+    "count": 2
+  },
+  {
+    "file": "tests/Feature/RenderedPageScriptTest.php",
+    "before": "'/student/student-",
+    "after": "'/assets/student/student-",
+    "count": 2
+  },
+  {
+    "file": "tests/Feature/StudentPagesTest.php",
+    "before": "'student/student-",
+    "after": "'assets/student/student-",
+    "count": 2
+  },
+  {
+    "file": "tests/Feature/StudentRegistrationEditTest.php",
+    "before": "'student/student-",
+    "after": "'assets/student/student-",
+    "count": 1
+  },
+  {
+    "file": "tests/Feature/StudentRegistrationEditTest.php",
+    "before": "'/student/student-",
+    "after": "'/assets/student/student-",
+    "count": 1
+  },
+  {
+    "file": "tests/Browser/student-image-assets-state.cjs",
+    "before": "pathname.startsWith('/student/images/')",
+    "after": "pathname.startsWith('/assets/student/images/')",
+    "count": 1
+  }
+]

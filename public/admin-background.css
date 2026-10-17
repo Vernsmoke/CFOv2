@@ -1,0 +1,766 @@
+/* Admin layouts only. One shared campus photo covers every admin page;
+   print views and embedded receipt/certificate previews remain excluded. */
+body.admin-background {
+    /* Admin-only palette; shared components retain their default theme. */
+    --admin-sidebar: #133458;
+    --admin-topbar: #FFD444;
+    --admin-content: #3A86FF;
+    --admin-content-text: #0B1B33;
+    --admin-surface: #132B4A;
+    --admin-surface-raised: #1B3A5C;
+    --admin-text: #F2F6FA;
+    --admin-muted: #B8C7D9;
+    --admin-topbar-hover: #FFE58A;
+    --admin-focus: #FFFFFF;
+    --admin-stat-blue: #E8F4FF;
+    --admin-stat-green: #53D6A0;
+    --admin-stat-orange: #FFC15A;
+    --admin-stat-red: #FF8DAB;
+
+    --admin-background-image: url("./images/admin-campus-bg.png");
+    --admin-background-fallback: #f4f7f9;
+    --admin-background-position: center;
+    --admin-background-panel: rgba(255, 255, 255, .96);
+
+    /* Shared containers match Recollection Registrations. */
+    --admin-container-border: #dce5e9;
+    --admin-container-radius: 14px;
+    --admin-card-radius: 12px;
+    --admin-container-shadow: 0 6px 24px #142f4208;
+    --admin-container-gap: 10px;
+    --admin-border-width: 2px;
+    --admin-card-background: #fff;
+    --admin-toolbar-background: #edf4fc;
+
+    /* Preserve the Dashboard's existing text contrast and wallpaper overlay. */
+    --admin-dashboard-title: #142344;
+    --admin-dashboard-secondary: #5B6B7A;
+    --admin-dashboard-overlay: rgba(25, 7, 19, .23);
+
+    /* Existing surface tokens now reference the admin navy palette. */
+    --admin-dashboard-dark-solid: var(--admin-content-text);
+    --admin-dashboard-dark-background: var(--admin-content);
+    --admin-dashboard-dark-card: var(--admin-surface);
+    --admin-dashboard-dark-border: rgba(242, 246, 250, .22);
+    --admin-dashboard-dark-text: var(--admin-text);
+    --admin-dashboard-dark-secondary: var(--admin-muted);
+    --admin-topbar-background: var(--admin-topbar);
+    --admin-topbar-border-width: 1px;
+    --admin-dashboard-dark-accent: #8BE0C7;
+    --admin-dashboard-dark-accent-hover: #B7F4E3;
+    --admin-dashboard-dark-icon-box: var(--admin-surface-raised);
+    --admin-dashboard-dark-control: var(--admin-dashboard-dark-solid);
+    --admin-dashboard-dark-control-border: #8B8B94;
+    --admin-dashboard-dark-control-hover-border: #B6B6C0;
+    --admin-dashboard-dark-control-hover: var(--admin-surface-raised);
+    --admin-dashboard-dark-placeholder: var(--admin-muted);
+    --admin-dashboard-dark-focus: var(--admin-focus);
+    --admin-dashboard-dark-primary: #215C4B;
+    --admin-dashboard-dark-primary-hover: #2B6F5B;
+    --admin-dashboard-dark-table-header: var(--admin-surface-raised);
+    --admin-dashboard-dark-table-hover: var(--admin-surface-raised);
+    --admin-dashboard-dark-shadow: 0 2px 4px rgba(0, 0, 0, .35),
+        0 16px 40px rgba(0, 0, 0, .5);
+    --admin-dark-success-text: #BDF3D8;
+    --admin-dark-success-background: #275344;
+    --admin-dark-success-border: #75CDA6;
+    --admin-dark-danger-text: #FFC0D0;
+    --admin-dark-danger-background: #532B36;
+    --admin-dark-danger-selected: #86384C;
+    --admin-dark-danger-border: #E792AA;
+    --admin-dark-row-highlight: #51432B;
+    /* Resolve the original document ink before main-content overrides it. */
+    --admin-preview-text: var(--ink, #192c3a);
+}
+
+@media screen {
+    html.admin-background-root {
+        background: transparent;
+    }
+
+    body.admin-background {
+        position: relative;
+        isolation: isolate;
+        min-height: 100vh;
+        min-height: 100dvh;
+        background: transparent;
+    }
+
+    /* Fixed to the viewport, outside document flow; never adds scroll width.
+       vh is the fallback; dvh follows the phone browser's changing toolbar. */
+    body.admin-background::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        height: 100vh;
+        height: 100dvh;
+        z-index: -1;
+        pointer-events: none;
+        background-color: var(--admin-background-fallback);
+        background-image: var(--admin-background-image);
+        background-size: cover;
+        background-position: var(--admin-background-position);
+        background-repeat: no-repeat;
+    }
+
+    body.admin-background .shell {
+        min-width: 0;
+        background: transparent;
+    }
+
+    /* Give exposed headings and footer text their own readable surface. */
+    body.admin-background .shell :is(.page-heading, .cfo-breadcrumb, .page-foot) {
+        min-width: 0;
+        padding: 18px 20px;
+        border: 1px solid #dce5e9;
+        border-radius: 12px;
+        background: var(--admin-background-panel);
+    }
+
+    body.admin-background .shell .cfo-breadcrumb {
+        padding: 10px 20px;
+    }
+
+    /* Content surfaces stay opaque. Existing status badges and the actual
+       receipt images/certificate canvases keep their own appearance. */
+    body.admin-background .shell :is(.panel, .metric, .welcome, .group-row,
+        .filters, .table-wrap, .table-scroll, .empty, form, table) {
+        background-color: #fff;
+    }
+
+    body.admin-background .shell :is(.tabs, .recovery-tabs) {
+        padding: 10px;
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    body.admin-background > dialog {
+        background-color: #fff;
+    }
+
+    body.admin-background .toast {
+        border: 1px solid #dce5e9;
+        background: #fff;
+        color: var(--ink, #142344);
+    }
+
+    /* Standalone certificate/receipt pages do not load this stylesheet.
+       Also suppress the image during the admin's embedded preview views. */
+    body.admin-background:has(.template-editor),
+    body.admin-background:has(#receipt-image-dialog[open]),
+    body.admin-background:has(#dialog[open] img[src^="/api/receipts/"]) {
+        --admin-background-image: none;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    body.admin-background {
+        /* Keep the campus statue and building visible in tall phone crops. */
+        --admin-background-position: 70% center;
+    }
+
+    body.admin-background .shell :is(.page-heading, .cfo-breadcrumb, .page-foot) {
+        padding: 14px;
+    }
+
+    body.admin-background .shell .cfo-breadcrumb {
+        padding-block: 10px;
+    }
+}
+
+/* Keep the existing Dashboard text/overlay settings independent of containers. */
+@media screen {
+    /* Preserve the existing exceptions for receipt and template previews. */
+    body.admin-background:has(#main-content > #page > .dashboard-overview):not(:has(
+        .template-editor, #receipt-image-dialog[open], #dialog[open] img[src^="/api/receipts/"]
+    ))::before {
+        background-image: linear-gradient(var(--admin-dashboard-overlay), var(--admin-dashboard-overlay)),
+            var(--admin-background-image);
+    }
+
+    body.admin-background #main-content:has(#page > .dashboard-overview) #page-title,
+    body.admin-background #main-content:has(#page > .dashboard-overview) > .page-heading :is(.eyebrow, p) {
+        color: var(--admin-content-text);
+    }
+
+    body.admin-background #page > .dashboard-overview .metric-top > span:first-child,
+    body.admin-background #page > .dashboard-overview .metric > strong,
+    body.admin-background #page > .dashboard-overview > .panel .panel-head > h2,
+    body.admin-background #page > .dashboard-overview > .panel .detail-list dd {
+        color: var(--admin-dashboard-title);
+    }
+
+    body.admin-background #page > .dashboard-overview .metric > :is(a, p),
+    body.admin-background #page > .dashboard-overview > .panel .detail-list dt,
+    body.admin-background #page > .dashboard-overview > .panel .panel-body > p {
+        color: var(--admin-dashboard-secondary);
+    }
+}
+
+/* The next recollection uses the same course/year groups as the schedule table. */
+@media screen {
+    .dashboard-overview .dashboard-schedule-list { margin: 0; }
+    .dashboard-overview .dashboard-schedule-row {
+        display: grid;
+        grid-template-columns: 112px minmax(0, 1fr);
+        align-items: start;
+        gap: 14px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 13px;
+    }
+    .dashboard-overview .dashboard-schedule-row:first-child { padding-top: 0; }
+    .dashboard-overview .dashboard-schedule-row:last-child { padding-bottom: 0; border-bottom: 0; }
+    .dashboard-overview .dashboard-schedule-row dt { color: var(--admin-dashboard-secondary); }
+    .dashboard-overview .dashboard-schedule-row dd { margin: 0; min-width: 0; color: var(--admin-dashboard-title); font-weight: 600; overflow-wrap: anywhere; }
+    .dashboard-overview .dashboard-schedule-status { display: inline-block; padding: 5px 10px; border-radius: 999px; background: #08bd78; color: #003d2d; font-size: 12px; font-weight: 700; }
+    .dashboard-overview .dashboard-schedule-status.is-closed { background: #ffd8e0; color: #8d3042; }
+}
+@media screen and (max-width: 560px) {
+    .dashboard-overview .dashboard-schedule-row { grid-template-columns: 88px minmax(0, 1fr); gap: 10px; font-size: 12px; }
+}
+
+/* Shared admin content containers. The standalone Registrations layout is the
+   reference and already has these dimensions. Scope the SPA equivalents to
+   its real #page wrapper; navigation, dialogs and certificate canvases retain
+   their own styles. All rules are screen-only so printing stays unchanged. */
+@media screen {
+    body.admin-background #main-content:has(> #page) {
+        width: calc(100% - 32px);
+        max-width: 1620px;
+        min-width: 0;
+        margin: 16px auto;
+        padding: 16px;
+        border: 1px solid var(--admin-container-border);
+        border-radius: var(--admin-container-radius);
+        background: var(--admin-content);
+        box-shadow: var(--admin-container-shadow);
+    }
+
+    body.admin-background #main-content:has(> #page) > .page-heading {
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 0 0 12px;
+        border: 0;
+        border-bottom: 1px solid var(--admin-container-border);
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+    body.admin-background #main-content > .page-heading > div { min-width: 0; }
+    body.admin-background #main-content > .page-heading .eyebrow { margin-bottom: 4px; }
+    body.admin-background #main-content > .page-heading p { margin-top: 4px; }
+
+    body.admin-background #main-content > #page {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--admin-container-gap);
+    }
+    body.admin-background #main-content #page :is(.stack, .split, .group-list,
+        .metrics, .recovery-overview, .dashboard-side, .ce-layout) {
+        gap: var(--admin-container-gap);
+    }
+    body.admin-background #main-content #page .recovery-overview { margin-bottom: 0; }
+    body.admin-background #main-content #page .metrics { grid-auto-rows: 1fr; }
+
+    body.admin-background #main-content #page :is(.panel, .metric, .group-row,
+        .welcome, .recovery-office, .recovery-review-card, .tabs,
+        .recovery-tabs, .ce-panel) {
+        min-width: 0;
+        border: 1px solid var(--admin-container-border);
+        border-radius: var(--admin-card-radius);
+        background: var(--admin-card-background);
+        box-shadow: var(--admin-container-shadow);
+    }
+    body.admin-background #main-content #page .metrics > .metric {
+        display: flex;
+        flex-direction: column;
+        padding: 14px;
+        border-left-width: 3px;
+    }
+    body.admin-background #main-content #page .metrics > .metric:nth-child(4n + 1) { border-left-color: var(--admin-stat-blue); }
+    body.admin-background #main-content #page .metrics > .metric:nth-child(4n + 2) { border-left-color: var(--admin-stat-green); }
+    body.admin-background #main-content #page .metrics > .metric:nth-child(4n + 3) { border-left-color: var(--admin-stat-orange); }
+    body.admin-background #main-content #page .metrics > .metric:nth-child(4n + 4) { border-left-color: var(--admin-stat-red); }
+    body.admin-background #main-content #page .metric :is(a, p) {
+        margin-top: auto;
+        padding-top: 8px;
+        overflow-wrap: anywhere;
+    }
+
+    body.admin-background #main-content #page .panel-head {
+        padding: 12px 16px;
+        gap: var(--admin-container-gap);
+        flex-wrap: wrap;
+        border-color: var(--admin-container-border);
+    }
+    body.admin-background #main-content #page :is(.panel-body, .filters,
+        .attendance-schedule, .attendance-health-filters, .group-row, .welcome,
+        .recovery-office, .recovery-review-card, .ce-panel) {
+        padding: 14px 16px;
+    }
+    body.admin-background #main-content #page :is(.tabs, .recovery-tabs) { padding: 12px 16px; }
+    body.admin-background #main-content #page .tabs { margin-bottom: 10px; }
+    body.admin-background #main-content #page :is(.filters, .table-toolbar,
+        .table-footer, .attendance-search-toolbar, .attendance-health-filters) {
+        gap: var(--admin-container-gap);
+        border-color: var(--admin-container-border);
+    }
+    body.admin-background #main-content #page :is(.table-toolbar, .table-footer,
+        .attendance-search-toolbar, .attendance-payment-note) { padding: 12px 16px; }
+    body.admin-background #main-content #page .table-toolbar { background: var(--admin-toolbar-background); }
+    body.admin-background #main-content #page .cfo-filter-help { padding-inline: 16px; }
+    body.admin-background #main-content #page :is(.table-wrap, .table-scroll) {
+        min-width: 0;
+        max-width: 100%;
+    }
+    body.admin-background #main-content #page .attendance-schedule { margin-bottom: 0; }
+    body.admin-background #main-content #page .attendance-search-toolbar {
+        border-radius: var(--admin-card-radius) var(--admin-card-radius) 0 0;
+    }
+    /* Filter menus need to extend past their panel without being clipped. */
+    body.admin-background #main-content #page .attendance-workspace { overflow: visible; }
+    body.admin-background #main-content #page .attendance-completion { padding: 0 16px 14px; }
+    body.admin-background #main-content #page #grid-host > .empty {
+        padding: 16px;
+        border: 1px solid var(--admin-container-border);
+        border-radius: var(--admin-card-radius);
+        background: var(--admin-card-background);
+        box-shadow: var(--admin-container-shadow);
+    }
+
+    body.admin-background #main-content:has(> #page) > :is(#cfo-context-search, .cfo-breadcrumb, .page-foot) {
+        padding: 12px 16px;
+        border: 1px solid var(--admin-container-border);
+        border-radius: var(--admin-card-radius);
+        background: var(--admin-card-background);
+        box-shadow: var(--admin-container-shadow);
+    }
+    body.admin-background #main-content:has(> #page) > :is(#cfo-context-search, .cfo-breadcrumb) { margin-bottom: 10px; }
+    body.admin-background #main-content:has(> #page) > .page-foot { margin-top: 12px; }
+}
+
+@media screen and (max-width: 1200px) {
+    body.admin-background #main-content #page .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media screen and (max-width: 650px) {
+    body.admin-background #main-content:has(> #page) {
+        width: calc(100% - 20px);
+        margin-block: 10px;
+        padding: 12px;
+    }
+    body.admin-background #main-content:has(> #page) > .page-heading { align-items: stretch; }
+    body.admin-background #main-content #page :is(.panel-head, .panel-body,
+        .filters, .table-toolbar, .table-footer, .attendance-schedule,
+        .attendance-search-toolbar, .attendance-health-filters,
+        .attendance-payment-note, .group-row, .welcome, .recovery-office,
+        .recovery-review-card, .tabs, .recovery-tabs, .ce-panel, #grid-host > .empty),
+    body.admin-background #main-content:has(> #page) > :is(#cfo-context-search, .cfo-breadcrumb, .page-foot) { padding: 12px; }
+    body.admin-background #main-content #page .attendance-completion { padding: 0 12px 12px; }
+    body.admin-background #main-content #page .cfo-filter-help { padding-inline: 12px; }
+}
+@media screen and (max-width: 430px) {
+    body.admin-background #main-content #page .metrics { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Shared main-content colors only, for both admin layouts. Navigation,
+   body-level dialogs, receipt/certificate previews and print retain their styles. */
+@media screen {
+    body.admin-background #main-content {
+        --ink: var(--admin-content-text);
+        --muted: var(--admin-content-text);
+        --primary: var(--admin-dashboard-dark-accent);
+        --primary-hover: var(--admin-dashboard-dark-accent-hover);
+        --line: var(--admin-dashboard-dark-border);
+        --soft: var(--admin-dashboard-dark-card);
+        --surface: var(--admin-dashboard-dark-solid);
+        --danger: var(--admin-dark-danger-text);
+        --attendance-ink: var(--admin-dashboard-dark-text);
+        --attendance-muted: var(--admin-dashboard-dark-secondary);
+        --attendance-line: var(--admin-dashboard-dark-border);
+        --admin-dashboard-title: var(--admin-dashboard-dark-text);
+        --admin-dashboard-secondary: var(--admin-dashboard-dark-secondary);
+        --admin-container-border: var(--admin-dashboard-dark-border);
+        --admin-card-background: var(--admin-dashboard-dark-card);
+        --admin-toolbar-background: var(--admin-dashboard-dark-table-header);
+        --registration-container-border: var(--admin-dashboard-dark-border);
+        background: var(--admin-dashboard-dark-background);
+        background-color: var(--admin-content);
+        color: var(--admin-content-text);
+        border-color: var(--admin-dashboard-dark-border);
+        box-shadow: var(--admin-dashboard-dark-shadow);
+    }
+    body.admin-background #main-content :is(.panel, .metric, .stat-card, .group-row,
+        .welcome, .recovery-office, .recovery-review-card, .ce-panel, .tabs,
+        .recovery-tabs, .cfo-search, .cfo-breadcrumb, .page-foot, form, .template-editor) {
+        --ink: var(--admin-text);
+        --muted: var(--admin-muted);
+    }
+    body.admin-background #main-content > .page-heading :is(h1, .eyebrow, p),
+    body.admin-background #main-content > .overview .overview-heading :is(h1, p) {
+        color: var(--admin-content-text);
+    }
+    body.admin-background #main-content :is(.panel, .group-row, .welcome, .recovery-office, .recovery-review-card, .ce-panel) {
+        background: var(--admin-dashboard-dark-card);
+        border-color: var(--admin-dashboard-dark-border);
+        box-shadow: var(--admin-dashboard-dark-shadow);
+        color: var(--admin-dashboard-dark-text);
+    }
+    body.admin-background #main-content :is(.metric, .stat-card) {
+        background: var(--admin-dashboard-dark-card);
+        color: var(--admin-dashboard-dark-text);
+        /* Colored accents keep the existing border widths. */
+        border-top-color: var(--admin-dashboard-dark-border);
+        border-right-color: var(--admin-dashboard-dark-border);
+        border-bottom-color: var(--admin-dashboard-dark-border);
+    }
+    body.admin-background #main-content :is(.metric-top, .stat-card strong, .stat-card span) {
+        color: var(--admin-dashboard-dark-text);
+    }
+    body.admin-background #main-content :is(.metric-icon, .heading-icon, .attendance-heading-icon) {
+        background: var(--admin-dashboard-dark-icon-box);
+        color: var(--admin-dashboard-dark-accent);
+    }
+    body.admin-background #main-content .metric > a {
+        color: var(--admin-dashboard-dark-accent);
+    }
+    body.admin-background #main-content a:hover {
+        color: var(--admin-dashboard-dark-accent-hover);
+    }
+    body.admin-background #main-content :is(.btn, .button, .icon-btn, .icon-button, .attendance-tab, .attendance-filter-menu summary, .cfo-search button, .pagination a, .pagination span) {
+        background: var(--admin-dashboard-dark-solid);
+        color: var(--admin-dashboard-dark-text);
+        border-color: var(--admin-dashboard-dark-control-border);
+    }
+    body.admin-background #main-content :is(.btn, .button, .icon-btn, .icon-button, .attendance-tab, .attendance-filter-menu summary, .cfo-search button, .pagination a, .pagination span):hover:not(:disabled) {
+        background: var(--admin-dashboard-dark-control-hover);
+        color: var(--admin-dashboard-dark-text);
+        border-color: var(--admin-dashboard-dark-control-hover-border);
+    }
+    body.admin-background #main-content :is(.btn.primary, .button.primary) {
+        background: var(--admin-dashboard-dark-primary);
+        border-color: var(--admin-dashboard-dark-accent);
+    }
+    body.admin-background #main-content :is(.btn.primary, .button.primary):hover:not(:disabled) {
+        background: var(--admin-dashboard-dark-primary-hover);
+    }
+    body.admin-background #main-content :is(input:not([type=checkbox]), select, textarea) {
+        color-scheme: dark;
+        background: var(--admin-dashboard-dark-control);
+        color: var(--admin-dashboard-dark-text);
+        border-color: var(--admin-dashboard-dark-control-border);
+    }
+    body.admin-background #main-content :is(input, textarea)::placeholder {
+        color: var(--admin-dashboard-dark-placeholder);
+    }
+    body.admin-background #main-content :focus-visible:not(.ce-stage *, .certificate *) {
+        outline: 3px solid var(--admin-dashboard-dark-focus);
+        outline-offset: 3px;
+    }
+    body.admin-background #main-content .field {
+        color: var(--admin-dashboard-dark-text);
+    }
+    body.admin-background #main-content :is(.empty p, .table-empty,
+        .table-footer, .cfo-filter-help, .form-help, .name-cell span, .panel-head p,
+        .stat-card small, .overview-heading p, .entries, time small, .list-note,
+        .attendance-schedule-label, .attendance-health-values small, .attendance-unrecorded,
+        .welcome p, .recovery-office p, .ce-note, .cfo-form-note, .cfo-breadcrumb,
+        .cfo-search-scope, .cfo-search-help, .cfo-search-status, .cfo-search-list h3, .cfo-search-result span) {
+        color: var(--admin-dashboard-dark-secondary);
+    }
+    body.admin-background #main-content :is(.filters, .table-wrap, .table-scroll, table, .empty, form,
+        .tabs, .recovery-tabs, .cfo-search, .cfo-search-results, .cfo-search-result,
+        .attendance-search-toolbar, .attendance-health-filters, .attendance-filter-popover,
+        .attendance-payment-note, .notice.neutral, .cfo-breadcrumb, .page-foot) {
+        background: var(--admin-dashboard-dark-card);
+        color: var(--admin-dashboard-dark-text);
+    }
+    body.admin-background #main-content :is(.table-toolbar, th) {
+        background: var(--admin-dashboard-dark-table-header);
+        color: var(--admin-dashboard-dark-text);
+        border-color: var(--admin-dashboard-dark-border);
+    }
+    body.admin-background #main-content :is(th, td) {
+        border-color: var(--admin-dashboard-dark-border);
+    }
+    body.admin-background #main-content tbody tr:hover,
+    body.admin-background #main-content tbody tr:hover td,
+    body.admin-background #main-content .cfo-search-result:hover {
+        background: var(--admin-dashboard-dark-table-hover);
+    }
+    body.admin-background #main-content .grid-sort span {
+        color: var(--admin-dashboard-dark-accent);
+    }
+}
+
+/* Secondary surfaces and controls keep their existing geometry and status cues. */
+@media screen {
+    body.admin-background #main-content .template-editor {
+        --ink: var(--admin-dashboard-dark-text);
+        --border: var(--admin-dashboard-dark-border);
+    }
+    body.admin-background #main-content:has(> #page) .ce-stage {
+        color: var(--admin-preview-text);
+    }
+    body.admin-background #main-content > .overview {
+        background: transparent;
+        box-shadow: none;
+        color: var(--admin-content-text);
+    }
+    body.admin-background #main-content :is(.overview-heading,
+        .attendance-tabs, .cfo-search, .cfo-search-results, .attendance-filter-popover,
+        .attendance-payment-note, .recovery-confirm, .group-mark, .event-date, .notice.neutral) {
+        border-color: var(--admin-dashboard-dark-border);
+    }
+    body.admin-background #main-content :is(a:not(.btn, .button, .cfo-search-result),
+        .empty > .icon, .empty-state > .icon, .stat-card > .icon, .attendance-schedule-meta .icon,
+        .attendance-search-toolbar .search > .icon) {
+        color: var(--admin-dashboard-dark-accent);
+    }
+    body.admin-background #main-content a:not(.btn, .button, .cfo-search-result):hover {
+        color: var(--admin-dashboard-dark-accent-hover);
+    }
+    body.admin-background #main-content :is(.empty-state p,
+        .table-toolbar > p, .table-toolbar [data-count], .table-scroll time small, .selection-status) {
+        color: var(--admin-dashboard-dark-secondary);
+    }
+    body.admin-background #main-content :is(.table-footer,
+        .selection-status, .notice.neutral, .event-date, .group-mark, .recovery-confirm) {
+        background: var(--admin-dashboard-dark-card);
+    }
+    body.admin-background #main-content :is(.event-date, .group-mark) {
+        color: var(--admin-dashboard-dark-accent);
+    }
+    body.admin-background #main-content :is(.filter-grid > label,
+        .date-range legend, .attendance-workspace .data-table td:first-child, .attendance-workspace .table-toolbar h2,
+        .cfo-search-heading label, .cfo-search-tools label, .cfo-search-result strong) {
+        color: var(--admin-dashboard-dark-text);
+    }
+    body.admin-background #main-content :is(.btn.danger, .cfo-required) {
+        color: var(--admin-dark-danger-text);
+    }
+    body.admin-background #main-content .btn.danger {
+        border-color: var(--admin-dark-danger-border);
+    }
+    body.admin-background #main-content .btn.danger:hover:not(:disabled) {
+        background: var(--admin-dark-danger-background);
+    }
+    body.admin-background #main-content :is(.attendance-tab.active,
+        .pagination [aria-current], .pagination [data-page], .recovery-tabs .btn[aria-pressed=true],
+        .ce-elements .btn[aria-pressed=true], .attendance-mark-all, .attendance-history) {
+        background: var(--admin-dashboard-dark-primary);
+        color: var(--admin-dashboard-dark-text);
+        border-color: var(--admin-dashboard-dark-accent);
+    }
+    body.admin-background #main-content :is(.attendance-tab.active,
+        .pagination a[aria-current], .recovery-tabs .btn[aria-pressed=true],
+        .ce-elements .btn[aria-pressed=true], .attendance-mark-all, .attendance-history):hover:not(:disabled) {
+        background: var(--admin-dashboard-dark-primary-hover);
+        color: var(--admin-dashboard-dark-text);
+        border-color: var(--admin-dashboard-dark-accent);
+    }
+    body.admin-background #main-content:has(> #page) .attendance-mark.present {
+        background: var(--admin-dark-success-background);
+        color: var(--admin-dark-success-text);
+        border-color: var(--admin-dark-success-border);
+    }
+    body.admin-background #main-content:has(> #page) .attendance-mark.absent {
+        background: var(--admin-dark-danger-background);
+        color: var(--admin-dark-danger-text);
+        border-color: var(--admin-dark-danger-border);
+    }
+    body.admin-background #main-content:has(> #page) .attendance-mark.present[aria-pressed=true] {
+        background: var(--admin-dashboard-dark-primary);
+        color: var(--admin-dashboard-dark-text);
+    }
+    body.admin-background #main-content:has(> #page) .attendance-mark.absent[aria-pressed=true] {
+        background: var(--admin-dark-danger-selected);
+        color: var(--admin-dashboard-dark-text);
+    }
+    body.admin-background #main-content:has(> #page) .attendance-mark.present:hover:not(:disabled) {
+        background: var(--admin-dashboard-dark-primary-hover);
+        color: var(--admin-dashboard-dark-text);
+        border-color: var(--admin-dark-success-border);
+    }
+    body.admin-background #main-content:has(> #page) .attendance-mark.absent:hover:not(:disabled) {
+        background: var(--admin-dark-danger-selected);
+        color: var(--admin-dashboard-dark-text);
+        border-color: var(--admin-dark-danger-border);
+    }
+    body.admin-background #main-content:has(> #page) .attendance-filter-menu[open] summary {
+        background: var(--admin-dashboard-dark-card);
+        color: var(--admin-dashboard-dark-text);
+        border-color: var(--admin-dashboard-dark-accent);
+    }
+    body.admin-background #main-content:has(> #page) :is(.attendance-filter-popover, .cfo-search-results) {
+        box-shadow: var(--admin-dashboard-dark-shadow);
+    }
+    body.admin-background #main-content:has(> #page) .data-table tr.live-highlight {
+        animation-name: admin-dark-live-row-highlight;
+    }
+    @keyframes admin-dark-live-row-highlight {
+        0%, 45% { background: var(--admin-dark-row-highlight); }
+        100% { background: transparent; }
+    }
+}
+
+/* Slightly stronger existing edges; no new borders on borderless elements.
+   Keep the sidebar, colored metric stripes and document previews unchanged. */
+@media screen {
+    body.admin-background .shell > .topbar,
+    body.admin-background .shell > .topbar :is(.btn, .icon-btn, .preview-tag),
+    body.admin-background #main-content,
+    body.admin-background #main-content :is(
+        .panel, .group-row, .welcome, .recovery-office, .recovery-review-card,
+        .recovery-confirm, .ce-panel, .tabs, .recovery-tabs, .notice, .event-date,
+        .cfo-search, .cfo-search-results, .cfo-form-error, .attendance-filter-popover,
+        .btn, .button, .icon-btn, .attendance-tab, .attendance-filter-menu summary,
+        .cfo-search button, .pagination a, .pagination span,
+        input:not([type=checkbox]), select, textarea),
+    body.admin-background #main-content:has(> #page) > :is(#cfo-context-search, .cfo-breadcrumb, .page-foot),
+    body.admin-background #main-content #page #grid-host > .empty {
+        border-width: var(--admin-border-width);
+    }
+    body.admin-background #main-content :is(.metric, .stat-card) {
+        border-top-width: var(--admin-border-width);
+        border-right-width: var(--admin-border-width);
+        border-bottom-width: var(--admin-border-width);
+    }
+    body.admin-background #main-content:has(> #page) > .page-heading,
+    body.admin-background #main-content :is(
+        .panel-head, .filters, .table-toolbar, .attendance-tabs, .attendance-search-toolbar,
+        .attendance-health-filters, .overview-heading, .task-link, th),
+    body.admin-background #main-content tbody tr:not(:last-child) td {
+        border-bottom-width: var(--admin-border-width);
+    }
+    body.admin-background #main-content :is(.table-footer, .form-actions, .form-section + .form-section) {
+        border-top-width: var(--admin-border-width);
+    }
+    body.admin-background.registrations-page #main-content :is(th, td) {
+        border-top-width: var(--admin-border-width);
+        border-right-width: var(--admin-border-width);
+        border-bottom-width: var(--admin-border-width);
+    }
+}
+
+/* Yellow admin headers use navy text, including their shared controls. */
+@media screen {
+    body.admin-background .shell > .topbar {
+        --ink: var(--admin-sidebar);
+        --muted: var(--admin-sidebar);
+        --primary: var(--admin-sidebar);
+        --primary-hover: var(--admin-sidebar);
+        background: var(--admin-topbar-background);
+        color: var(--admin-sidebar);
+        border-color: var(--admin-sidebar);
+        border-width: var(--admin-topbar-border-width);
+        box-shadow: var(--admin-dashboard-dark-shadow);
+    }
+    body.admin-background .shell > .topbar :is(.topbar-title, .topbar-heading nav, .account small) {
+        color: var(--admin-sidebar);
+    }
+    body.admin-background .shell > .topbar :is(.topbar-heading > strong, .account) {
+        color: var(--admin-sidebar);
+    }
+    body.admin-background .shell > .topbar .topbar-heading nav a {
+        color: var(--admin-sidebar);
+    }
+    body.admin-background .shell > .topbar .topbar-heading nav a:hover {
+        color: var(--admin-sidebar);
+    }
+    body.admin-background .shell > .topbar .avatar {
+        background: var(--admin-sidebar);
+        color: var(--admin-topbar);
+    }
+    body.admin-background .shell > .topbar :is(.btn, .icon-btn, .icon-button) {
+        background: var(--admin-topbar);
+        color: var(--admin-sidebar);
+        border-color: var(--admin-sidebar);
+    }
+    body.admin-background .shell > .topbar :is(.btn, .icon-btn, .icon-button):hover:not(:disabled) {
+        background: var(--admin-topbar-hover);
+        color: var(--admin-sidebar);
+        border-color: var(--admin-sidebar);
+    }
+    body.admin-background .shell > .topbar :focus-visible {
+        outline-color: var(--admin-sidebar);
+    }
+    body.admin-background .shell > .topbar .preview-tag {
+        background: var(--admin-topbar-hover);
+        color: var(--admin-sidebar);
+        border-color: var(--admin-sidebar);
+    }
+    body.admin-background .shell > .topbar .preview-tag::before {
+        background: var(--admin-sidebar);
+    }
+    body.admin-background .shell > .topbar .preview-tag.live {
+        background: var(--admin-topbar-hover);
+        color: var(--admin-sidebar);
+        border-color: var(--admin-sidebar);
+    }
+    body.admin-background .shell > .topbar .preview-tag.live::before {
+        background: var(--admin-sidebar);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--admin-sidebar) 12%, transparent);
+    }
+}
+
+/* Dashboard links remain readable on the navy metric surfaces. */
+@media screen {
+    body.admin-background #main-content:has(> #page > .dashboard-overview) {
+        --accent-sky: var(--admin-stat-blue);
+        --accent-sky-hover: var(--admin-text);
+    }
+    body.admin-background #main-content:has(> #page > .dashboard-overview) > #page > .dashboard-overview > .metrics > .metric > a {
+        color: var(--accent-sky);
+        transition: color .15s ease;
+    }
+    body.admin-background #main-content:has(> #page > .dashboard-overview) > #page > .dashboard-overview > .metrics > .metric > a:hover {
+        color: var(--accent-sky-hover);
+    }
+    body.admin-background #main-content:has(> #page > .dashboard-overview) > #page > .dashboard-overview > .metrics > .metric:first-child {
+        border-top-color: var(--admin-stat-blue);
+    }
+    body.admin-background #main-content:has(> #page > .dashboard-overview) :is(a, button):focus-visible {
+        outline: 3px solid var(--admin-focus);
+    }
+}
+
+/* Preserve the four stat-card colors on the existing top/left borders. The
+   pale blue stripe also contrasts with the blue container and navy cards. */
+@media screen {
+    body.admin-background #main-content #page .metric:nth-child(4n + 1),
+    body.admin-background #main-content .stat-card.total {
+        border-top-color: var(--admin-stat-blue);
+    }
+    body.admin-background #main-content #page .metric:nth-child(4n + 2),
+    body.admin-background #main-content .stat-card.verified {
+        border-top-color: var(--admin-stat-green);
+    }
+    body.admin-background #main-content #page .metric:nth-child(4n + 3),
+    body.admin-background #main-content .stat-card.pending {
+        border-top-color: var(--admin-stat-orange);
+    }
+    body.admin-background #main-content #page .metric:nth-child(4n + 4),
+    body.admin-background #main-content .stat-card.rejected {
+        border-top-color: var(--admin-stat-red);
+    }
+    body.admin-background #main-content .stat-card.total { border-left-color: var(--admin-stat-blue); }
+    body.admin-background #main-content .stat-card.verified { border-left-color: var(--admin-stat-green); }
+    body.admin-background #main-content .stat-card.pending { border-left-color: var(--admin-stat-orange); }
+    body.admin-background #main-content .stat-card.rejected { border-left-color: var(--admin-stat-red); }
+}
+
+@media print {
+    html.admin-background-root,
+    body.admin-background {
+        min-height: 0;
+        background: #fff !important;
+    }
+
+    body.admin-background::before {
+        content: none !important;
+        display: none !important;
+        background: none !important;
+    }
+}

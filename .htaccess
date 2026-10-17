@@ -1,0 +1,8 @@
+# This project lives inside XAMPP's htdocs. Serve Laravel through a
+# virtual host whose DocumentRoot is public/, never through this root.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Deny from all
+</IfModule>

@@ -1,0 +1,13 @@
+/* Student Certificates (admin) */
+.cert-info { display: flex; gap: 12px; align-items: flex-start; margin: 0 0 12px; padding: 12px 16px; border: 1px solid #1f9d6b; border-radius: 12px; background: #0d3b34; color: #e9fff6; font-size: 13px; line-height: 1.5; }
+.cert-info-icon { display: grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 50%; background: #1f9d6b; color: #fff; }
+.cert-info-icon .icon { width: 14px; height: 14px; }
+.cert-student { display: block; font-weight: 700; }
+.cert-sub { display: block; margin-top: 2px; color: var(--muted, #9db3c8); font-size: 12px; }
+.btn.cert-print { border-color: #4d8dff; color: #1d4ed8; }
+.btn.cert-download { border-color: #1f9d6b; color: var(--primary, #146b61); }
+.btn.cert-print + .btn.cert-download { margin-left: 6px; }
+@media screen {
+  body.admin-background #main-content .btn.cert-print { border-color: #4d8dff; color: #cfe0ff; }
+  body.admin-background #main-content .btn.cert-download { border-color: #1f9d6b; color: #c9f5e0; }
+}

@@ -1,0 +1,36 @@
+/* Student My Certificate page. Reuses the student theme's .field, .primary, .outline and .form-actions. */
+.certificate-page > p { color: #667a76; }
+.certificate-page { min-width: 0; color: #233544; }
+.certificate-page h1 { margin: 0 0 8px; color: #123e47; font: 700 clamp(29px, 3vw, 39px)/1.2 Georgia, serif; }
+.cert-notice { background: #eaf5f1; border: 1px solid #d0e7de; border-radius: 11px; padding: 13px 15px; color: #38675c !important; font-size: 13px; line-height: 1.5; }
+.cert-selector, .cert-selected, .cert-empty { background: #fff; border: 1px solid #dfe8e9; border-radius: 14px; box-shadow: 0 7px 22px #123d4208; }
+.cert-selector { padding: 18px 20px; margin: 18px 0; min-width: 0; }
+.cert-selector > .field { display: grid; gap: 8px; margin: 0; min-width: 0; }
+.cert-filter-label { display: block; line-height: 1.4; }
+.cert-selector select { display: block; width: 100%; max-width: 100%; min-width: 0; min-height: 44px; box-sizing: border-box; }
+.cert-help { margin: 8px 0 0; font-size: 12px; color: #586e74; }
+.cert-selected { width: 100%; max-width: none; min-width: 0; overflow: hidden; }
+.cert-selected[hidden], .cert-empty[hidden] { display: none; }
+.cert-selected-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 18px 22px; border-bottom: 1px solid #dfe8e9; }
+.cert-selected-head > div { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+.cert-selected-head h2 { margin: 0 0 5px; font-size: 18px; }
+.cert-selected-head p { margin: 0; font-size: 12px; color: #586e74; }
+.cert-status { display: inline-flex; align-items: center; gap: 6px; border-radius: 99px; padding: 6px 10px; background: #e4f7ee; color: #18764f; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.cert-stage { padding: 24px; background: #f5f8f5; }
+.cert-stage img { display: block; width: 100%; max-width: 900px; height: auto; margin: 0 auto; }
+.cert-meta { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr); gap: 16px; margin: 0; padding: 15px 22px 0; }
+.cert-meta > div { min-width: 0; overflow-wrap: anywhere; }
+.cert-meta dt { font-size: 11px; color: #586e74; }
+.cert-meta dd { margin: 4px 0 0; font-size: 13px; font-weight: 700; color: #254e52; }
+.cert-selected .form-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 16px 22px 20px; margin: 0; border-top: 0; }
+.cert-selected .form-actions > button { width: 100%; min-width: 0; min-height: 44px; }
+body.dashboard-mode:not(.admin-mode):has(#app .dash-shell) .certificate-page #certificate-selected .form-actions > button { min-width: 0; min-height: 44px; }
+.cert-empty { padding: 50px 20px; text-align: center; color: #586e74; }
+.cert-empty p { margin: 7px 0 0; font-size: 13px; }
+.cert-view { width: min(950px, calc(100% - 24px)); max-height: 92vh; padding: 0; border: 0; border-radius: 16px; overflow: auto; box-shadow: 0 22px 70px #0004; color: #233544; background: #fff; }
+.cert-view::backdrop { background: #082f2b77; }
+.certificate-page :is(select, button):focus-visible, .cert-view button:focus-visible { outline: 3px solid var(--green, #075a43); outline-offset: 3px; }
+@media (max-width: 760px) { .cert-stage { padding: 10px; } }
+@media (max-width: 640px) { .cert-meta { grid-template-columns: minmax(0, 1fr); gap: 12px; } }
+@media (max-width: 480px) { .cert-selected .form-actions { grid-template-columns: minmax(0, 1fr); } }
+@media print { .cert-view { display: none !important; } }

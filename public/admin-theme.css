@@ -1,0 +1,552 @@
+/* Shared CFO palette: screen surfaces and semantic states only. */
+@media screen {
+  body.admin-background {
+    --cfo-text: #FFFFFF;
+    --cfo-text-on-bright: #000000;
+    --cfo-navy: #062542;
+    --cfo-panel: rgba(3,31,55,.96);
+    --cfo-navy-hover: #123F6B;
+    --cfo-page-bg: #041B31;
+    --cfo-yellow: #FFD84D;
+    --cfo-error-text: #F47D8F;
+    --cfo-danger: #A52B42;
+    --cfo-border: #8B8B94;
+    --cfo-text-muted: #DCE9F5;
+    --cfo-success: #00BD83;
+    --cfo-info: #087DF0;
+    --cfo-input: #F4F8FD;
+    --cfo-input-border: #B4C7D8;
+    --cfo-options: #F3F7FC;
+    --cfo-button: #0B2B49;
+    --cfo-action: #00A970;
+    --cfo-dialog: #082B49;
+    --cfo-container-border: #FFFFFF;
+    --cfo-danger-surface: #FFF0F1;
+    --navy-hover: var(--cfo-navy-hover);
+    --page-bg: var(--cfo-page-bg);
+    --error-text: var(--cfo-error-text);
+    --text-muted: var(--cfo-text-muted);
+    --success: var(--cfo-success);
+    --info: var(--cfo-info);
+  }
+}
+
+/* Current student design mapped to admin content and the shared header.
+   Existing sidebar rules and document canvases retain their own styles. */
+@media screen {
+  body.admin-background {
+    --navy: var(--cfo-navy);
+    --panel: var(--cfo-panel);
+    --line: var(--cfo-navy-hover);
+    --blue: var(--cfo-info);
+    --green: var(--cfo-success);
+    --yellow: var(--cfo-yellow);
+    --text: var(--cfo-text);
+    --muted: var(--cfo-text-muted);
+    --ink: var(--text);
+    --surface: var(--cfo-panel);
+    --soft: var(--cfo-panel);
+    --primary: var(--cfo-success);
+    --primary-hover: var(--cfo-success);
+    --danger: var(--cfo-danger);
+    --radius: 9px;
+    --admin-font-weight-regular: 400;
+    --admin-font-weight-medium: 500;
+    --admin-font-weight-semibold: 700;
+    --admin-font-weight-bold: 700;
+    --admin-title-size: 20px;
+    --admin-panel-title-size: 15px;
+    --admin-metric-label-size: 11px;
+    --admin-metric-value-size: 16px;
+    --admin-body-size: 14px;
+    --admin-hint-size: 11px;
+    --admin-sidebar-group-size: 10px;
+    --admin-sidebar-menu-size: 11px;
+    --admin-button-size: 11px;
+    --admin-input-size: 14px;
+    --admin-phone-input-size: 14px;
+    --admin-badge-size: 10px;
+    --admin-minimum-size: 10px;
+    --admin-sidebar: var(--navy);
+    --admin-topbar: var(--yellow);
+    --admin-topbar-hover: var(--cfo-yellow);
+    --admin-content: var(--blue);
+    --admin-content-text: var(--text);
+    --admin-surface: var(--cfo-panel);
+    --admin-surface-raised: var(--panel);
+    --admin-text: var(--text);
+    --admin-muted: var(--muted);
+    --admin-focus: var(--yellow);
+    --admin-stat-blue: var(--blue);
+    --admin-stat-green: var(--green);
+    --admin-stat-orange: var(--yellow);
+    --admin-stat-red: var(--cfo-error-text);
+    --admin-background-image: url("./images/admin-campus-bg.png") !important;
+    --admin-background-fallback: var(--cfo-navy) !important;
+    --admin-background-position: center !important;
+    --admin-background-panel: var(--cfo-panel);
+    --admin-container-border: var(--cfo-container-border);
+    --admin-container-radius: 9px;
+    --admin-card-radius: 9px;
+    --admin-container-shadow: none;
+    --admin-container-gap: 12px;
+    --admin-border-width: 1px;
+    --admin-card-background: var(--cfo-panel);
+    --admin-toolbar-background: var(--panel);
+    --admin-dashboard-dark-solid: var(--navy);
+    --admin-dashboard-dark-background: transparent;
+    --admin-dashboard-dark-card: var(--cfo-panel);
+    --admin-dashboard-dark-border: var(--cfo-container-border);
+    --admin-dashboard-dark-text: var(--text);
+    --admin-dashboard-dark-secondary: var(--muted);
+    --admin-dashboard-dark-accent: var(--green);
+    --admin-dashboard-dark-accent-hover: var(--green);
+    --admin-dashboard-dark-icon-box: var(--blue);
+    --admin-dashboard-dark-control: var(--cfo-input);
+    --admin-dashboard-dark-control-border: var(--cfo-input-border);
+    --admin-dashboard-dark-control-hover-border: var(--cfo-input-border);
+    --admin-dashboard-dark-control-hover: var(--cfo-input);
+    --admin-dashboard-dark-placeholder: var(--cfo-text-on-bright);
+    --admin-dashboard-dark-primary: var(--cfo-action);
+    --admin-dashboard-dark-primary-hover: var(--cfo-action);
+    --admin-dashboard-dark-table-header: var(--panel);
+    --admin-dashboard-dark-table-hover: var(--cfo-panel);
+    --admin-dashboard-dark-shadow: none;
+    --admin-dark-success-text: var(--cfo-text-on-bright);
+    --admin-dark-success-background: var(--cfo-success);
+    --admin-dark-success-border: var(--green);
+    --admin-dark-danger-text: var(--cfo-text);
+    --admin-dark-danger-background: var(--cfo-danger);
+    --admin-dark-danger-border: var(--cfo-danger);
+    --admin-dark-danger-selected: var(--cfo-danger);
+    --admin-dark-row-highlight: var(--cfo-panel);
+    --sidebar-panel-radius: 0px;
+    --sidebar-border: var(--line);
+    --sidebar-divider: var(--line);
+    --sidebar-hover-bg: var(--cfo-navy);
+    --sidebar-active-bg: var(--blue);
+    --sidebar-active-text: var(--text);
+    --sidebar-active-icon: var(--text);
+    --sidebar-avatar-bg: var(--cfo-navy);
+    --sidebar-inset-bg: var(--cfo-panel);
+    --sidebar-shadow: transparent;
+    margin: 0;
+    background: transparent !important;
+    color: var(--text);
+    font: 14px var(--admin-font-family);
+  }
+  /* The campus photograph uses the palette's navy overlay. */
+  body.admin-background::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    height: 100vh;
+    height: 100dvh;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--admin-background-fallback);
+    background-image: linear-gradient(rgba(4,27,49,.88),rgba(4,27,49,.88)), var(--admin-background-image) !important;
+    background-size: cover;
+    background-position: var(--admin-background-position);
+    background-repeat: no-repeat;
+  }
+  body.admin-background .shell { background: transparent; }
+  body.admin-background #main-content {
+    --ink: var(--text) !important;
+    --muted: var(--cfo-text-muted) !important;
+    --line: var(--cfo-navy-hover) !important;
+    --surface: var(--cfo-panel) !important;
+    --admin-card-background: var(--cfo-panel) !important;
+    --admin-container-border: var(--cfo-container-border) !important;
+    --admin-dashboard-title: var(--text) !important;
+    --admin-dashboard-secondary: var(--muted) !important;
+    --registration-container-border: var(--cfo-container-border);
+    --attendance-ink: var(--text);
+    --attendance-muted: var(--muted);
+    --attendance-line: var(--line);
+    --attendance-blue: var(--blue);
+    --attendance-green: var(--green);
+    --attendance-red: var(--cfo-danger);
+    width: 100% !important;
+    max-width: 1600px !important;
+    margin: auto !important;
+    padding: 14px 18px 90px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--text);
+    box-shadow: none !important;
+    min-width: 0;
+    font-family: var(--admin-font-family);
+  }
+  body.admin-background :is(.shell,.sidebar,dialog,.ms-modal,.ms-menu,.toast) {
+    font-family: var(--admin-font-family) !important;
+  }
+  body.admin-background :is(button,input,select,textarea):not(.ce-stage *,.certificate *,.print-area *) { font-family: var(--admin-font-family) !important; }
+  body.admin-background button:disabled:not(.ce-stage *,.certificate *,.print-area *) { opacity: .85; }
+
+  /* Create Schedule header appearance shared by every admin page. */
+  body.admin-background .shell > .admin-header {
+    --at-header-background: var(--cfo-yellow);
+    --at-header-hover: #FFE77E;
+    --at-header-ink: var(--cfo-text-on-bright);
+    box-sizing: border-box;
+    height: 52px !important; min-height: 52px !important;
+    width: 100% !important; max-width: none !important;
+    margin: 0 !important; padding: 0 18px !important; gap: 12px;
+    position: sticky; top: 0; z-index: 25;
+    border: 0 !important; border-bottom: 1px solid var(--cfo-navy-hover) !important; border-radius: 0 !important;
+    background: var(--at-header-background) !important; color: var(--at-header-ink) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,.16) !important;
+    font-weight: bold;
+  }
+  body.admin-background .admin-header :is(#admin-header-title,#admin-header-breadcrumb) { color: var(--at-header-ink); font-size: 12px; letter-spacing: normal; }
+  body.admin-background .admin-header .admin-header-control {
+    width: auto; height: auto; flex-basis: auto; padding: 8px 12px;
+    border: 1px solid var(--cfo-navy) !important; border-radius: 6px !important;
+    background: var(--at-header-background) !important; color: var(--at-header-ink) !important;
+  }
+  body.admin-background .admin-header .admin-header-control .icon { width: 18px; height: 18px; color: var(--at-header-ink); stroke: currentColor; }
+  body.admin-background .admin-header .admin-header-account { min-height: 40px; padding: 0; gap: 10px; border-radius: 10px; color: var(--at-header-ink); background: transparent; }
+  body.admin-background .admin-header :is(#admin-header-name,#admin-header-role) { color: var(--at-header-ink); opacity: 1; font-weight: bold; }
+  body.admin-background .admin-header #admin-header-name { font-size: 12px; }
+  body.admin-background .admin-header #admin-header-role { font-size: 11px; }
+  body.admin-background .admin-header #admin-header-avatar { width: 36px; height: 36px; flex-basis: 36px; padding: 0; border: 0; background: #173B59 !important; color: var(--cfo-text) !important; font-size: 14px; font-weight: 700; }
+  body.admin-background .admin-header :is(button,.account):hover:not(:disabled) { background: var(--at-header-hover) !important; color: var(--at-header-ink) !important; }
+  body.admin-background .admin-header #live-status { background: var(--at-header-hover); color: var(--at-header-ink); border-color: var(--at-header-ink); font-size: 10px; }
+  body.admin-background .admin-header :is(button,.account):focus-visible { outline-color: var(--at-header-ink); }
+  body.admin-background .sidebar { background: var(--navy); border-color: var(--line); box-shadow: none; }
+  body.admin-background .sidebar .nav-link { padding: 9px 11px; gap: 10px; border: 1px solid var(--cfo-border); border-radius: 6px; background: var(--cfo-navy); color: var(--text); font-size: 11px !important; font-weight: bold; }
+  body.admin-background .sidebar .nav-link.active { background: var(--blue); border-color: var(--cfo-info); color: var(--text); box-shadow: none; }
+  body.admin-background .sidebar .nav-link:hover { background: var(--blue); color: var(--text); }
+  body.admin-background .nav-backdrop { background: rgba(4,27,49,.6); }
+
+  /* Reference .hero occupies the same content width as the panels below it. */
+  body.admin-background #main-content :is(.page-heading,.ms-page-head,.overview-heading,.attendance-heading) {
+    max-width: none; width: 100%; margin: 0 0 12px !important;
+    padding: 15px 18px !important; border: 0 !important; border-radius: 9px;
+    background: linear-gradient(100deg,var(--cfo-navy-hover),var(--cfo-navy-hover)) !important;
+    color: var(--text); box-shadow: none !important;
+    gap: 12px; align-items: center;
+  }
+  body.admin-background #main-content :is(.page-heading,.ms-page-head,.overview-heading,.attendance-heading) h1 {
+    margin: 5px 0 !important; color: var(--cfo-text-on-bright) !important;
+    font: bold 20px/1.25 var(--admin-font-family) !important; letter-spacing: normal;
+  }
+  body.admin-background #main-content :is(.page-heading,.ms-page-head,.overview-heading,.attendance-heading) p {
+    margin: 0 !important; color: var(--cfo-text-on-bright) !important; font: 12px var(--admin-font-family) !important;
+  }
+  body.admin-background #main-content :is(.eyebrow,.ms-kicker) { font: bold 10px var(--admin-font-family) !important; letter-spacing: 1px; color: var(--cfo-navy) !important; }
+  body.admin-background #main-content :is(.page-heading,.ms-page-head) :is(.eyebrow,.ms-kicker) { margin: 0; }
+  body.admin-background #main-content > .overview { padding: 0; }
+
+  /* Reference .panel and .head, retaining existing grids and table wrappers. */
+  body.admin-background #main-content :is(.panel,.metric,.stat-card,.welcome,.group-row,.recovery-office,.recovery-review-card,.ce-panel,.cfo-search,.cfo-search-results,.ms-summary,.ms-search-panel,.ms-filter-panel,.ms-table-panel,.ms-calendar-panel) {
+    background: var(--cfo-panel) !important; color: var(--text);
+    border: 1px solid var(--cfo-container-border) !important; border-radius: 9px !important;
+    padding: 12px !important; margin-bottom: 11px; box-shadow: none !important;
+  }
+  body.admin-background #main-content :is(.panel-head,.ms-table-head,.ms-calendar-head,.overview .overview-heading,.ce-panel h2) { gap: 10px; }
+  body.admin-background #main-content :is(.panel-head,.ms-table-head,.ms-calendar-head) {
+    padding: 0 0 10px !important; margin-bottom: 10px; border-bottom: 1px solid var(--line); background: transparent !important;
+  }
+  body.admin-background #main-content :is(.panel-head,.ms-panel-title,.ms-table-head,.ms-calendar-head,.ce-panel) h2 { font-size: 15px !important; font-weight: bold !important; letter-spacing: normal; color: var(--text); }
+  body.admin-background #main-content :is(.panel-head,.ms-panel-title,.ms-table-head,.ms-calendar-head) p { color: var(--muted); font-size: 11px !important; margin: 0; }
+  body.admin-background #main-content :is(.panel-body,.panel .filters) { padding: 0 !important; }
+  body.admin-background #main-content :is(.metrics,.split,.dashboard-schedule-list,.stack,.ms-summary-grid) { gap: 12px; }
+  body.admin-background #main-content :is(.metric,.stat-card) {
+    --at-card-accent: var(--cfo-info);
+    padding: 10px !important;
+    border: 1px solid var(--cfo-container-border) !important;
+  }
+  body.admin-background #main-content :is(.metric,.stat-card):nth-child(4n + 2) { --at-card-accent: var(--green); }
+  body.admin-background #main-content :is(.metric,.stat-card):nth-child(4n + 3) { --at-card-accent: var(--yellow); }
+  body.admin-background #main-content :is(.metric,.stat-card):nth-child(4n + 4) { --at-card-accent: var(--cfo-error-text); }
+  body.admin-background #main-content :is(.metric,.stat-card) :is(.metric-icon,.icon) { color: var(--cfo-page-bg); }
+  body.admin-background #main-content .metric .metric-icon {
+    width: 40px; height: 40px; flex-basis: 40px;
+    padding: 8px; border-radius: 50% !important;
+    background: var(--at-card-accent) !important;
+  }
+  body.admin-background #main-content .stat-card > .icon {
+    width: 40px; height: 40px; padding: 8px;
+    border-radius: 50%; background: var(--at-card-accent);
+  }
+  body.admin-background #main-content :is(.metric > strong,.stat-card strong) {
+    margin: 9px 0 0; color: var(--text); letter-spacing: normal;
+    font: 16px var(--admin-font-family) !important;
+  }
+  body.admin-background #main-content :is(.metric-top,.stat-card span) { color: var(--muted); font-size: 11px !important; }
+  body.admin-background #main-content :is(.metric-icon,.heading-icon,.attendance-heading-icon) { background: var(--blue); color: var(--text); border-radius: 7px; padding: 10px; box-shadow: none; }
+  body.admin-background #main-content :is(.page-foot,.cfo-breadcrumb,.notice,.cr-reason-box,.ms-notice,.empty-state) { background: var(--cfo-panel) !important; color: var(--muted); border: 1px solid var(--cfo-container-border); border-radius: 9px; padding: 12px; box-shadow: none; }
+  body.admin-background #main-content :is(.muted,.small,.form-help,.list-note,.cr-help,.cr-sub,.ms-muted,.ms-helper,.cfo-search-help,.cfo-search-status,.cfo-filter-help,.attendance-schedule-meta,.attendance-unrecorded) { color: var(--muted); font-size: 11px !important; }
+
+  /* Reference .form / .field. Keep control types, hidden states and handlers. */
+  body.admin-background #main-content form:not(.schedule-builder *) { background: transparent !important; }
+  body.admin-background :is(.form-grid,.filter-grid,.ms-filters,.cr-form) { gap: 10px; }
+  body.admin-background :is(.field,.ms-field,.search-input,.workflow-form label):not(.schedule-builder *,.schedule-course-dialog *) { color: var(--text); font-size: 11px !important; font-weight: bold !important; }
+  body.admin-background :is(.field,.ms-field) > label { display: block; margin-bottom: 5px; }
+  body.admin-background :is(#main-content,dialog,.ms-modal) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=hidden]),select,textarea):not(.schedule-builder *,.schedule-course-dialog *,.ce-stage *,.certificate *,.receipt-viewer *,.print-area *) {
+    color-scheme: var(--at-control-scheme,light); width: 100%; min-height: 0;
+    padding: 9px !important; background: var(--at-control-background,var(--cfo-input)) !important; color: var(--at-control-text,var(--cfo-text-on-bright)) !important;
+    border: 1px solid var(--at-control-border,var(--cfo-border)) !important; border-radius: 6px !important;
+    font: 600 14px var(--admin-font-family) !important;
+  }
+  body.admin-background :is(#main-content,dialog,.ms-modal) :is(input,textarea):not(.ce-stage *,.certificate *,.print-area *)::placeholder { color: var(--cfo-text-on-bright) !important; opacity: 1; }
+  body.admin-background :is(#main-content,dialog) :is(input[type=checkbox],input[type=radio]):not(.ce-stage *,.certificate *) { accent-color: var(--cfo-info); width: 16px; height: 16px; margin: 0; flex-shrink: 0; }
+  body.admin-background .check-label { gap: 8px; font-size: 12px !important; }
+  body.admin-background #main-content :is(.search,.search-input,.history-search-input):has(> .icon) input { padding-left: 37px !important; }
+  body.admin-background #main-content #registration-filters .search-input > .icon { top: 50%; left: 13px; transform: translateY(-50%); pointer-events: none; }
+  body.admin-background #main-content #registration-filters .search-input > input[type=search] { padding-left: 48px !important; }
+  body.admin-background #main-content .cfo-search input[type=search] { width: 100%; }
+  body.admin-background #main-content :is(.entries,.pagination-tools,.table-footer,.table-toolbar) select { width: auto; }
+
+  /* Reference .btn / .blue / .green / .red. Canvas tools retain their geometry. */
+  body.admin-background :is(.btn,.button,.ms-primary,.ms-secondary,.ms-export,.ms-action,.ms-page-btn,.ms-view-switch,.attendance-tab,.attendance-filter-menu summary,.cfo-search button,.pagination a,.pagination span,.cancel-button,.receipt-review-toggle):not(.ce-stage *,.certificate *,.print-area *) {
+    min-height: 0 !important; padding: 9px 11px !important;
+    border: 1px solid var(--at-button-border,var(--cfo-border)) !important; border-radius: 6px !important;
+    background: var(--at-button-background,var(--cfo-button)) !important; color: var(--at-button-text,var(--cfo-text)) !important;
+    font: bold 11px var(--admin-font-family) !important; text-decoration: none; box-shadow: none !important;
+  }
+  body.admin-background :is(.btn.primary,.button.primary,.ms-primary,.ms-export) { background: var(--cfo-success) !important; border-color: var(--cfo-success) !important; }
+  body.admin-background :is(.btn.blue,.button.blue,.attendance-tab.active,.ms-active,.pagination .active) { background: var(--cfo-navy-hover) !important; border-color: var(--cfo-info) !important; }
+  body.admin-background :is(.btn.danger,.button.danger,.ms-delete,.ms-danger,.ms-menu-danger) { background: var(--cfo-danger) !important; color: var(--cfo-error-text) !important; border-color: var(--cfo-danger) !important; }
+  body.admin-background :is(.btn,.button,.ms-primary,.ms-secondary,.ms-action,.attendance-tab):hover:not(:disabled) { filter: none; }
+  body.admin-background :is(.icon-btn,.icon-button,.filter-toggle,.view-button,.admin-header-dialog-close):not(.sidebar *,.admin-header *) {
+    background: var(--cfo-navy) !important; color: var(--cfo-text) !important;
+    border: 1px solid var(--cfo-border) !important; border-radius: 6px;
+  }
+  body.admin-background #main-content .pagination [aria-current] { background: var(--cfo-navy-hover) !important; border-color: var(--cfo-info) !important; }
+
+  /* Reference summary .row, .label, .value, .pills and .badge. */
+  body.admin-background #main-content :is(.table-wrap,.table-scroll,.ms-table-wrap) { background: var(--cfo-panel) !important; border: 1px solid var(--cfo-container-border) !important; border-radius: 9px; margin-top: 12px; }
+  body.admin-background #main-content :is(.table-wrap,.table-scroll,.ms-table-wrap) > table > thead > tr:last-child > :is(th,td) { border-bottom: 1px solid var(--cfo-container-border) !important; }
+  body.admin-background #main-content table { width: 100%; border-collapse: collapse !important; border-spacing: 0; background: transparent !important; color: var(--text); }
+  body.admin-background #main-content :is(th,td) { padding: 9px !important; border: 1px solid var(--cfo-navy-hover) !important; border-left-width: 0 !important; font-size: 11px !important; line-height: normal !important; vertical-align: middle; }
+  body.admin-background #main-content table :is(th,td):last-child { border-right-width: 0 !important; }
+  body.admin-background #main-content tbody tr:last-child > td { border-bottom-width: 0 !important; }
+  body.admin-background #main-content th { background: var(--panel) !important; color: var(--cfo-text-muted) !important; font-weight: bold !important; text-transform: none !important; letter-spacing: normal !important; }
+  body.admin-background #main-content td { height: 55px; color: var(--text); font-weight: 500; }
+  body.admin-background #main-content tbody tr:hover td { background: var(--cfo-panel) !important; }
+  body.admin-background #main-content :is(.table-toolbar,.table-footer,.ms-table-footer,.attendance-search-toolbar,.attendance-health-filters,.filter-grid,.filter-actions,.selection-status) { background: var(--panel) !important; border-color: var(--cfo-navy-hover); padding: 12px !important; color: var(--muted); font-size: 11px; }
+  body.admin-background :is(.badge,.status-badge,.upload-badge,.ms-badge,.schedule-state) { padding: 5px 8px !important; border-radius: 14px !important; background: var(--cfo-navy-hover); color: var(--text); font-size: 10px !important; font-weight: bold; }
+  body.admin-background :is(.badge.success,.status-badge.verified,.status-badge[data-status=Approved],.upload-badge.uploaded,.schedule-state.is-scheduled,.ms-open,.ms-completed,.attendance-pill.present,.attendance-pill.paid) { background: var(--cfo-success) !important; color: var(--cfo-navy) !important; border-color: var(--green); }
+  body.admin-background :is(.badge.warning,.status-badge.pending,.status-badge[data-status=Pending],.ms-draft,.attendance-pill.pending) { background: var(--yellow) !important; color: var(--cfo-navy) !important; }
+  body.admin-background :is(.badge.danger,.badge.error,.status-badge.rejected,.status-badge[data-status=Rejected],.ms-cancelled,.ms-closed,.attendance-pill.absent) { background: var(--cfo-danger) !important; color: var(--cfo-error-text) !important; }
+  body.admin-background :is(.attendance-chip,.ms-section-chip,.ms-course-chip,.ms-course-group-name,.ms-course-label,.ms-attention-badge) { color: var(--text); }
+  body.admin-background :is(.attendance-chip,.ms-section-chip,.ms-course-chip) { background: var(--cfo-navy-hover) !important; padding: 5px 8px !important; border: 0 !important; border-radius: 14px !important; font-size: 10px !important; }
+  body.admin-background :is(.attendance-chip,.ms-section-chip,.ms-course-chip):nth-child(even) { background: var(--cfo-success) !important; }
+  body.admin-background #main-content :is(.detail-list > div,.dashboard-schedule-row,.ms-course-group) { border-color: var(--cfo-navy-hover) !important; }
+  body.admin-background #main-content .detail-list dt { color: var(--cfo-text-muted); font-size: 11px !important; }
+  body.admin-background #main-content .detail-list dd { color: var(--text); font-size: 11px !important; font-weight: bold; overflow-wrap: anywhere; }
+  body.admin-background #main-content .grid-sort { color: inherit; }
+
+  /* Reference .modalbg / .modal / .modalfoot; large document views stay large. */
+  body.admin-background dialog:not(#registration-dialog,#receipt-image-dialog,.large):not(:has(.ce-stage,.certificate)) { width: min(430px,calc(100% - 36px)); }
+  body.admin-background :is(dialog,.ms-modal) {
+    color: var(--text); background: var(--cfo-dialog) !important;
+    border: 1px solid var(--cfo-container-border) !important; border-radius: 10px !important;
+    box-shadow: none; font: 14px var(--admin-font-family);
+  }
+  body.admin-background dialog::backdrop { background: #0009; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  body.admin-background .ms-modal-backdrop { background: #0009; padding: 18px; }
+  body.admin-background :is(.dialog-header,.dialog-heading,.ms-modal-head,.admin-header-dialog-heading) { background: transparent !important; border-color: var(--line); padding: 18px 18px 0; gap: 10px; }
+  body.admin-background :is(.dialog-header,.dialog-heading,.ms-modal-head) :is(h2,h3) { margin: 0 0 8px; color: var(--text); font-size: 16.38px !important; font-weight: bold; }
+  body.admin-background :is(.dialog-body,.ms-modal-body) { padding: 18px; }
+  body.admin-background :is(.dialog-body,.dialog-heading,.ms-modal-body) p:not(.ce-stage *,.certificate *) { color: var(--cfo-text-muted); font-size: 12px !important; }
+  body.admin-background :is(.dialog-footer,.ms-modal-foot,.registration-dialog-footer) { padding: 0 18px 18px; gap: 8px; border-color: var(--line); background: transparent !important; }
+  body.admin-background .ms-modal { padding: 0; }
+  body.admin-background .ms-modal:not(:has(.schedule-builder,.ms-detail-grid)) { width: min(430px,100%); }
+  body.admin-background #admin-header-notifications { width: min(430px,calc(100% - 36px)); padding: 18px; }
+  body.admin-background .receipt-image-heading { background: var(--panel); color: var(--text); border-color: var(--line); }
+  body.admin-background .receipt-image-heading p { color: var(--cfo-text-muted); }
+  body.admin-background :is(.ms-menu,.attendance-filter-popover,.cfo-search-result,.cr-reason-box,.recovery-confirm) { background: var(--panel) !important; color: var(--text); border-color: var(--cfo-container-border); }
+  body.admin-background #registration-dialog :is(.information-section,.management-card) { background: var(--cfo-panel); border: 1px solid var(--cfo-container-border); border-radius: 9px; }
+  body.admin-background #registration-dialog :is(.information-section > h3,.management-heading) { background: var(--panel); color: var(--text); font-size: 15px !important; }
+  body.admin-background #registration-dialog .information-fields dt { background: var(--navy); color: var(--cfo-text-muted); border-width: 1px; font-size: 11px !important; }
+  body.admin-background #registration-dialog .information-fields dd { color: var(--text); font-size: 14px !important; }
+  body.admin-background #registration-dialog .review-step > span { width: 40px; height: 40px; background: var(--blue); color: var(--text); font-size: 20px; border-radius: 50%; }
+  body.admin-background #registration-dialog .review-step.active > span { background: var(--blue); }
+  body.admin-background #registration-dialog .review-step { color: var(--muted); }
+  body.admin-background #registration-dialog .information-section { --reg-section-accent: var(--cfo-info); }
+  body.admin-background #registration-dialog .information-section:nth-child(even) { --reg-section-accent: var(--green); }
+
+  /* Reference .toast / .bottom. Do not change hidden states or action handlers. */
+  body.admin-background .toast {
+    right: 18px; bottom: 78px; left: auto; transform: none;
+    background: #063E35 !important; color: var(--text) !important;
+    border: 1px solid var(--cfo-success) !important; border-radius: 8px;
+    padding: 12px; font-size: 12px !important; box-shadow: none; z-index: 20;
+  }
+  body.admin-background :is(.attendance-bulkbar,.registration-dialog-footer,.ms-table-footer) { background: #041F38F2 !important; border-top: 1px solid var(--cfo-navy-hover); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  body.admin-background .form-actions { gap: 7px; }
+  body.admin-background .admin-table-scrollbar { --admin-table-scroll-thumb: var(--cfo-text-muted); --admin-table-scroll-track: var(--cfo-panel); }
+  body.admin-background .admin-table-scrollbar::-webkit-scrollbar-thumb:hover { background-color: var(--cfo-navy-hover); }
+  body.admin-background :focus-visible:not(.ce-stage *,.certificate *) { outline-color: var(--yellow); }
+  body.admin-background #main-content :is(input,select,textarea):focus { outline: 2px solid var(--blue); outline-offset: 2px; box-shadow: none; }
+
+  /* Create Schedule filter palette. Control variables preserve reserved icon
+     padding and the existing form builders' control types and behavior. */
+  body.admin-background #main-content,
+  body.admin-background :is(dialog,.ms-modal) {
+    --at-filter-background: var(--cfo-input);
+    --at-filter-text: var(--cfo-text-on-bright);
+    --at-filter-border: var(--cfo-input-border);
+    --at-filter-muted: var(--cfo-text-on-bright);
+    --at-filter-hover-border: var(--cfo-info);
+    --at-filter-focus: var(--cfo-info);
+  }
+  body.admin-background :is(#main-content,dialog,.ms-modal) :is(select,input[type=search],.filters input,.filter-grid input,.ms-filters input,.cfo-search input,.cr-form textarea):not([type=checkbox],[type=radio],[type=hidden],.ce-stage *,.certificate *) {
+    --at-control-background: var(--at-filter-background);
+    --at-control-text: var(--at-filter-text);
+    --at-control-border: var(--at-filter-border);
+    --at-control-scheme: light;
+    color-scheme: light;
+  }
+  body.admin-background :is(#main-content,dialog,.ms-modal) :is(input[type=search],.filters input,.filter-grid input,.ms-filters input,.cfo-search input,.cr-form textarea)::placeholder { color: var(--at-filter-muted) !important; }
+  body.admin-background :is(#main-content,dialog,.ms-modal) select:has(option:checked[value=""]) { --at-control-text: var(--at-filter-muted); }
+  body.admin-background #main-content :is(.filters,.filter-grid,.ms-filters,.cfo-search) :is(.btn,.button,button):not(.primary,.danger,.blue,.ms-primary,.ms-export) {
+    --at-button-background: var(--cfo-button);
+    --at-button-text: var(--cfo-text);
+    --at-button-border: var(--cfo-border);
+  }
+  body.admin-background #main-content :is(.filters,.filter-grid,.ms-filters,.cfo-search) :is(.btn,.button,button):hover:not(:disabled,.primary,.danger,.blue,.ms-primary,.ms-export) {
+    --at-button-background: var(--cfo-button);
+    --at-button-border: var(--at-filter-hover-border);
+  }
+  body.admin-background :is(#main-content,dialog,.ms-modal) :is(select,input[type=search],.filters input,.filter-grid input,.ms-filters input,.cfo-search input,.cr-form textarea):focus-visible {
+    outline: 3px solid var(--at-filter-focus); outline-offset: 3px;
+  }
+  body.admin-background :is(#main-content,dialog,.ms-modal) :is(select,input[type=search],.filters input,.filter-grid input,.ms-filters input,.cfo-search input,.cr-form textarea)[aria-invalid=true] {
+    --at-control-border: var(--cfo-danger);
+  }
+  body.admin-background :is(#main-content,dialog,.ms-modal) :is(select,input[type=search]):disabled { --at-control-text: var(--at-filter-muted); }
+}
+@media screen and (max-width: 700px) {
+  body.admin-background { --admin-background-position: 70% center !important; }
+  body.admin-background #main-content { padding: 10px 8px 145px !important; }
+  body.admin-background .shell > .admin-header { padding: 0 18px !important; }
+  body.admin-background .admin-header #admin-header-breadcrumb { font-size: 10px; }
+  body.admin-background .admin-header-account-copy { display: none; }
+  body.admin-background #main-content :is(.page-heading,.ms-page-head,.overview-heading,.attendance-heading) { align-items: flex-start; flex-direction: column; }
+  body.admin-background #main-content :is(.page-heading,.ms-page-head,.overview-heading,.attendance-heading) h1 { font-size: 18px !important; }
+}
+
+/* Palette roles. Color overrides preserve the existing component geometry. */
+@media screen {
+  body.admin-background :is(#main-content,dialog,.ms-modal) {
+    --at-control-background: var(--cfo-input);
+    --at-control-text: var(--cfo-text-on-bright);
+    --at-control-border: var(--cfo-input-border);
+    --at-control-scheme: light;
+    --admin-dark-danger-text: var(--cfo-danger);
+    --admin-dark-danger-background: var(--cfo-danger-surface);
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) {
+    --ad-navy: var(--cfo-navy);
+    --ad-panel: var(--cfo-panel);
+    --ad-line: var(--cfo-container-border);
+    --ad-blue: var(--cfo-info);
+    --ad-green: var(--cfo-success);
+    --ad-yellow: var(--cfo-yellow);
+    --ad-text: var(--cfo-text);
+    --ad-muted: var(--cfo-text-muted);
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content {
+    --admin-container-border: var(--cfo-container-border);
+    --admin-stat-blue: var(--cfo-info);
+    --admin-stat-red: var(--cfo-error-text);
+    --admin-dashboard-dark-card: var(--cfo-panel);
+    --admin-dashboard-dark-solid: var(--cfo-navy);
+    --admin-dashboard-dark-control-border: var(--cfo-input-border);
+    --admin-dashboard-dark-control-hover-border: var(--cfo-info);
+    --admin-dashboard-dark-primary: var(--cfo-action);
+    --admin-dashboard-dark-primary-hover: var(--cfo-action);
+    --admin-dashboard-dark-accent: var(--cfo-success);
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .metric-icon {
+    color: var(--cfo-page-bg);
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .dashboard-schedule-status {
+    background: var(--cfo-success); color: var(--cfo-text-on-bright);
+  }
+  body.admin-background:has(#main-content > #page > .dashboard-overview) #main-content #page .dashboard-schedule-status.is-closed {
+    background: var(--cfo-danger); color: var(--cfo-text);
+  }
+  body.admin-background #main-content:has(> #page) .attendance-mark.present {
+    background: var(--cfo-success) !important; color: var(--cfo-text-on-bright) !important;
+  }
+  body.admin-background #main-content:has(> #page) .attendance-mark.absent {
+    background: var(--cfo-danger) !important; color: var(--cfo-text) !important;
+  }
+  body.admin-background .sidebar .nav-link:hover,
+  body.admin-background .sidebar .nav-link.active {
+    background: var(--cfo-navy-hover); border-color: var(--cfo-border); color: var(--cfo-text);
+  }
+  body.admin-background .sidebar .nav-link.active { box-shadow: inset 3px 0 var(--cfo-yellow); }
+  body.admin-background #main-content :is(.page-heading,.ms-page-head,.overview-heading,.attendance-heading) {
+    background: linear-gradient(100deg,#0877F2,#267FF1) !important;
+  }
+  body.admin-background #main-content :is(.page-heading,.ms-page-head,.overview-heading,.attendance-heading) :is(.eyebrow,.ms-kicker) { color: var(--cfo-text-on-bright) !important; }
+  body.admin-background #main-content th { background: var(--cfo-navy) !important; color: var(--cfo-text) !important; }
+  body.admin-background #main-content table { background: var(--cfo-panel) !important; }
+  body.admin-background #main-content tbody tr:hover td { background: var(--cfo-navy-hover) !important; }
+  body.admin-background :is(.btn.primary,.button.primary,.primary,.ms-primary,.ms-export,.students-primary):not(.ce-stage *,.certificate *,.print-area *) {
+    background: var(--cfo-action) !important; color: var(--cfo-text-on-bright) !important; border-color: var(--cfo-action) !important;
+  }
+  body.admin-background :is(.btn.blue,.button.blue,.attendance-tab.active,.ms-active,.pagination .active):not(.ce-stage *,.certificate *) {
+    background: var(--cfo-info) !important; color: var(--cfo-text-on-bright) !important; border-color: var(--cfo-info) !important;
+  }
+  body.admin-background :is(.btn.danger,.button.danger,.ms-delete,.ms-danger,.ms-menu-danger,.students-danger):not(.ce-stage *,.certificate *) {
+    background: var(--cfo-danger-surface) !important; color: var(--cfo-danger) !important; border-color: var(--cfo-danger) !important;
+  }
+  body.admin-background :is(.badge,.status-badge,.upload-badge,.ms-badge,.schedule-state,.attendance-chip,.ms-section-chip,.ms-course-chip) {
+    background: #0969C7 !important; color: var(--cfo-text) !important;
+  }
+  body.admin-background :is(.attendance-chip,.ms-section-chip,.ms-course-chip):nth-child(even) {
+    background: #007E60 !important; color: var(--cfo-text) !important;
+  }
+  body.admin-background :is(.badge.success,.status-badge.verified,.status-badge.approved,.status-badge[data-status=Approved],.upload-badge.uploaded,.schedule-state.is-scheduled,.ms-open,.ms-completed,.attendance-pill.present,.attendance-pill.paid) {
+    background: var(--cfo-success) !important; color: var(--cfo-text-on-bright) !important; border-color: var(--cfo-success) !important;
+  }
+  body.admin-background :is(.badge.warning,.status-badge.pending,.status-badge[data-status=Pending],.ms-draft,.attendance-pill.pending) {
+    background: var(--cfo-yellow) !important; color: var(--cfo-text-on-bright) !important; border-color: var(--cfo-yellow) !important;
+  }
+  body.admin-background :is(.badge.danger,.badge.error,.status-badge.rejected,.status-badge[data-status=Rejected],.ms-cancelled,.ms-closed,.attendance-pill.absent) {
+    background: var(--cfo-danger-surface) !important; color: var(--cfo-danger) !important; border-color: var(--cfo-danger) !important;
+  }
+  body.admin-background :is(.error,.cfo-form-error,.batch-feedback.error):not(.badge,.btn,.button,.certificate *) {
+    color: var(--cfo-error-text) !important;
+  }
+  body.admin-background .cfo-required:not(.certificate *,.print-area *) { color: var(--cfo-text) !important; }
+  body.admin-background :is(.message.error,.note.error,.notice.error,.cfo-form-error) {
+    background: var(--cfo-danger-surface) !important; color: var(--cfo-danger) !important; border-color: var(--cfo-container-border) !important;
+  }
+  body.admin-background :is(.message.success,.note.success,.notice.success) {
+    background: #063E35 !important; color: var(--cfo-text) !important; border-color: var(--cfo-container-border) !important;
+  }
+  body.admin-background #registration-dialog :is(.information-section > h3,.management-heading) { background: var(--cfo-navy); }
+  body.admin-background :focus-visible:not(.ce-stage *,.certificate *) { outline-color: var(--cfo-info); }
+  body.admin-background :is(input,select,textarea)[aria-invalid=true] { --at-control-border: var(--cfo-error-text); }
+
+  /* Nested admin surfaces use the same contrast and outlines as the builder. */
+  body.admin-background :is(#main-content,dialog,.ms-modal) :is(.cert-info,.attendance-schedule-card,.attendance-payment-note,.attendance-health-summary,.attendance-allergen-summary,.recovery-confirm,.ms-detail,.ce-elements,.ce-properties):not(.ce-stage *,.certificate *,.print-area *) {
+    background: var(--cfo-panel); color: var(--cfo-text); border-color: var(--cfo-container-border) !important;
+  }
+  body.admin-background #registration-dialog :is(.narrative-section dd,.schedule-preview) {
+    background: var(--cfo-options); color: var(--cfo-text-on-bright); font-weight: 600; border-color: var(--cfo-container-border) !important;
+  }
+  body.admin-background #registration-dialog .schedule-preview :is(strong,span,.icon) { color: var(--cfo-text-on-bright); }
+  body.admin-background :is(.recovery-tabs .btn[aria-pressed=true],.attendance-mark-all,.attendance-history,.attendance-present-only[aria-pressed=true],.ms-view-switch .ms-active):not(.ce-stage *,.certificate *,.print-area *) {
+    background: var(--cfo-info) !important; color: var(--cfo-text-on-bright) !important;
+  }
+  body.admin-background #main-content :is(.search,.search-input,.history-search-input) > .icon { color: var(--cfo-text-on-bright); }
+  body.admin-background :is(.message.error,.note.error,.notice.error,.cfo-form-error) :is(.error,p,span) { color: var(--cfo-danger) !important; }
+  /* Standalone dividers are hidden; container outlines and table grids stay visible. */
+  body.admin-background #main-content :is(.filters,.attendance-search-toolbar,.attendance-health-filters,.panel-head,.ms-table-head,.ms-calendar-head,.ms-panel-title,.overview-heading,.attendance-tabs,.tabs,.task-link) { border-bottom: 0 !important; }
+  body.admin-background #main-content :is(.table-toolbar,.ms-table-note) { border-block: 0 !important; }
+  body.admin-background #main-content :is(.form-actions,.form-section + .form-section,.table-footer,.ms-table-footer,.page-foot) { border-top: 0 !important; }
+  body.admin-background :is(.dialog-header,.dialog-heading,.ms-modal-head,.admin-header-dialog-heading,.receipt-image-heading) { border-bottom: 0 !important; }
+  body.admin-background :is(.dialog-footer,.dialog-foot,.ms-modal-foot,.registration-dialog-footer,.sb-dialog-actions) { border-top: 0 !important; }
+  body.admin-background #main-content hr:not(.ce-stage *,.certificate *,.print-area *) { display: none !important; }
+}

@@ -1,0 +1,311 @@
+/* Dashboard only. Values follow cfo_create_schedule_grouping_ui_banner_same_width.html.
+ * The shared shell remains unchanged; #dashboard-title exists only on the dashboard. */
+@media screen {
+  body.dashboard-mode:has(.dash-content #dashboard-title) {
+    --sd-navy: #062542;
+    --sd-panel: #082b49;
+    --sd-line: #214c70;
+    --sd-blue: #087df0;
+    --sd-green: #00bd83;
+    --sd-yellow: #ffd84d;
+    --sd-text: #eff7ff;
+    --sd-muted: #b0c4d8;
+    background: linear-gradient(135deg, #041d35, #0a4778);
+    color: var(--sd-text);
+    font: 14px Arial, sans-serif;
+  }
+
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-shell {
+    font: 14px Arial, sans-serif;
+    color: var(--sd-text);
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-shell *,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-shell *::before,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-shell *::after {
+    box-sizing: border-box;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-shell button,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-shell input,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-shell select {
+    font-family: inherit;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-shell button { cursor: pointer; }
+
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-sidebar {
+    background: var(--sd-navy);
+    border-right: 1px solid var(--sd-line);
+    color: var(--sd-text);
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-sidebar::before { background-image: none; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-brand,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-sidebar-quote { font-family: Arial, sans-serif; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-brand { padding: 18px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-brand-subtitle { font-size: 14px; color: var(--sd-muted); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-nav { gap: 7px; padding: 0 18px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-nav a,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-nav button,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-logout {
+    min-height: 40px;
+    padding: 9px 11px;
+    gap: 10px;
+    border: 1px solid #557795;
+    border-radius: 6px;
+    background: #0b2b49;
+    color: #eef7ff;
+    font-size: 11px;
+    font-weight: bold;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-nav .is-active,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-nav a:hover,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-nav button:hover {
+    background: var(--sd-blue);
+    border-color: #479dff;
+    box-shadow: none;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-logout { margin: 18px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-logout:hover { background: #0b2b49; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-nav .icon,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-logout .icon { width: 18px; height: 18px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-sidebar-quote { color: var(--sd-muted); font-size: 12px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-backdrop:not([hidden]) { background: #0009; }
+
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    height: 52px;
+    padding: 0 18px;
+    gap: 12px;
+    background: var(--sd-yellow);
+    color: #17334d;
+    border-bottom: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .16);
+    font-weight: bold;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-icon-button:not(.dash-sidebar-close) {
+    width: auto;
+    height: auto;
+    padding: 8px 12px;
+    border: 1px solid #34516c;
+    border-radius: 8px;
+    background: #ffe77e;
+    color: #17334d;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-icon-button .icon { width: 18px; height: 18px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-sidebar-close {
+    background: #0b2b49;
+    color: var(--sd-text);
+    border-color: #557795;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-user-tools { gap: 12px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile { padding-left: 0; border-left: 0; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-button { min-height: 40px; gap: 10px; color: #17334d; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-avatar { width: 36px; height: 36px; background: #173b59; color: white; font-size: 14px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-name strong { font-size: 12px; font-weight: bold; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-name > span { font-size: 11px; color: #17334d; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-button > .icon { margin-left: 0; }
+
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content {
+    width: 100%;
+    max-width: 1600px;
+    margin: auto;
+    padding: 14px 18px 90px;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-welcome {
+    width: 100%;
+    max-width: none;
+    margin: 0 0 12px;
+    padding: 15px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-radius: 9px;
+    background: linear-gradient(100deg, #0877f2, #267ff1);
+    color: var(--sd-text);
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-welcome > div { min-width: 0; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-greeting { margin: 0; font: bold 10px Arial, sans-serif; letter-spacing: 1px; color: #052e58; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-welcome h1 { margin: 5px 0; color: var(--sd-text); font: bold 20px/1.25 Arial, sans-serif; overflow-wrap: anywhere; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-subtitle { margin: 0; font-size: 12px; line-height: normal; color: var(--sd-text); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-welcome blockquote { margin: 0; color: var(--sd-text); font: 12px/1.5 Arial, sans-serif; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-welcome cite { margin-top: 5px; color: var(--sd-text); font: 11px/1.5 Arial, sans-serif; }
+
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status-grid { width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 9px; margin-bottom: 12px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-green { --tone: var(--sd-green); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-gold { --tone: var(--sd-yellow); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-blue,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-purple { --tone: #42b7ff; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-rose { --tone: #f47d8f; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status {
+    min-height: 0;
+    padding: 10px;
+    border: 2px solid var(--tone, #42b7ff);
+    border-radius: 9px;
+    background: rgba(3, 31, 55, .96);
+    color: var(--tone, var(--sd-blue));
+    box-shadow: none;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status > .dash-status-icon { width: 36px; height: 36px; padding: 8px; margin-bottom: 9px; border-radius: 50%; background: var(--tone, var(--sd-blue)); color: #07385f; stroke-width: 1.8; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status h2 { margin: 0 0 5px; color: var(--sd-muted); font-size: 11px; font-weight: bold; line-height: normal; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status p { margin: 0; color: var(--sd-text); font-size: 16px; line-height: normal; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status-mark { width: 17px; height: 17px; margin-top: 9px; color: var(--sd-navy); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status-mark .icon { width: 17px; height: 17px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status-mark.is-calendar { color: var(--tone); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status-mark.is-calendar .icon { width: 24px; height: 24px; }
+
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-columns { width: 100%; grid-template-columns: minmax(0, 2fr) minmax(280px, .9fr); gap: 12px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-primary-column,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-secondary-column { grid-template-columns: minmax(0, 1fr); gap: 11px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-panel,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content > .panel,
+  body.dashboard-mode:has(.dash-content #dashboard-title) #replace-receipt {
+    min-width: 0;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid #214d72;
+    border-radius: 9px;
+    background: rgba(3, 31, 55, .96);
+    color: var(--sd-text);
+    box-shadow: none;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-panel h2,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content > .panel h2 { margin: 0 0 10px; padding-bottom: 10px; border-bottom: 1px solid var(--sd-line); gap: 9px; color: var(--sd-text); font-size: 15px; line-height: normal; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-panel h2 > .icon { width: 34px; height: 34px; padding: 8px; border-radius: 7px; background: var(--sd-blue); color: var(--sd-text); flex-shrink: 0; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-panel-heading { gap: 9px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--sd-line); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-panel-heading h2 { margin: 0; padding: 0; border: 0; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 12px;
+    padding: 20px 22px;
+    border-color: #705e31;
+    border-left: 4px solid var(--sd-yellow);
+    background: linear-gradient(115deg, rgba(255, 216, 77, .08), transparent 65%), var(--cfo-panel, var(--sd-panel));
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice > div { min-width: 0; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice .dash-registration-notice-labels { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice .badge { display: inline-flex; padding: 4px 9px; border: 1px solid #96534d; border-radius: 5px; background: #4a2829; color: #ffc6bf; font: bold 11px/1.3 Arial, sans-serif; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice .dash-registration-notice-eyebrow { color: var(--sd-muted); font-size: 10px; font-weight: bold; letter-spacing: .8px; text-transform: uppercase; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice h2 { display: block; margin: 0 0 7px; padding: 0; border: 0; color: var(--sd-text); font: bold 20px/1.3 Arial, sans-serif; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice p { margin: 0; color: #c3d3e4; font-size: 13px; line-height: 1.6; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice .dash-registration-notice-history { margin-top: 5px; color: var(--sd-muted); font-size: 11px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice .form-actions { margin: 0; flex-shrink: 0; align-self: center; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice .primary { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 48px; padding: 13px 18px; border-radius: 7px; background: var(--sd-yellow); color: var(--sd-navy); border-color: var(--sd-yellow); font-size: 12px; text-align: center; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice .primary:hover { background: #ffe782; border-color: #ffe782; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice .primary svg { width: 18px; height: 18px; flex-shrink: 0; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-event-grid { gap: 9px; margin-top: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-chapel-image { border: 1px solid var(--sd-line); border-radius: 6px; background: var(--sd-navy); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-chapel figcaption { margin-top: 9px; font: 12px/1.5 Arial, sans-serif; color: var(--sd-text); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-chapel figcaption span { margin-top: 5px; font: 10px/1.5 Arial, sans-serif; color: var(--sd-muted); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-event-info dl { gap: 0; margin: 0 0 10px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-event-info dl > div { grid-template-columns: 17px minmax(52px, .8fr) minmax(0, 1.4fr); gap: 5px; padding: 9px 0; border-bottom: 1px solid #1a4264; font-size: 11px; line-height: normal; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-event-info dl > div:last-child { border-bottom: 0; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-event-info dt { color: #b7cadd; font-weight: normal; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-event-info dd { color: var(--sd-text); font-weight: bold; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-event-info .icon { width: 17px; height: 17px; color: var(--sd-muted); stroke-width: 1.8; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-scheduled { padding: 5px 8px; border-radius: 14px; background: #0969c7; color: var(--sd-text); font-size: 10px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-event-info dl > div:last-child dd:not(:has(.dash-scheduled)) { justify-self: start; padding: 5px 8px; border-radius: 14px; background: #0969c7; font-size: 10px; }
+
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-view-schedule,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-panel-heading > button,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-quick-grid button,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content > .panel .primary,
+  body.dashboard-mode:has(.dash-content #dashboard-title) #replace-receipt .primary,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content > .note .outline {
+    min-height: 0;
+    padding: 9px 11px;
+    gap: 7px;
+    border: 1px solid #557795;
+    border-radius: 6px;
+    background: #0b2b49;
+    color: #eef7ff;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    text-decoration: none;
+    line-height: normal;
+    box-shadow: none;
+  }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-view-schedule { background: var(--sd-blue); border-color: #479dff; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content > .panel .primary,
+  body.dashboard-mode:has(.dash-content #dashboard-title) #replace-receipt .primary { background: #00a970; border-color: #42d8ac; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content > .panel p { font-size: 11px; color: var(--sd-muted); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content > .panel .field,
+  body.dashboard-mode:has(.dash-content #dashboard-title) #replace-receipt label { display: block; font-size: 11px; font-weight: bold; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content > .panel select,
+  body.dashboard-mode:has(.dash-content #dashboard-title) #replace-receipt input { width: 100%; padding: 9px; margin: 5px 0 10px; background: #f4f8fd; color: #173856; border: 1px solid #b4c7d8; border-radius: 6px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content > .note { color: var(--sd-muted); font-size: 11px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-view-schedule .icon { width: 17px; height: 17px; color: #eef7ff; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-quick-grid .dash-green { background: #00a970; border-color: #42d8ac; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-quick-grid .dash-blue,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-quick-grid .dash-purple { background: var(--sd-blue); border-color: #479dff; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-quick-grid .dash-gold { border-color: var(--sd-yellow); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-quick-grid .dash-rose { background: #fff0f1; color: #a52b42; border-color: #f0b3bd; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-quick-grid .icon { width: 18px; height: 18px; stroke-width: 1.8; flex-shrink: 0; }
+
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-announcement { gap: 10px; padding: 10px; border: 2px solid #42b7ff; border-radius: 9px; background: transparent; color: var(--sd-text); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-announcement:nth-of-type(even) { border-color: var(--sd-green); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-announcement h3 { margin: 0 0 3px; color: var(--sd-text); font-size: 16px; line-height: normal; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-announcement p { margin: 0; color: var(--sd-muted); font-size: 11px; line-height: normal; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-announcement time { color: var(--sd-muted); font-size: 10px; line-height: normal; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-announcement > .icon { color: var(--sd-blue); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-announcement a { display: inline-flex; margin-top: 7px; padding: 5px 7px; border: 1px solid #479dff; border-radius: 5px; background: var(--sd-blue); color: white; font-size: 10px; font-weight: bold; text-decoration: none; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-announcements > p { color: var(--sd-muted); font-size: 11px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-reflection { min-height: 0; padding: 12px; gap: 10px; border: 1px dashed #43baff; border-radius: 8px; background: #052543; color: var(--sd-text); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-reflection p { margin: 0 0 4px; font: 14px/1.5 Arial, sans-serif; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-reflection span:not(.dash-leaf) { color: var(--sd-muted); font-size: 11px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-leaf { width: 36px; height: 36px; background: #72bfff; color: #08375c; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-leaf .icon { width: 24px; height: 24px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-reflection > .dash-leaf-decoration { color: var(--sd-green); opacity: .12; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-preview-note { color: var(--sd-muted); font-size: 10px; }
+
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-panel { background: var(--sd-panel); color: var(--sd-text); border: 1px solid #47789c; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, .16); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu { top: calc(100% + 10px); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu button,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu a { padding: 9px 11px; font-size: 11px; font-weight: bold; color: var(--sd-text); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu button:hover,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-menu a:hover,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-item:hover,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-item.is-unviewed { background: var(--sd-navy); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-heading { border-color: var(--sd-line); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-heading h2 { font-size: 15px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-heading span,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-copy time,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-empty { color: var(--sd-muted); font-size: 11px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-item { color: var(--sd-text); border-radius: 6px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-copy { font-size: 12px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-icon { background: var(--sd-blue); color: var(--sd-text); border-radius: 7px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notification-unread { background: var(--sd-green); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-notifications span { background: #fff0f1; color: #a52b42; font-size: 10px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-shell button:hover { filter: none; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-shell :is(button, a):focus-visible,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status:focus { outline: 2px solid var(--sd-yellow); outline-offset: 3px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-topbar :is(button, a):focus-visible { outline-color: var(--sd-navy); }
+}
+
+@media screen and (max-width: 1050px) {
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-columns { grid-template-columns: minmax(0, 1fr); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-secondary-column { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+}
+
+@media screen and (max-width: 700px) {
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-content { padding: 10px 8px 145px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-welcome { align-items: flex-start; flex-direction: column; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-welcome h1 { font-size: 18px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-welcome blockquote { text-align: left; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice { flex-direction: column; align-items: stretch; gap: 16px; padding: 16px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice h2 { font-size: 18px; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice .form-actions { align-self: stretch; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) #dashboard-registration-notice .primary { width: 100%; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-status { min-height: 0; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-event-grid,
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-secondary-column { grid-template-columns: minmax(0, 1fr); }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-profile-name { display: none; }
+  body.dashboard-mode:has(.dash-content #dashboard-title) .dash-panel-heading { flex-wrap: wrap; }
+}

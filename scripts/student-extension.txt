@@ -1,0 +1,16 @@
+function connectedStudentCertificates() {
+  const registrations=cfoStudent.registrations;
+  const markup=registrations.map(r=>`<section class="certificate-content"><h2>${escapeHTML(r.year)} Recollection</h2><p>${r.certificate?'Available · '+escapeHTML(r.certificate.certificate_number):r.attendance==='Present'&&r.attendance_verified_at?'Eligible. Awaiting certificate issuance.':'Not available. Present and verified attendance are required.'}</p>${r.certificate?`<img src="/certificates/${r.certificate.id}" alt="Issued certificate" style="width:100%;max-width:900px"><div class="form-actions"><a class="primary" href="/certificates/${r.certificate.id}" target="_blank" rel="noopener">View / Print</a><a class="outline" href="/certificates/${r.certificate.id}?download=1">Download SVG</a></div>`:''}</section>`).join('');
+  dashboard({active:'certificate',titleId:'certificate-title',content:`<section class="certificate-page"><h1 id="certificate-title">My Certificate</h1>${markup||'<p>No recollection registration yet.</p>'}</section>`});
+}
+function connectedRegistrationDetails() {
+  const r=cfoStudent.registrations.find(r=>r.year===new Date().getFullYear());
+  if(!r)return;
+  const note=document.querySelector('.dash-preview-note');
+  if(note){note.textContent=`Registration: ${r.status}. Receipt: ${r.receipt_status}. ${r.rejection_reason||''} ${r.receipt_reason||''}`;
+    if(['Rejected','Not uploaded'].includes(r.receipt_status)){
+      note.insertAdjacentHTML('afterend',`<form id="replace-receipt"><label>Upload receipt (JPG/PNG, up to 5 MB)<input type="file" name="receipt" accept="image/jpeg,image/png" required></label><button type="submit" class="primary">Submit receipt</button></form>`);
+      document.querySelector('#replace-receipt').onsubmit=e=>{e.preventDefault();cfoSubmit(e.target,async()=>{await cfoRequest('/api/registrations/'+r.id+'/receipt','POST',new FormData(e.target));renderedRoute=null;await route();showNotice('Receipt saved','Your receipt is awaiting verification.');});};
+    }
+  }
+}

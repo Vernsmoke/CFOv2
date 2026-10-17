@@ -1,0 +1,2 @@
+﻿PASS: sse: identical metadata, status, response headers, and rendered HTML; Cache-Control=no-store, private.
+PASS: polling: identical metadata, status, response headers, and rendered HTML; Cache-Control=no-store, private.

@@ -1,0 +1,43 @@
+/* Shared screen-only horizontal controls. Tables keep their existing height and layout. */
+@media screen {
+    body.admin-background .admin-table-scroll-frame { position: relative; min-width: 0; max-width: 100%; }
+    body.admin-background .admin-table-scroll-frame.is-overflowing { padding-bottom: 4px; }
+    body.admin-background .admin-table-scroll-container { min-width: 0; }
+    /* Keep panel corner clipping without making it a false sticky scroll parent. */
+    body.admin-background .admin-table-scroll-host { overflow: clip !important; }
+    body.admin-background .admin-table-scroll-source { overflow-x: auto; scrollbar-width: none; }
+    body.admin-background .admin-table-scroll-source::-webkit-scrollbar:horizontal { height: 0; }
+    body.admin-background .admin-table-scroll-source::-webkit-scrollbar-track:horizontal,
+    body.admin-background .admin-table-scroll-source::-webkit-scrollbar-thumb:horizontal { display: none; }
+    body.admin-background .admin-table-scrollbar {
+        --admin-table-scroll-thumb: #8a8a8a;
+        --admin-table-scroll-track: rgba(255, 255, 255, .18);
+        position: sticky;
+        bottom: var(--admin-table-scroll-bottom, 0px);
+        z-index: 8;
+        height: 12px;
+        min-height: 12px;
+        max-width: 100%;
+        padding: 0;
+        border: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: auto;
+        scrollbar-color: var(--admin-table-scroll-thumb) var(--admin-table-scroll-track);
+    }
+    body.admin-background .admin-table-scrollbar.is-out-of-view { visibility: hidden; pointer-events: none; }
+    body.admin-background .admin-table-scroll-spacer { height: 1px; pointer-events: none; }
+    body.admin-background .admin-table-scrollbar::-webkit-scrollbar { height: 12px; background: transparent; }
+    body.admin-background .admin-table-scrollbar::-webkit-scrollbar-track { background: var(--admin-table-scroll-track); }
+    body.admin-background .admin-table-scrollbar::-webkit-scrollbar-thumb {
+        background: var(--admin-table-scroll-thumb);
+        border: 2px solid transparent;
+        border-radius: 999px;
+        background-clip: padding-box;
+    }
+    body.admin-background .admin-table-scrollbar::-webkit-scrollbar-thumb:hover { background: #6f6f6f; background-clip: padding-box; }
+    body.admin-background .admin-table-scrollbar::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+    body.admin-background .admin-table-scrollbar::-webkit-scrollbar-corner { background: transparent; }
+    @supports selector(::-webkit-scrollbar) { body.admin-background .admin-table-scrollbar { scrollbar-color: auto; } }
+}
+@media print { .admin-table-scrollbar { display: none !important; } }

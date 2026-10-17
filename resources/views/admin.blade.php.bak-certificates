@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="en" class="admin-background-root">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#152c40">
+  <meta name="description" content="Christian Formation Office registration and attendance management.">
+  <title>CFO · Admin Panel</title>
+  <style>
+    /* 01. Design tokens and foundation */
+    :root {
+      --ink: #192c3a; --muted: #586c7a; --primary: #146b61; --primary-hover: #0d554d;
+      --navy: #152c40; --canvas: #f4f7f9; --surface: #fff; --line: #dce5e9;
+      --soft: #edf5f2; --danger: #ab343d; --radius: 14px; --sidebar: 252px;
+      --shadow: 0 6px 24px #142f4208;
+      font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); font-size: 15px;
+      background: var(--canvas); scrollbar-gutter: stable;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; line-height: 1.55; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(25px, 2.4vw, 34px); line-height: 1.2; letter-spacing: -.9px; font-weight: 650; }
+    h2 { font-size: 18px; line-height: 1.4; letter-spacing: -.3px; font-weight: 650; }
+    h3 { font-size: 15px; font-weight: 650; }
+    a { color: var(--primary); text-underline-offset: 3px; }
+    button, input, select, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    button { cursor: pointer; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    :focus-visible { outline: 3px solid #2785bd; outline-offset: 3px; }
+    [hidden] { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; clip-path: inset(50%); overflow: hidden; white-space: nowrap; }
+    .icon { width: 20px; height: 20px; flex: 0 0 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; }
+    .eyebrow { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
+    .skip-link { position: fixed; left: 16px; top: -100px; z-index: 100; padding: 10px 16px; background: white; border-radius: 8px; }
+    .skip-link:focus { top: 12px; }
+
+    /* 02. Shared navigation and page shell */
+    .sidebar { position: fixed; inset: 0 auto 0 0; width: var(--sidebar); background: var(--navy); color: #e5edf3; display: flex; flex-direction: column; z-index: 40; }
+    .brand { display: flex; align-items: center; gap: 12px; padding: 27px 22px 22px; text-decoration: none; color: white; }
+    .brand img { width: 43px; height: 49px; object-fit: contain; flex: 0 0 43px; }
+    .brand strong { display: block; font-family: Georgia, serif; font-size: 21px; font-weight: 500; line-height: 1.2; }
+    .brand small { display: block; margin-top: 5px; color: #b9cbd6; font-size: 10px; letter-spacing: 1.15px; text-transform: uppercase; }
+    .workspace-label { margin: 0 18px 14px; padding: 11px 12px; border: 1px solid #ffffff20; border-radius: 9px; font-size: 12px; color: #d4e0e8; }
+    .sidebar nav { flex: 1; overflow-y: auto; padding: 0 12px 16px; }
+    .nav-group { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #a7bbc9; padding: 18px 13px 7px; }
+    .nav-link { display: flex; align-items: center; gap: 12px; padding: 10px 13px; min-height: 43px; margin: 2px 0; color: #d7e2ea; text-decoration: none; font-size: 13px; border-radius: 8px; line-height: 1.4; }
+    .nav-link:hover { background: #ffffff0d; color: white; }
+    .nav-link.active { color: white; background: #ffffff15; box-shadow: inset 3px 0 #6dc8ad; font-weight: 650; }
+    .sidebar-footer { flex-shrink: 0; border-top: 1px solid #ffffff18; padding: 14px 18px; display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; }
+    .avatar { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #e4edea; color: #28574e; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .sidebar-footer strong { font-size: 12px; display: block; }
+    .sidebar-footer small { color: #b0c4d1; font-size: 11px; }
+    .sidebar-footer button { background: none; border: 0; color: #d6e3ec; width: 38px; height: 40px; border-radius: 6px; }
+    .sidebar-footer button:hover { background: #ffffff12; }
+    .shell { margin-left: var(--sidebar); min-width: 0; }
+    .topbar { width: calc(100% - 32px); max-width: 1620px; min-height: 70px; display: flex; align-items: center; gap: 12px; margin: 16px auto 0; padding: 12px 20px; background: #ffffffed; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .topbar-title { min-width: 0; font-size: 13px; color: var(--muted); flex: 1; }
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+    .topbar-actions .account { display: flex; align-items: center; gap: 9px; border: 0; background: transparent; padding: 4px; text-align: left; color: var(--ink); }
+    .account strong { display: block; font-size: 12px; }
+    .account small { display: block; color: var(--muted); font-size: 11px; }
+    .preview-tag { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: #f8fafb; color: var(--muted); padding: 4px 9px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .preview-tag::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #688778; }
+    .preview-tag.live { color: #176344; border-color: #b8dccb; background: #f0faf4; }
+    .preview-tag.live::before { background: #16a15c; box-shadow: 0 0 0 3px #16a15c22; }
+    .topbar #live-status { border-radius: 999px; }
+    .data-table tr.live-highlight { animation: live-row-highlight 3s ease-out; }
+    @keyframes live-row-highlight { 0%,45% { background: #fff0bf; } 100% { background: transparent; } }
+    main { max-width: 1620px; margin: auto; padding: 30px 32px 42px; min-width: 0; }
+    .page-heading { display: flex; gap: 20px; justify-content: space-between; align-items: flex-end; margin-bottom: 26px; }
+    .page-heading .eyebrow { margin-bottom: 9px; }
+    .page-heading p { color: var(--muted); font-size: 14px; margin-top: 9px; max-width: 740px; }
+    #page-title:focus, #history-heading:focus { outline: none; }
+    .page-actions, .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .page-actions { flex-shrink: 0; }
+    .page-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px; border-top: 1px solid var(--line); padding-top: 16px; color: var(--muted); font-size: 11px; }
+    .icon-btn.nav-close { display: none; }
+    .nav-backdrop { position: fixed; inset: 0; background: #11273780; z-index: 35; border: 0; }
+    body.nav-collapsed .sidebar { display: none; }
+    body.nav-collapsed .shell { margin-left: 0; }
+
+    /* 03. Buttons, badges, forms and feedback */
+    .btn { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 14px; border: 1px solid #bccbd3; border-radius: 8px; color: #294552; background: white; font-size: 13px; line-height: 1.4; font-weight: 600; text-decoration: none; }
+    .btn:hover:not(:disabled) { background: #f1f6f7; border-color: #8fa6b2; }
+    .btn.primary { background: var(--primary); border-color: var(--primary); color: white; }
+    .btn.primary:hover:not(:disabled) { background: var(--primary-hover); border-color: var(--primary-hover); }
+    .btn.danger { color: var(--danger); border-color: #d5aab0; background: white; }
+    .btn.danger:hover { background: #fff1f2; }
+    .btn.quiet { border-color: transparent; background: transparent; }
+    .btn.compact { padding: 6px 10px; min-height: 34px; font-size: 12px; }
+    .icon-btn { display: inline-grid; place-items: center; width: 40px; height: 40px; min-width: 40px; border: 1px solid var(--line); border-radius: 8px; background: white; color: #365360; }
+    .icon-btn:hover { background: #edf4f6; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; background: #eef2f5; color: #49606f; border-radius: 5px; font-size: 11px; font-weight: 650; line-height: 1.5; }
+    .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .badge.success { color: #21694c; background: #e9f4ee; }
+    .badge.warning { color: #8a601d; background: #fbf1de; }
+    .badge.danger { color: #a63d48; background: #fbecef; }
+    .badge.info { color: #326589; background: #eaf2fa; }
+    label.field { display: grid; gap: 7px; font-size: 12px; font-weight: 650; color: #354d5a; min-width: 0; }
+    input:not([type=checkbox]), select, textarea { width: 100%; min-width: 0; border: 1px solid #bdcbd4; border-radius: 7px; padding: 10px 12px; min-height: 42px; color: var(--ink); background: white; font-size: 13px; }
+    input::placeholder, textarea::placeholder { color: #748592; }
+    input[readonly] { background: #f4f7f9; color: #586e7c; }
+    textarea { min-height: 100px; resize: vertical; }
+    input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--primary); cursor: pointer; vertical-align: middle; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    .form-section + .form-section { border-top: 1px solid var(--line); margin-top: 26px; padding-top: 24px; }
+    .form-section h3 { margin-bottom: 16px; }
+    .form-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; padding-top: 22px; margin-top: 22px; border-top: 1px solid var(--line); }
+    .check-label { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .notice { padding: 13px 16px; border: 1px solid #d3e6df; border-radius: 9px; background: #f0f7f4; color: #3e6359; font-size: 12px; line-height: 1.6; margin-bottom: 20px; }
+    .notice.neutral { background: #f6f8fa; border-color: var(--line); color: var(--muted); }
+    .form-help { font-size: 12px; color: var(--muted); font-weight: 400; }
+    .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 70; max-width: calc(100vw - 32px); width: max-content; background: var(--navy); color: white; padding: 12px 20px; border-radius: 9px; box-shadow: var(--shadow); font-size: 13px; }
+
+    /* 04. Cards, dashboard and information panels */
+    .panel { min-width: 0; border: 1px solid var(--line); background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: clip; }
+    .panel-body { padding: 24px; }
+    .panel-head { display: flex; gap: 16px; justify-content: space-between; align-items: center; padding: 21px 24px; border-bottom: 1px solid var(--line); }
+    .panel-head p { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .stack { display: grid; grid-template-columns: minmax(0,1fr); gap: 22px; min-width: 0; }
+    #grid-host, #page { min-width: 0; }
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 22px; align-items: start; }
+    .dashboard-split { grid-template-columns: minmax(0, 1fr) 310px; }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .metric { padding: 21px 22px 18px; border: 1px solid var(--line); border-radius: 12px; background: white; min-width: 0; box-shadow: var(--shadow); }
+    .metric-top { display: flex; gap: 8px; align-items: center; justify-content: space-between; font-size: 12px; color: #506775; font-weight: 600; }
+    .metric-icon { display: grid; place-items: center; width: 33px; height: 33px; color: var(--primary); background: #eef5f2; border-radius: 9px; flex-shrink: 0; }
+    .metric strong { display: block; font-size: 32px; letter-spacing: -1px; font-weight: 650; margin: 10px 0 6px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .metric a, .metric p { display: flex; align-items: center; gap: 5px; margin-top: 11px; font-size: 11px; text-decoration: none; }
+    .metric a:hover { text-decoration: underline; }
+    .metric a .icon { width: 13px; height: 13px; flex-basis: 13px; }
+    .welcome { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 24px; border-radius: 12px; background: #e9f2ef; border: 1px solid #d8e7e1; }
+    .welcome p { font-size: 13px; color: #48685e; margin-top: 6px; }
+    .welcome .icon { width: 20px; height: 20px; flex-basis: 20px; }
+    .task-link { display: flex; gap: 12px; align-items: center; padding: 17px 0; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+    .task-link:last-child { border-bottom: 0; padding-bottom: 0; }
+    .task-link:first-child { padding-top: 0; }
+    .task-link strong { display: block; font-size: 13px; }
+    .task-link small { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; }
+    .task-link > .icon:last-child { margin-left: auto; width: 16px; height: 16px; }
+    .event-date { display: inline-grid; place-items: center; padding: 10px 17px; border: 1px solid #dae8e1; border-radius: 10px; background: #edf5f1; color: #2f6b56; margin-bottom: 18px; }
+    .event-date small { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .event-date strong { font-size: 28px; font-weight: 600; line-height: 1.3; }
+    .detail-list { display: grid; grid-template-columns: 130px minmax(0,1fr); gap: 14px 20px; font-size: 13px; margin: 0; }
+    .detail-list dt { color: var(--muted); }
+    .detail-list dd { margin: 0; overflow-wrap: anywhere; font-weight: 500; }
+    .detail-list.vertical { grid-template-columns: 1fr; gap: 4px; }
+    .detail-list.vertical dd { margin-bottom: 13px; }
+    .group-list { display: grid; gap: 12px; }
+    .group-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: white; }
+    .group-title { display: flex; align-items: center; gap: 14px; }
+    .group-mark { padding: 10px; min-width: 58px; background: var(--soft); color: var(--primary); border-radius: 9px; font-size: 12px; font-weight: 700; text-align: center; }
+    .empty { text-align: center; padding: 48px 22px; }
+    .empty .icon { width: 32px; height: 32px; margin-bottom: 12px; color: #668794; }
+    .empty p { max-width: 470px; margin: 8px auto 18px; color: var(--muted); font-size: 13px; }
+
+    /* 05. Reusable data grids */
+    .filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; padding: 20px 24px; border-bottom: 1px solid var(--line); }
+    .filters .field { flex: 1 1 140px; }
+    .filters .field.search { flex: 2 1 230px; }
+    .table-toolbar { display: flex; justify-content: space-between; gap: 14px; align-items: center; flex-wrap: wrap; padding: 15px 24px; border-bottom: 1px solid var(--line); background: #fcfdfd; }
+    .table-wrap { overflow-x: auto; max-width: 100%; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+    th { padding: 13px 18px; background: #f7f9fb; color: #5a6f7d; font-size: 10px; letter-spacing: .55px; text-transform: uppercase; white-space: nowrap; font-weight: 650; border-bottom: 1px solid var(--line); }
+    td { padding: 16px 18px; border-bottom: 1px solid #eaf0f3; vertical-align: middle; line-height: 1.5; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #fafcfd; }
+    .data-table { min-width: 780px; }
+    #page:has(.welcome) .data-table { min-width: 620px; }
+    .data-table.wide { min-width: 1080px; }
+    .data-table td { max-width: 320px; }
+    .data-table .actions { flex-wrap: nowrap; }
+    .data-table input[type=checkbox] { margin: 0; }
+    @media screen and (min-width: 1001px) {
+      #data-grid.history-grid .data-table { min-width: 0; width: 100%; table-layout: fixed; }
+      #data-grid.history-grid .data-table :is(th, td) { padding-inline: 8px; white-space: normal; overflow-wrap: anywhere; }
+      #data-grid.history-grid .grid-sort { display: block; max-width: 100%; white-space: normal; }
+      #data-grid.history-grid th:nth-child(1) { width: 16%; }
+      #data-grid.history-grid th:nth-child(2) { width: 13%; }
+      #data-grid.history-grid th:nth-child(3) { width: 17%; }
+      #data-grid.history-grid th:nth-child(4) { width: 12%; }
+      #data-grid.history-grid th:nth-child(5) { width: 15%; }
+      #data-grid.history-grid th:nth-child(6) { width: 15%; }
+      #data-grid.history-grid th:nth-child(7) { width: 12%; }
+    }
+    .data-table select { min-width: 148px; min-height: 36px; padding: 6px 9px; font-size: 12px; }
+    .name-cell strong { display: block; font-weight: 650; white-space: nowrap; }
+    .name-cell span { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+    .nowrap { white-space: nowrap; }
+    .table-footer { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; padding: 16px 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .pagination select { width: 65px; min-height: 34px; font-size: 12px; padding: 5px 8px; }
+    .table-empty { padding: 40px; text-align: center; color: var(--muted); }
+    .tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--line); margin-bottom: 24px; overflow-x: auto; }
+    .tab { padding: 12px 16px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); font-size: 13px; white-space: nowrap; }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 650; }
+
+    /* Password reset queue */
+    .recovery-overview { display: grid; gap: 20px; margin-bottom: 20px; }
+    .recovery-office { display: flex; align-items: flex-start; gap: 14px; padding: 20px 24px; background: var(--soft); border: 1px solid #cce1d7; border-radius: 12px; }
+    .recovery-office > .icon { color: var(--primary); margin-top: 3px; }
+    .recovery-office p { color: #48685e; font-size: 13px; margin-top: 5px; max-width: 850px; }
+    .recovery-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .recovery-tabs .btn[aria-pressed=true] { background: var(--navy); color: white; border-color: var(--navy); }
+    .recovery-grid .name-cell strong { white-space: normal; }
+    .recovery-grid .name-cell span { overflow-wrap: anywhere; }
+    .recovery-grid .data-table .actions { flex-wrap: wrap; min-width: 150px; }
+    .recovery-grid .data-table .actions .btn { min-height: 38px; }
+    .recovery-status-help { display: block; color: var(--muted); font-size: 11px; margin-top: 6px; max-width: 170px; }
+    .recovery-review-card { padding: 18px; border: 1px solid var(--line); background: #f8fafb; border-radius: 10px; margin-bottom: 20px; }
+    .recovery-confirm { padding: 16px; border: 1px solid #cce1d7; border-radius: 9px; background: var(--soft); align-items: flex-start; }
+    .recovery-confirm input { flex-shrink: 0; margin-top: 3px; }
+    .recovery-error { color: var(--danger); font-size: 13px; margin-top: 14px; }
+
+    /* 06. Dialogs and print previews */
+    dialog { width: min(570px, calc(100vw - 32px)); padding: 0; margin: auto; border: 1px solid var(--line); border-radius: 15px; color: var(--ink); max-height: calc(100dvh - 32px); overflow-y: auto; box-shadow: 0 24px 100px #091e3b25; }
+    dialog.large { width: min(850px, calc(100vw - 32px)); }
+    dialog::backdrop { background: #10293e80; backdrop-filter: blur(2px); }
+    body:has(dialog[open]) { overflow: hidden; }
+    .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 24px; border-bottom: 1px solid var(--line); }
+    .dialog-body { padding: 24px; }
+    .dialog-body > p { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+    .dialog-body .notice:last-child { margin-bottom: 0; }
+    .dialog-footer:empty { display: none; }
+    .dialog-footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; padding: 18px 24px; border-top: 1px solid var(--line); background: #fbfcfd; }
+    .certificate { background: #fdfdfb; border: 1px solid #cbbd8e; outline: 5px solid #f5f2e8; padding: 32px 24px; text-align: center; color: #285346; margin: 5px; overflow-wrap: anywhere; }
+    .certificate .school { font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; }
+    .certificate h2 { font: 600 25px/1.4 Georgia,serif; letter-spacing: 2px; margin: 27px 0 18px; }
+    .certificate .recipient { font: italic 30px/1.4 Georgia,serif; border-bottom: 1px solid #d5d9ce; padding-bottom: 14px; margin: 18px auto; max-width: 90%; }
+    .certificate p { font-size: 12px; line-height: 1.8; }
+    .certificate .signature { margin-top: 30px; font-size: 11px; }
+    .poster { display: grid; place-content: center; min-height: 280px; padding: 32px; background: #eff2e7; color: #435b43; text-align: center; border: 1px solid #dbe2cc; border-radius: 9px; }
+    .poster strong { font: 38px/1.15 Georgia,serif; margin: 18px 0; }
+    .poster small { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+    .print-area { display: none; }
+    .signed-out { max-width: 440px; margin: 10vh auto; text-align: center; }
+    @media print {
+      body > * { display: none !important; }
+      body > .print-area { display: block !important; }
+      .print-area { padding: 12mm; color: black; background: white; }
+      .print-area h1 { font-size: 23px; margin-bottom: 8px; }
+      .print-area p { font-size: 12px; margin-bottom: 18px; }
+      .print-area table { min-width: 0; font-size: 10px; }
+      .print-area th,.print-area td { padding: 8px; }
+      .certificate { break-inside: avoid; }
+    }
+
+    /* 07. Responsive layout and reduced motion */
+    @media (min-width: 1600px) { main { padding: 36px 46px; } }
+    @media (max-width: 1200px) {
+      .split { grid-template-columns: minmax(0,1fr); }
+      .dashboard-side { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+      .metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width: 1000px) {
+      .sidebar { transform: translateX(-100%); width: min(285px,calc(100vw - 40px)); }
+      body.nav-open .sidebar { transform: translateX(0); }
+      body.nav-collapsed .sidebar { display: flex; }
+      .shell { margin-left: 0; }
+      .icon-btn.nav-close { display: grid; position: absolute; top: 12px; right: 10px; width: 30px; height: 30px; min-width: 30px; background: transparent; border: 0; color: white; }
+      .brand { padding-right: 45px; }
+      body.nav-open { overflow: hidden; }
+      .page-heading { align-items: flex-start; }
+    }
+    @media (max-width: 650px) {
+      main { padding: 24px 16px 30px; }
+      .topbar { width: calc(100% - 20px); margin-top: 10px; padding: 10px 12px; gap: 8px; min-height: 64px; }
+      .topbar-title { font-size: 12px; }
+      .topbar-actions { gap: 6px; }
+      .topbar-actions .account > span:not(.avatar), .topbar .preview-tag { display: none; }
+      .topbar-actions #live-status { display: inline-flex; }
+      .page-heading { flex-direction: column; gap: 18px; margin-bottom: 22px; }
+      .page-actions { width: 100%; flex-wrap: wrap; }
+      .page-actions .btn { flex: 1; }
+      .metrics { gap: 10px; }
+      .metric { padding: 15px; }
+      .metric-top { align-items: flex-start; font-size: 11px; }
+      .metric-icon { width: 27px; height: 27px; border-radius: 6px; }
+      .metric-icon .icon { width: 17px; height: 17px; }
+      .metric strong { font-size: 29px; }
+      .metric a { font-size: 11px; align-items: flex-start; }
+      .welcome { padding: 18px; flex-direction: column; align-items: stretch; }
+      .dashboard-side, .form-grid { grid-template-columns: minmax(0,1fr); }
+      .panel-body, .panel-head, .filters { padding: 18px; }
+      .panel-head { flex-wrap: wrap; }
+      .table-toolbar, .table-footer { padding: 14px 18px; }
+      .filters .field { flex-basis: calc(50% - 14px); }
+      .filters .field.search { flex-basis: 100%; }
+      input:not([type=checkbox]),select,textarea { font-size: 16px; }
+      .btn { min-height: 42px; }
+      .btn.compact { min-height: 38px; }
+      .group-row { align-items: flex-start; flex-direction: column; padding: 18px; gap: 16px; }
+      .group-row .actions { width: 100%; }
+      .group-row .btn { flex: 1; }
+      .detail-list { grid-template-columns: 1fr; gap: 4px; }
+      .detail-list dd { margin-bottom: 12px; }
+      .dialog-header, .dialog-body, .dialog-footer { padding: 18px; }
+      .dialog-footer .btn { flex: 1; }
+      .page-foot { flex-direction: column; }
+      .certificate { padding: 25px 15px; }
+    }
+    @media (max-height: 720px) { .brand { padding-top: 18px; padding-bottom: 14px; } .workspace-label { display: none; } .nav-group { padding-top: 12px; } .sidebar-footer { padding-top: 10px; padding-bottom: 10px; } }
+    @media (max-width: 360px) {
+      .metrics { grid-template-columns: 1fr; } .filters .field { flex-basis: 100%; }
+      .topbar { flex-wrap: wrap; }
+      .topbar-title { flex-basis: calc(100% - 60px); }
+      .topbar-actions { margin-left: auto; }
+    }
+    /* Dashboard and History containers; reuse the existing palette and components. */
+    @media screen {
+      #main-content:has(.dashboard-overview, #history-summary) { width: calc(100% - 32px); margin: 16px auto; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--admin-background-panel, #fff); box-shadow: var(--shadow); }
+      #main-content:has(.dashboard-overview) > .page-heading { gap: 12px; align-items: center; margin-bottom: 12px; padding: 0 0 12px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; }
+      #main-content:has(.dashboard-overview) .page-heading > div { min-width: 0; }
+      #main-content:has(.dashboard-overview) .page-heading .eyebrow { margin-bottom: 4px; }
+      #main-content:has(.dashboard-overview) .page-heading p { margin-top: 4px; }
+      .dashboard-overview, #page:has(#history-summary) { gap: 10px; }
+      .dashboard-overview .metrics, #history-summary { gap: 10px; grid-auto-rows: 1fr; }
+      .dashboard-overview :is(.metric, .panel), #history-summary > .metric, #page:has(#history-summary) .panel { border-radius: 12px; border-color: var(--line); box-shadow: var(--shadow); }
+      .dashboard-overview .metric, #history-summary > .metric { display: flex; flex-direction: column; padding: 14px; }
+      .dashboard-overview .metrics > .metric, #history-summary > .metric { border-left-width: 3px; }
+      .dashboard-overview .metrics > .metric:nth-child(1), #history-summary > .metric:nth-child(1) { border-left-color: #2f80ed; }
+      .dashboard-overview .metrics > .metric:nth-child(2), #history-summary > .metric:nth-child(2) { border-left-color: #14b87a; }
+      .dashboard-overview .metrics > .metric:nth-child(3), #history-summary > .metric:nth-child(3) { border-left-color: #f5a020; }
+      .dashboard-overview .metrics > .metric:nth-child(4), #history-summary > .metric:nth-child(4) { border-left-color: #ef5e75; }
+      .dashboard-overview .metric strong, #history-summary > .metric strong { margin: 6px 0 0; }
+      .dashboard-overview .metric :is(a, p), #history-summary > .metric :is(a, p) { margin-top: auto; padding-top: 8px; overflow-wrap: anywhere; }
+      .dashboard-overview .panel-head, #page:has(#history-summary) .panel-head { padding: 12px 16px; gap: 10px; flex-wrap: wrap; }
+      .dashboard-overview .panel-body, #page:has(#history-summary) .panel-body { padding: 14px 16px; }
+      .dashboard-overview .detail-list { gap: 8px 16px; }
+      #page:has(#history-summary) { display: grid; grid-template-columns: minmax(0, 1fr); }
+      #page:has(#history-summary) :is(.filters, .table-toolbar, .table-footer) { padding: 12px 16px; gap: 10px; }
+      #page:has(#history-summary) .filters { padding-block: 14px; }
+      #page:has(#history-summary) .history-filter-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
+      #page:has(#history-summary) .history-search-input { display: flex; align-items: center; gap: 8px; min-width: 0; }
+      #page:has(#history-summary) .history-search-input input { flex: 1; width: 100%; min-width: 0; }
+      #page:has(#history-summary) .history-date-controls { display: flex; align-items: flex-end; gap: 8px; min-width: 0; }
+      #page:has(#history-summary) .history-date-controls .field { min-width: 0; }
+      #page:has(#history-summary) .cfo-filter-help { padding-inline: 16px; }
+      #main-content:has(#history-summary) > #cfo-context-search { margin-bottom: 10px; padding: 12px 16px; border-color: var(--line); background: #fff; box-shadow: var(--shadow); }
+      #main-content:has(#history-summary) > .page-foot { margin-top: 12px; padding: 12px 16px; box-shadow: var(--shadow); }
+    }
+    @media screen and (max-width: 650px) {
+      #main-content:has(.dashboard-overview, #history-summary) { width: calc(100% - 20px); margin-block: 10px; padding: 12px; }
+      #main-content:has(.dashboard-overview) > .page-heading { align-items: stretch; gap: 10px; }
+      .dashboard-overview .panel-head, .dashboard-overview .panel-body, #page:has(#history-summary) :is(.panel-head, .panel-body, .filters, .table-toolbar, .table-footer) { padding: 12px; }
+      .dashboard-overview .detail-list { gap: 4px; }
+      .dashboard-overview .detail-list dd { margin-bottom: 8px; }
+      .dashboard-overview .detail-list dd:last-child { margin-bottom: 0; }
+      #page:has(#history-summary) .cfo-filter-help { padding-inline: 12px; }
+      #main-content:has(#history-summary) > :is(#cfo-context-search, .page-foot) { padding: 12px; }
+      #page:has(#history-summary) .history-filter-controls { grid-template-columns: minmax(0, 1fr); }
+      #page:has(#history-summary) .history-date-controls .field { flex: 1; }
+      #page:has(#history-summary) .history-date-controls input { width: 100%; min-width: 0; }
+    }
+    @media screen and (max-width: 430px) {
+      .dashboard-overview .metrics, #history-summary { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+  </style>
+@include('partials.certificate-editor')
+@include('partials.cfo-usability')
+@if(request()->is('admin/schedules/*/edit'))
+<script src="{{ asset('cfo-search.js') }}?v={{ filemtime(public_path('cfo-search.js')) }}"></script>
+@endif
+<link rel="stylesheet" href="{{ asset('admin-sidebar.css') }}?v={{ filemtime(public_path('admin-sidebar.css')) }}">
+<link rel="stylesheet" href="{{ asset('admin-background.css') }}?v={{ filemtime(public_path('admin-background.css')) }}">
+<link rel="stylesheet" href="{{ asset('admin-attendance.css') }}?v={{ filemtime(public_path('admin-attendance.css')) }}">
+<link rel="stylesheet" media="screen" href="{{ asset('admin-typography.css') }}?v={{ filemtime(public_path('admin-typography.css')) }}">
+  <link rel="stylesheet" media="screen" href="{{ asset('admin-header.css') }}?v={{ filemtime(public_path('admin-header.css')) }}">
+  <link rel="stylesheet" media="screen" href="{{ asset('admin-scrollbar.css') }}?v={{ filemtime(public_path('admin-scrollbar.css')) }}">
+  <link rel="stylesheet" media="screen" href="{{ asset('admin-table-scroll.css') }}?v={{ filemtime(public_path('admin-table-scroll.css')) }}">
+  <script src="{{ asset('admin-table-scroll.js') }}?v={{ filemtime(public_path('admin-table-scroll.js')) }}" defer></script>
+  <link rel="stylesheet" media="screen" href="{{ asset('admin-schedule-create.css') }}?v={{ filemtime(public_path('admin-schedule-create.css')) }}">
+  <script src="{{ asset('admin-course-sections.js') }}?v={{ filemtime(public_path('admin-course-sections.js')) }}"></script>
+  <script src="{{ asset('admin-schedule-create.js') }}?v={{ filemtime(public_path('admin-schedule-create.js')) }}"></script>
+  <link rel="stylesheet" media="screen" href="{{ asset('my-schedules.css') }}?v={{ filemtime(public_path('my-schedules.css')) }}">
+  <script src="{{ asset('my-schedules.js') }}?v={{ filemtime(public_path('my-schedules.js')) }}"></script>
+  <link rel="stylesheet" media="screen" href="{{ asset('admin-change-requests.css') }}?v={{ filemtime(public_path('admin-change-requests.css')) }}">
+  <script src="{{ asset('admin-change-requests.js') }}?v={{ filemtime(public_path('admin-change-requests.js')) }}"></script>
+</head>
+<body class="admin-background">
+  <!-- Authenticated administrator workspace. -->
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <aside class="sidebar" id="sidebar" aria-label="Admin navigation">
+    <button class="icon-btn nav-close" id="close-nav" type="button" aria-label="Close navigation" aria-controls="sidebar"><span class="sidebar-close-symbol" aria-hidden="true">&times;</span><svg class="icon sidebar-collapse-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+    <a class="brand" href="#admin-dashboard">
+      <span class="sidebar-logo"><img src="{{ asset('assets/ulslogo.png') }}" alt="Christian Formation Office logo" width="44" height="44"></span>
+      <strong class="sidebar-school-name">University of<br>La Salette</strong>
+    </a>
+    <nav id="navigation" aria-label="Main navigation"></nav>
+    <div class="sidebar-footer">
+      <span class="avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 2)) }}</span>
+      <div><strong>{{ auth()->user()->name }}</strong><small>Administrator</small></div>
+      <button data-action="logout" aria-label="Log out" title="Logout"><span data-icon="logout"></span></button>
+    </div>
+  </aside>
+  <button class="nav-backdrop" id="nav-backdrop" aria-label="Close navigation" hidden></button>
+  <div class="shell" id="shell">
+    @include('partials.admin-header', ['headerTitle' => 'Dashboard', 'headerDashboard' => true, 'headerSpa' => true])
+    <main id="main-content" tabindex="-1">
+      <div class="page-heading"><div><div class="eyebrow" id="page-category">Overview</div><h1 id="page-title" tabindex="-1">Dashboard</h1><p id="page-description"></p></div><div class="page-actions" id="page-actions"></div></div>
+      <div id="cfo-context-search" hidden></div>
+      <div id="page"></div>
+      <footer class="page-foot"><span>University of La Salette · Christian Formation Office</span><span>CFO database · Saved records</span></footer>
+    </main>
+  </div>
+  <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div class="print-area" id="print-area"></div>
+
+  <script>
+    'use strict';
+    window.CFO_BACKEND = {{ Illuminate\Support\Js::from($cfoBackend) }};
+
+
+    /* 09. Shared UI helpers */
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+    const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const iconPaths = {
+      menu:'M4 6h16M4 12h16M4 18h16', close:'m6 6 12 12M18 6 6 18',
+      search:'M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0', filter:'M3 4h18l-7 8v7l-4 2v-9z', down:'m6 9 6 6 6-6',
+      heart:'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z',
+      lock:'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4', refresh:'M20 7v5h-5M4 17v-5h5M6 8a7 7 0 0 1 12-2l2 3M18 16a7 7 0 0 1-12 2l-2-3',
+      home:'m3 10 9-7 9 7M5 9v12h5v-7h4v7h5V9',
+      users:'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M16 4a4 4 0 0 1 0 8M22 21v-2a4 4 0 0 0-3-3.9M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
+      'user-check':'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0m3 4 2 2 4-4',
+      register:'M8 4H5v17h14V4h-3M9 2h6v4H9zM8 11h8M8 15h6',
+      course:'m2 9 10-6 10 6-10 6-10-6M6 12v6l6 3 6-3v-6M22 9v8',
+      receipt:'M5 3h14v19l-3-2-4 2-4-2-3 2V3M9 8h6M9 12h6M9 16h3',
+      calendar:'M4 5h16v16H4zM8 2v6M16 2v6M4 10h16M8 14h2M14 14h2M8 18h2',
+      change:'M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4',
+      check:'m5 12 4 4L19 6', clock:'M12 8v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',
+      award:'M17 8a5 5 0 1 1-10 0 5 5 0 0 1 10 0M8 12l-2 10 6-3 6 3-2-10',
+      history:'M3 11a9 9 0 1 1 2 7M3 4v7h7M12 7v6l4 2',
+      settings:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M9 3l-1 3-3 1v3l-2 2 2 2v3l3 1 1 3h6l1-3 3-1v-3l2-2-2-2V7l-3-1-1-3z',
+      logout:'M9 3H4v18h5M10 12h11m-4-4 4 4-4 4', bell:'M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4',
+      arrow:'M4 12h16m-5-5 5 5-5 5', back:'M20 12H4m5-5-5 5 5 5', plus:'M12 5v14M5 12h14',
+      download:'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5', print:'M7 8V3h10v5M6 17H3V9h18v8h-3M7 14h10v8H7zM17 11h1',
+      eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
+      edit:'m4 16 12-12 4 4L8 20H4zM14 6l4 4', trash:'M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7',
+      leaf:'M20 3C9 3 3 7 5 15c5 9 16 2 15-12ZM4 21 16 9', info:'M12 11v6M12 7h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',
+      file:'M5 2h9l5 5v15H5zM14 2v6h5M9 12h6M9 16h6', upload:'M12 16V3m-5 5 5-5 5 5M4 16v5h16v-5'
+    };
+    function icon(name) { return `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${iconPaths[name] || iconPaths.file}"/></svg>`; }
+    function hydrateIcons() { $$('[data-icon]').forEach(element => { element.outerHTML = icon(element.dataset.icon); }); }
+    function button(label, action, id = '', tone = '', symbol = '') {
+      return `<button type="button" class="btn ${tone}" data-action="${action}" data-id="${escapeHTML(id)}">${symbol ? icon(symbol) : ''}${escapeHTML(label)}</button>`;
+    }
+    function link(label, route, tone = '', symbol = '') { return `<a class="btn ${tone}" href="#${route}">${symbol ? icon(symbol) : ''}${escapeHTML(label)}</a>`; }
+    function badge(value) {
+      const text = String(value);
+      const tone = /^(Active|Present|Approved|Generated|Printed|Downloaded|Scheduled|Completed|Available)/i.test(text) ? 'success' : /^(Pending|Not Yet|Not Printed|Not Downloaded)/i.test(text) ? 'warning' : /^(Absent|Rejected|Inactive)/i.test(text) ? 'danger' : 'info';
+      return `<span class="badge ${tone}">${escapeHTML(text)}</span>`;
+    }
+    function details(pairs) { return `<dl class="detail-list">${pairs.map(([key,value]) => `<dt>${escapeHTML(key)}</dt><dd>${escapeHTML(value || '—')}</dd>`).join('')}</dl>`; }
+    function metric(label, number, caption, symbol, route) {
+      return `<article class="metric"><div class="metric-top"><span>${escapeHTML(label)}</span><span class="metric-icon">${icon(symbol)}</span></div><strong>${escapeHTML(number)}</strong>${route ? `<a href="${route.startsWith('/') ? route : '#'+route}">${escapeHTML(caption)} ${icon('arrow')}</a>` : `<p class="muted">${escapeHTML(caption)}</p>`}</article>`;
+    }
+    function note(message, neutral = false) { return `<div class="notice ${neutral ? 'neutral' : ''}">${escapeHTML(message)}</div>`; }
+    function empty(title, description, actions = '') { return `<section class="panel empty">${icon('file')}<h2>${escapeHTML(title)}</h2><p>${escapeHTML(description)}</p><div class="actions" style="justify-content:center">${actions}</div></section>`; }
+    let toastTimer;
+    function toast(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('#toast').hidden = true; }, 4500); }
+    const dialog = $('#dialog');
+    let dialogOpener;
+    function showDialog(title, body, footer = button('Close','close-dialog'), large = false) {
+      if (dialog.open) dialog.close();
+      dialogOpener = document.activeElement;
+      dialog.classList.toggle('large', large);
+      dialog.innerHTML = `<div class="dialog-header"><h2 id="dialog-title">${escapeHTML(title)}</h2><button class="icon-btn" data-action="close-dialog" aria-label="Close dialog">${icon('close')}</button></div><div class="dialog-body">${body}</div><div class="dialog-footer">${footer}</div>`;
+      dialog.showModal();
+    }
+    function closeDialog() { if (dialog.open) dialog.close(); }
+    dialog.addEventListener('close', () => { if (dialogOpener?.isConnected) dialogOpener.focus({preventScroll:true}); });
+    dialog.addEventListener('click', event => { if(event.target === dialog && (event.clientX < dialog.getBoundingClientRect().left || event.clientX > dialog.getBoundingClientRect().right || event.clientY < dialog.getBoundingClientRect().top || event.clientY > dialog.getBoundingClientRect().bottom)) actions['close-dialog'](); });
+    dialog.addEventListener('cancel', event => { event.preventDefault(); actions['close-dialog'](); });
+    function previewNotice(title, message) { showDialog(title, `<p>${escapeHTML(message)}</p>${note('Front-end preview only. No server, database or account has been updated.', true)}`); }
+    function csvDownload(name, columns, rows) {
+      const cell = value => '"' + String(value ?? '').replace(/^[=+@\-\t\r]/, "'$&").replace(/"/g, '""') + '"';
+      const csv = [columns, ...rows].map(row => row.map(cell).join(',')).join('\r\n');
+      const url = URL.createObjectURL(new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'}));
+      const anchor = document.createElement('a'); anchor.href = url; anchor.download = name; anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+    function printPreview(title, markup) {
+      $('#print-area').innerHTML = `<h1>${escapeHTML(title)}</h1><p>University of La Salette · Christian Formation Office</p>${markup}`;
+      window.print();
+    }
+    const unique = values => [...new Set(values)].sort();
+    const options = (values, current = '', all = 'All', label = value => value) => `<option value="">${escapeHTML(all)}</option>${values.map(value => `<option value="${escapeHTML(value)}" ${String(value)===String(current)?'selected':''}>${escapeHTML(label(value))}</option>`).join('')}`;
+    const multiSelectField = (label, name, values, selected = []) => `<label class="field">${escapeHTML(label)}<select name="${name}[]" multiple required size="${Math.min(4,Math.max(values.length,2))}">${values.map(value=>`<option value="${escapeHTML(value.id)}" ${selected.map(String).includes(String(value.id))?'selected':''}>${escapeHTML(value.name)}</option>`).join('')}</select><small>Choose one or more options.</small></label>`;
+    const groupKey = student => `${student.course}-${String(student.year).match(/\d+/)?.[0] || student.year}`;
+
+    /* 10. Shared data grid: search, exact filters, pagination and selections. */
+    const gridState = new Map();
+    let activeGrid = null;
+    function dataGrid(config) {
+      const state = gridState.get(config.key) || {q:'', filters:{...config.initialFilters}, page:1, size:10, selected:new Set()};
+      gridState.set(config.key, state);
+      if(config.filterQuery !== undefined && state.filterQuery !== config.filterQuery) {
+        state.filters={...config.initialFilters}; state.filterQuery=config.filterQuery; state.page=1; state.selected.clear();
+      }
+      if(config.initialSearch !== undefined) state.q = config.initialSearch;
+      const filterRows = config.countFilterOptions ? config.rows() : [];
+      function filterOptions(filter) {
+        if(!config.countFilterOptions)return options(filter.values,state.filters[filter.key],filter.all || 'All');
+        // Totals describe the whole selected schedule, independent of search and other filters.
+        const counts=new Map();
+        filterRows.forEach(row=>{const value=String(filter.get(row));counts.set(value,(counts.get(value)||0)+1);});
+        return options(filter.values,state.filters[filter.key],`${filter.all || 'All'} (${filterRows.length})`,value=>`${value} (${counts.get(String(value))||0})`);
+      }
+      const fields = (config.filters || []).map(filter => `<label class="field">${escapeHTML(filter.label)}${filter.type === 'date' ? `<input type="date" data-filter="${filter.key}" value="${escapeHTML(state.filters[filter.key] || '')}">` : `<select data-filter="${filter.key}">${filterOptions(filter)}</select>`}</label>`).join('');
+      const searchField = `<label class="field search">${config.compactFilters?`<span class="sr-only">${escapeHTML(config.searchLabel || 'Search')}</span>${icon('search')}`:escapeHTML(config.searchLabel || 'Search')}<input type="search" data-search placeholder="${escapeHTML(config.placeholder || 'Search by name or student ID…')}" value="${escapeHTML(state.q)}"></label>`;
+      // History opts into separate clear controls; every other grid retains its existing toolbar.
+      const filterControls = config.historyControls
+        ? `<div class="filters history-filter-controls"><div class="field search"><label for="history-search">Search</label><div class="history-search-input"><input id="history-search" type="search" data-search aria-label="Search recollection history" placeholder="${escapeHTML(config.placeholder)}" value="${escapeHTML(state.q)}"><button type="button" class="btn compact" data-clear-search aria-label="Clear history search" ${state.q?'':'hidden'}>${icon('close')}</button></div></div><div class="history-date-controls">${fields}<button type="button" class="btn" data-clear-date aria-label="Clear recollection schedule date">Clear date</button></div></div>`
+        : config.expandableFilters
+        ? `<div class="attendance-search-toolbar attendance-health-toolbar">${searchField}<button type="button" class="btn" data-toggle-filters aria-expanded="${Boolean(state.filtersOpen)}" aria-controls="attendance-health-filters">${icon('settings')} <span data-toggle-filter-label>${state.filtersOpen?'Hide Filters':'Show Filters'}</span><span class="attendance-filter-badge" data-active-filters hidden></span></button><button type="button" class="btn" data-reset>${icon('refresh')} Clear Filters</button>${config.filterToolbar || ''}</div><section id="attendance-health-filters" class="attendance-health-filters" ${state.filtersOpen?'':'hidden'}><h3>Student Filters</h3><p>Combine filters to narrow the current schedule.</p><div class="attendance-health-filter-grid">${fields}</div></section>`
+        : config.compactFilters
+        ? `<div class="attendance-search-toolbar">${searchField}<details class="attendance-filter-menu"><summary>${icon('filter')} Filter ${icon('down')}</summary><div class="attendance-filter-popover">${fields}</div></details><button type="button" class="btn" data-reset>${icon('refresh')} Clear Filters</button>${config.filterToolbar || ''}</div>`
+        : `<div class="filters">${searchField}${fields}<button class="btn" data-reset>Clear filters</button></div>`;
+      const root = document.createElement('section'); root.className = config.historyControls ? 'panel history-grid' : 'panel'; root.id = 'data-grid';
+      root.innerHTML = `${filterControls}
+        <div class="table-toolbar"><div><h2>${escapeHTML(config.title)}</h2><span class="muted small" data-count role="status"></span></div><div class="actions">${config.toolbarBefore || ''}${config.toolbar || ''}</div></div>
+        <p class="cfo-filter-help">Filters work together. Select a column heading to sort. Export uses the matching records.</p>
+        <div class="table-wrap" role="region" aria-label="${escapeHTML(config.title)} table; scroll horizontally for more columns" tabindex="0"><table class="data-table ${config.wide?'wide':''}"><thead><tr>${config.selectable?'<th><input type="checkbox" data-select-all aria-label="Select all rows on this page"></th>':''}${config.columns.map((column,index)=>`<th scope="col" ${column.sort!==false&&(column.get||column.sort)?'aria-sort="none"':''}>${column.sort!==false&&(column.get||column.sort)?`<button type="button" class="grid-sort" data-sort="${index}" aria-label="Sort by ${escapeHTML(column.label)}">${config.historyControls?escapeHTML(column.label).replaceAll('/','/<wbr>'):escapeHTML(column.label)} <span aria-hidden="true">↕</span></button>`:escapeHTML(column.label)}</th>`).join('')}${config.rowActions?'<th scope="col">Actions</th>':''}</tr></thead><tbody></tbody></table></div>
+        <div class="table-footer"><span data-range></span><div class="pagination">${config.compactFilters?'<span>Show</span>':''}<label class="sr-only" for="page-size">Rows per page</label><select id="page-size">${[5,10,25,50].map(n=>`<option ${n===state.size?'selected':''}>${n}</option>`).join('')}</select>${config.compactFilters?'<span>entries</span>':''}<button class="btn compact" data-prev aria-label="Previous page">${icon('back')}</button><span data-page></span><button class="btn compact" data-next aria-label="Next page">${icon('arrow')}</button></div></div>`;
+      $('#grid-host').replaceChildren(root);
+      if(config.historyControls)$('[data-filter="scheduleDate"]',root).setAttribute('aria-label','Filter by recollection schedule date');
+      const idOf = config.id || (row => row.id);
+      function filtered() {
+        const rows=config.rows().filter(row => (config.searchMatches || window.CfoSearch.matches)(config.search(row),state.q) && (config.filters || []).every(filter=>!state.filters[filter.key] || (filter.matches ? filter.matches(row,state.filters[filter.key]) : String(filter.get(row)) === state.filters[filter.key])));
+        return window.CfoSearch.sortRows(rows,config.columns,state.sortIndex,state.sortDirection);
+      }
+      function draw() {
+        const rows = filtered(), pages = Math.max(1, Math.ceil(rows.length/state.size)); state.page = Math.min(state.page,pages);
+        const start = (state.page-1)*state.size, visible = rows.slice(start,start+state.size);
+        $('tbody',root).innerHTML = visible.map((row,index)=>`<tr data-row-id="${escapeHTML(idOf(row))}">${config.selectable?`<td><input type="checkbox" data-select="${escapeHTML(idOf(row))}" aria-label="Select ${escapeHTML(row.name || idOf(row))}" ${state.selected.has(String(idOf(row)))?'checked':''}></td>`:''}${config.columns.map(column=>`<td${column.nowrap?' class="nowrap"':''}>${column.rowNumber ? start+index+1 : column.html ? column.html(row) : escapeHTML(column.get(row))}</td>`).join('')}${config.rowActions?`<td><div class="actions">${config.rowActions(row)}</div></td>`:''}</tr>`).join('') || `<tr><td class="table-empty" colspan="${config.columns.length+(config.selectable?1:0)+(config.rowActions?1:0)}">No records match your search and filters.</td></tr>`;
+        if(window.CFO_LIVE_HIGHLIGHT_ID){const highlighted=$(`[data-row-id="${CSS.escape(String(window.CFO_LIVE_HIGHLIGHT_ID))}"]`,root);if(highlighted){highlighted.classList.add('live-highlight');setTimeout(()=>highlighted.classList.remove('live-highlight'),3200);window.CFO_LIVE_HIGHLIGHT_ID=null;}}
+        $('[data-count]',root).textContent = config.resultCount ? config.resultCount(rows.length) : `${rows.length} ${config.noun || 'records'}${config.selectable && state.selected.size ? ` · ${state.selected.size} selected` : ''}`;
+        $('[data-range]',root).textContent = `Showing ${rows.length ? start+1 : 0}–${Math.min(start+state.size,rows.length)} of ${rows.length}`;
+        $('[data-page]',root).textContent = `${state.page} / ${pages}`;
+        $('[data-prev]',root).disabled = state.page === 1; $('[data-next]',root).disabled = state.page === pages;
+        if(config.selectable) { const check=$('[data-select-all]',root); check.checked=visible.length>0 && visible.every(row=>state.selected.has(String(idOf(row)))); check.indeterminate=!check.checked && visible.some(row=>state.selected.has(String(idOf(row)))); }
+        if(config.expandableFilters){const count=(config.filters||[]).filter(filter=>Boolean(state.filters[filter.key])).length+(state.q.trim()?1:0);const indicator=$('[data-active-filters]',root);indicator.textContent=count;indicator.hidden=count===0;}
+        config.afterDraw?.(rows);
+        $$('[data-sort]',root).forEach(control=>{const selected=Number(control.dataset.sort)===state.sortIndex;control.parentElement.setAttribute('aria-sort',selected?(state.sortDirection==='desc'?'descending':'ascending'):'none');control.querySelector('span').textContent=selected?(state.sortDirection==='desc'?'↓':'↑'):'↕';});
+        if(window.CfoSearch)syncAdminSearch();
+      }
+      let searchTimer;
+      function cancelSearchDraw() { if(searchTimer !== undefined){clearTimeout(searchTimer);searchTimer=undefined;} }
+      $('[data-search]',root).addEventListener('input',event=>{
+        state.q=event.target.value; state.page=1; state.selected.clear();
+        if(config.historyControls)$('[data-clear-search]',root).hidden=!state.q;
+        if(config.searchDebounce){cancelSearchDraw();searchTimer=setTimeout(()=>{searchTimer=undefined;if(activeGrid?.config===config)draw();},config.searchDebounce);}
+        else draw();
+      });
+      $$('[data-filter]',root).forEach(control=>{
+        const filterEvent=(config.filters || []).find(filter=>filter.key===control.dataset.filter)?.event || 'change';
+        control.addEventListener(filterEvent,()=>{cancelSearchDraw();state.filters[control.dataset.filter]=control.value;state.page=1;state.selected.clear();draw();});
+      });
+      if(config.historyControls){
+        $('[data-clear-search]',root).onclick=()=>{cancelSearchDraw();state.q='';state.page=1;state.selected.clear();$('[data-search]',root).value='';$('[data-clear-search]',root).hidden=true;draw();$('[data-search]',root).focus();};
+        $('[data-clear-date]',root).onclick=()=>{cancelSearchDraw();state.filters.scheduleDate='';state.page=1;state.selected.clear();$('[data-filter="scheduleDate"]',root).value='';draw();$('[data-filter="scheduleDate"]',root).focus();};
+      }else $('[data-reset]',root).onclick=()=>{state.q='';state.filters={};state.page=1;state.selected.clear();$('[data-search]',root).value='';$$('[data-filter]',root).forEach(control=>control.value='');draw();};
+      $('[data-prev]',root).onclick=()=>{state.page--;draw();}; $('[data-next]',root).onclick=()=>{state.page++;draw();};
+      $('#page-size',root).onchange=event=>{state.size=Number(event.target.value);state.page=1;draw();};
+      $$('[data-sort]',root).forEach(control=>control.onclick=()=>{const index=Number(control.dataset.sort);state.sortDirection=state.sortIndex===index&&state.sortDirection==='asc'?'desc':'asc';state.sortIndex=index;state.page=1;draw();});
+      root.addEventListener('change',event=>{
+        if(event.target.hasAttribute('data-select')) { const id=event.target.dataset.select; event.target.checked?state.selected.add(id):state.selected.delete(id);draw(); }
+        if(event.target.hasAttribute('data-select-all')) { filtered().slice((state.page-1)*state.size,state.page*state.size).forEach(row=>event.target.checked?state.selected.add(String(idOf(row))):state.selected.delete(String(idOf(row))));draw(); }
+      });
+      if(config.expandableFilters)$('[data-toggle-filters]',root).onclick=()=>{state.filtersOpen=!state.filtersOpen;$('#attendance-health-filters',root).hidden=!state.filtersOpen;$('[data-toggle-filters]',root).setAttribute('aria-expanded',String(state.filtersOpen));$('[data-toggle-filter-label]',root).textContent=state.filtersOpen?'Hide Filters':'Show Filters';};
+      if(config.compactFilters&&!config.expandableFilters){
+        root.addEventListener('keydown',event=>{const menu=$('.attendance-filter-menu',root);if(event.key==='Escape'&&menu.open){event.preventDefault();menu.open=false;$('summary',menu).focus();}});
+        root.addEventListener('click',event=>{const menu=$('.attendance-filter-menu',root);if(menu.open&&!menu.contains(event.target))menu.open=false;});
+      }
+      activeGrid = {config,state,filtered,draw}; draw();
+      return activeGrid;
+    }
+
+    /* 11. Routes and shell behavior */
+    const pages = {
+      'admin-dashboard':['Dashboard','A clear view of your recollection workspace.','Overview','home'],
+      'admin-lan-access':['Phone access','Share the student login URL and QR code.','Office','info'],
+      'admin-all-student':['Student Accounts','View student accounts and review their approval status.','Students','users'],
+      'admin-register-this-year':['Recollection Registrations','Review new registrations and set their schedules.','Students','register'],
+      'admin-course-year':['Academic options','Manage the courses, year levels and sections used by accounts and schedules.','Students','course'],
+      'admin-student-reciept':['Receipt Verification','Review receipts and payment statuses in one place.','Students','receipt'],
+      'admin-recollection-schedule':['Your Recollection Schedules','Browse schedules and open their details.','Recollection','calendar'],
+      'admin-add-new-recollection-schedule':['Create New Recollection Schedule','Prepare schedule information and review the student-facing preview.','Recollection','calendar'],
+      'admin-schedule-change-requests':['Schedule change requests','Review student requests and assign an eligible recollection schedule.','Recollection','change'],
+      'admin-student-attendance':['Student Attendance','Mark attendance and move completed batches to History.','Recollection','check'],
+      'admin-certificate':['Student Certificates','Review eligible students and certificate status.','Documents','award'],
+      'admin-certificate-template':['Certificate template','Customize the current design shown on eligible certificates.','Documents','file'],
+      'admin-history':['Recollection History','Completed batches and permanently retained yearly records.','Documents','history'],
+      'admin-announcements':['Announcements','Publish notices for students.','Office','info'],
+      'admin-settings':['Settings','Administrator profile and Christian Formation Office information.','Office','settings'],
+      'admin-password-resets':['Password reset requests','Review requests and verify students in person.','Office','lock'],
+      'admin-activity':['Activity log','Recorded office actions.','Office','history'],
+      'login':['Signed out','No real account session was changed.','Preview','logout']
+    };
+    const navGroups = Object.entries(@json(config('admin_navigation'))).map(([title,items])=>[title,Object.keys(items)]);
+    const navDisplay = {
+      'admin-recollection-schedule':['My schedules','calendar'],
+      'admin-schedule-change-requests':['Change requests','change'],
+      'admin-student-attendance':['Student Attendance','user-check']
+    };
+    $('#navigation').innerHTML = navGroups.map(([title,routes])=>`<div class="nav-group">${title}</div>${routes.map(route=>`<a class="nav-link" href="${route==='admin-register-this-year'?'/admin/recollection-registrations':'#'+route}" data-route="${route}">${icon(navDisplay[route]?.[1] || pages[route][3])}<span>${navDisplay[route]?.[0] || pages[route][0]}</span></a>`).join('')}`).join('');
+    const mobile = matchMedia('(max-width: 1000px)');
+    let desktopCollapsed = false;
+    function syncNavigation() {
+      const open = document.body.classList.contains('nav-open');
+      $('#sidebar').inert = mobile.matches ? !open : desktopCollapsed;
+      $('#shell').inert = mobile.matches && open;
+      $('#nav-backdrop').hidden = !(mobile.matches && open);
+      $('#toggle-nav').setAttribute('aria-expanded', String(mobile.matches ? open : !desktopCollapsed));
+    }
+    function closeNavigation() { document.body.classList.remove('nav-open');syncNavigation(); }
+    $('#toggle-nav').onclick=()=>{if(mobile.matches){document.body.classList.toggle('nav-open');syncNavigation();if(document.body.classList.contains('nav-open'))$('#close-nav').focus();}else{desktopCollapsed=!desktopCollapsed;document.body.classList.toggle('nav-collapsed',desktopCollapsed);syncNavigation();}};
+    $('#close-nav').onclick=()=>{if(mobile.matches)closeNavigation();else $('#toggle-nav').click();$('#toggle-nav').focus();};
+    $('#nav-backdrop').onclick=()=>{closeNavigation();$('#toggle-nav').focus();};
+    mobile.addEventListener('change',()=>{closeNavigation();if($('#sidebar').contains(document.activeElement)&&$('#sidebar').inert)$('#toggle-nav').focus();});
+    document.addEventListener('keydown',event=>{
+      if(dialog.open || !mobile.matches || !document.body.classList.contains('nav-open'))return;
+      if(event.key==='Escape'){$('#close-nav').click();}
+      if(event.key==='Tab'){const controls=$$('a,button',$('#sidebar'));const first=controls[0],last=controls.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}}
+    });
+    function routeDetails() {
+      const [requested,query='']=location.hash.slice(1).split('?');
+      const params=new URLSearchParams(query);
+      if(!requested && window.CFO_BACKEND?.edit_schedule) {
+        params.set('id',String(window.CFO_BACKEND.edit_schedule.id));
+        return {route:'admin-add-new-recollection-schedule',params};
+      }
+      const aliases={'admin-upcoming-recollection':'admin-recollection-schedule','admin-print-student-list':'admin-student-attendance','admin-student-list':'admin-student-attendance'};
+      if(requested==='admin-upcoming-recollection')params.set('phase','Upcoming');
+      return {route:aliases[requested]||requested||'admin-dashboard',params};
+    }
+    function go(route) { if(location.hash==='#'+route)renderRoute();else location.hash=route; }
+    let currentRoute = 'admin-dashboard';
+    function renderRoute() { return renderConnectedAdmin(); }
+
+        /* 12. Page layouts and original preview interactions */
+    const panel = (title, body, actions='') => `<section class="panel"><div class="panel-head"><h2>${escapeHTML(title)}</h2><div class="actions">${actions}</div></div><div class="panel-body">${body}</div></section>`;
+    const field = (label,name,value='',type='text',extra='') => `<label class="field">${escapeHTML(label)}<input name="${name}" type="${type}" value="${escapeHTML(value)}" ${extra}></label>`;
+    const selectField = (label,name,values,value) => `<label class="field">${escapeHTML(label)}<select name="${name}">${values.map(v=>`<option ${v===value?'selected':''}>${escapeHTML(v)}</option>`).join('')}</select></label>`;
+    const requiredSelectField = (label,name,values,value) => `<label class="field">${escapeHTML(label)}<select name="${name}" required><option value="" disabled ${value?'':'selected'}>Choose ${escapeHTML(label.toLowerCase())}</option>${values.map(v=>`<option value="${escapeHTML(v)}" ${v===value?'selected':''}>${escapeHTML(v)}</option>`).join('')}</select></label>`;
+    const optionalSelectField = (label,name,values,value) => `<label class="field">${escapeHTML(label)}<select name="${name}"><option value="" ${value?'':'selected'}>Not set</option>${values.map(v=>`<option value="${escapeHTML(v)}" ${v===value?'selected':''}>${escapeHTML(v)}</option>`).join('')}</select></label>`;
+    const studentName = r => `<div class="name-cell"><strong>${escapeHTML(r.name)}</strong><span>${escapeHTML(r.id)}</span></div>`;
+    const objectFilter = (key,label,rows) => ({key,label,values:unique(rows.map(r=>r[key])),get:r=>r[key]});
+    const actions = {'close-dialog':closeDialog, 'profile':()=>go('admin-settings')};
+    document.querySelector('.skip-link').addEventListener('click',event=>{event.preventDefault();$('#main-content').focus();$('#main-content').scrollIntoView();});
+    document.addEventListener('click',event=>{const control=event.target.closest('[data-action]');if(control){const action=actions[control.dataset.action];if(action)Promise.resolve(action(control.dataset.id)).catch(error=>toast(error.message));}});
+    $('#sidebar').addEventListener('click',event=>{const anchor=event.target.closest('a[href]');if(anchor && anchor.pathname===location.pathname && anchor.hash===location.hash){event.preventDefault();renderRoute();}});
+
+    /* Laravel mode: use the same shell, tables, dialogs and inline styles with saved data. */
+    let cfoState = null;
+    let mySchedulesController = null;
+    let schedulePageController = null;
+    let cfoRouteVersion = 0;
+    let pendingConnectedSave = null;
+    let connectedSaveBusy = false;
+    function cancelConnectedSave() {
+      if(connectedSaveBusy || batchSaveBusy)return;
+      const pending=pendingConnectedSave;
+      pendingConnectedSave=null;
+      if(pending?.previous && pending.route===location.hash) {
+        dialog.replaceChildren(...pending.previous.nodes);
+        dialog.classList.toggle('large',pending.previous.large);
+        dialogOpener=pending.previous.opener;
+        if(!dialog.open)dialog.showModal();
+        dialog.querySelector('input,select,textarea,button')?.focus({preventScroll:true});
+      } else closeDialog();
+    }
+    actions['close-dialog']=cancelConnectedSave;
+    async function backend(url, method = 'GET', body) {
+      const multipart=body instanceof FormData; const response = await fetch(url, {method, credentials:'same-origin', headers:{Accept:'application/json',...(!multipart?{'Content-Type':'application/json'}:{}),'X-CSRF-TOKEN':window.CFO_BACKEND.csrf_token}, ...(body?{body:multipart?body:JSON.stringify(body)}:{})});
+      const result = await response.json().catch(()=>({}));
+      if (!response.ok) {
+        if (response.status===401) location.href='/#login';
+        const error=Error(response.status===419?'Your session expired. Reload the page.':Object.values(result.errors||{}).flat().join('\n')||result.message||'The request failed.');
+        error.fields=result.errors;throw error;
+      }
+      if (result.csrf_token) Object.assign(window.CFO_BACKEND,result);
+      return result;
+    }
+    async function saveConnected(url, method, values, confirmed = false, onSaved = null) {
+      if(connectedSaveBusy)return;
+      if (!confirmed) {
+        pendingConnectedSave = {url,method,values,onSaved,route:location.hash,form:dialog.open?dialog.querySelector('form'):document.querySelector('#page form'),previous:dialog.open?{nodes:[...dialog.childNodes],large:dialog.classList.contains('large'),opener:dialogOpener}:null};
+        const fields = values instanceof FormData ? [...values.keys()] : Object.keys(values || {});
+        const summary = url==='/api/admin/settings/certificate'
+          ? '<p>Save this design as the active certificate template? It will automatically update the student view of all eligible certificates.</p>'
+          : `<p>This will ${escapeHTML(method==='DELETE'?'delete the selected record':method==='POST'?'save the requested record':'save the selected changes')} in the CFO system.</p><p>Review: ${escapeHTML(fields.filter(name=>!name.toLowerCase().includes('password')&&name!=='publication_key').map(name=>({course_ids:'Courses',year_level:'Year level',schedule_id:'Recollection schedule',assigned_schedule_id:'Assigned schedule',review_reason:'Admin note',receipt_status:'Receipt status',receipt_reason:'Receipt review reason'}[name]||name.replaceAll('_',' '))).join(', ') || 'Selected record')}.</p>`;
+        showDialog('Confirm changes',summary,button('Cancel','close-dialog')+button('Confirm and save','connected-confirm-save'));
+        return;
+      }
+      connectedSaveBusy=true;
+      const controls=[...dialog.querySelectorAll('button')];
+      controls.forEach(control=>control.disabled=true);
+      try { const result=await backend(url,method,values); if(result.user)window.CFO_BACKEND.user=result.user; pendingConnectedSave=null; closeDialog(); if(onSaved)onSaved(result); await renderConnectedAdmin(); toast(result.message || 'Changes saved to the CFO database.'); }
+      catch (error) { const form=pendingConnectedSave?.form;connectedSaveBusy=false; cancelConnectedSave(); window.CfoUsability?.formError(form,error);toast(error.message); }
+      finally { connectedSaveBusy=false; controls.forEach(control=>control.disabled=false); }
+    }
+    const connectedStudent = r => `<div class="name-cell"><strong>${escapeHTML(r.user?.name||r.name)}</strong><span>${escapeHTML(r.user?.student_id||r.student_id)}</span></div>`;
+    const connectedSchedule = r => r.schedule ? `${r.schedule.title} · ${r.schedule.date}` : '—';
+    const findRegistration = id => [...cfoState.registrations,...(cfoState.history||[])].find(r=>String(r.id)===String(id));
+    function connectedGrid(config) {
+      $('#page').innerHTML=(config.beforeGrid||'')+'<div id="grid-host"></div>';
+      const search=window.CfoSearch.gridOptions(config.key);
+      return dataGrid({id:r=>String(r.id),toolbar:button('Export CSV','export-grid','','','download'),...config,...search,...config.searchOptions,columns:config.columns.map(column=>({...column,...(!column.get&&column.label==='Student'?{sort:r=>r.user?.name||r.name}:{}),...(!column.get&&column.label==='Status'?{sort:r=>r.status}:{})}))});
+    }
+    function syncAdminSearch() {
+      const {route,params}=routeDetails();
+      if(['admin-dashboard','admin-student-attendance','admin-history','admin-recollection-schedule','admin-add-new-recollection-schedule'].includes(route)){window.CfoSearch.mount($('#cfo-context-search'),null);return;}
+      const context=window.CfoSearch.buildContext({role:window.CFO_BACKEND.user.role,user:window.CFO_BACKEND.user,state:cfoState,route,params,rows:activeGrid?.filtered(),recoveryStatus});
+      window.CfoSearch.mount($('#cfo-context-search'),context,entry=>{
+        const handlers={student:connectedStudentEdit,registration:connectedRegistration,attendance:connectedRegistration,receipt:connectedReceipt,history:connectedHistoryView,request:connectedRequest,recovery:connectedRecoveryReview};
+        if(handlers[entry.kind])handlers[entry.kind](String(entry.id));
+        else if(entry.kind==='announcement') { const row=cfoState.announcements.find(r=>r.id===entry.id);if(row)showDialog(row.title,`<p style="white-space:pre-wrap">${escapeHTML(row.body)}</p>`); }
+        else if(entry.kind==='filter'&&activeGrid){activeGrid.state.q=entry.query;activeGrid.state.page=1;$('#data-grid [data-search]').value=entry.query;activeGrid.draw();$('#data-grid [data-search]').focus();}
+      });
+    }
+    async function renderConnectedAdmin(changedResources = null) {
+      const liveRefresh = Array.isArray(changedResources) && changedResources.length > 0;
+      const version=++cfoRouteVersion;
+      if (!liveRefresh) { pendingConnectedSave=null; closeDialog(); closeNavigation(); activeGrid=null; }
+      if (!liveRefresh) { schedulePageController?.destroy?.(); schedulePageController=null; }
+      const {route,params}=routeDetails(); currentRoute=route;
+      const scheduleWorkspace=['admin-recollection-schedule','admin-add-new-recollection-schedule'].includes(route);
+      if(!scheduleWorkspace){mySchedulesController?.destroy();mySchedulesController=null;}
+      const creatingSchedule=route==='admin-add-new-recollection-schedule';
+      const editingSchedule=creatingSchedule&&params.has('id');
+      $('.page-heading').hidden=route==='admin-history'||scheduleWorkspace;
+      $('.page-foot').hidden=scheduleWorkspace||['admin-dashboard','admin-student-attendance','admin-all-student','admin-history'].includes(route);
+      if(route==='admin-register-this-year'){window.location.replace('/admin/recollection-registrations'+(params.size?'?'+params.toString():''));return;}
+      if(!liveRefresh && params.size) {
+        const filterGrid={'admin-all-student':'connected-students','admin-recollection-schedule':'connected-schedules','admin-student-reciept':'connected-receipts'}[route];
+        if(filterGrid)gridState.delete(filterGrid);
+      }
+      const meta=pages[route]||['Page not found','','Workspace'];
+      const headerName=editingSchedule?'Edit Recollection Schedule':$$('.nav-link').find(link=>link.dataset.route===route)?.querySelector('span')?.textContent || meta[0];
+      const headerAncestors=route==='admin-dashboard'?[]:[{name:'Dashboard',href:'/admin#admin-dashboard'}];
+      if(route==='admin-add-new-recollection-schedule')headerAncestors.push({name:navDisplay['admin-recollection-schedule'][0],href:'/admin#admin-recollection-schedule'});
+      window.AdminHeader?.setPage(headerName,headerAncestors);
+      if (!liveRefresh) { $('#page-title').textContent=meta[0]; $('#page-description').textContent=meta[1]; $('#page-category').textContent=meta[2]; $('#page-actions').innerHTML=''; $('#page').innerHTML=note('Loading saved records',true); }
+      if(window.CfoSearch&&!liveRefresh){if(['admin-dashboard','admin-student-attendance','admin-history'].includes(route)||scheduleWorkspace)window.CfoSearch.mount($('#cfo-context-search'),null);else window.CfoSearch.pending($('#cfo-context-search'));}
+      const parent={'admin-add-new-recollection-schedule':'admin-recollection-schedule'}[route]||route;
+      $$('.nav-link').forEach(a=>{a.classList.toggle('active',a.dataset.route===parent);if(a.dataset.route===parent)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+      $('.page-foot span:last-child').textContent='CFO database · Saved records';
+      try {
+        const url='/api/admin/state?include_history='+(route==='admin-history'?'1':'0')+(liveRefresh?'&resources='+encodeURIComponent(changedResources.join(',')):'' );
+        const state=await backend(url);
+        if(version!==cfoRouteVersion)return;
+        if(liveRefresh&&isAdminEditing()){changedResources.forEach(resource=>pendingLiveResources.add(resource));return;}
+        const oldRegistrations=cfoState?.registrations||[];
+        const oldUsers=cfoState?.users||[];
+        cfoState=liveRefresh?{...cfoState,...state}:state;
+        const currentUser=state.users?.find(user=>user.id===window.CFO_BACKEND.user.id);
+        if(currentUser)window.CFO_BACKEND.user=currentUser;
+        $$('.account:not(.admin-header-account) strong, .sidebar-footer strong, .sidebar-profile-name').forEach(e=>e.textContent=window.CFO_BACKEND.user.name);
+        $$('.avatar:not(#admin-header-avatar)').forEach(e=>e.textContent=window.CFO_BACKEND.user.name.slice(0,2).toUpperCase());
+        if(liveRefresh&&changedResources.includes('registrations')&&state.registrations){const oldIds=new Set(oldRegistrations.map(row=>String(row.id)));const created=state.registrations.find(row=>!oldIds.has(String(row.id)));if(created){window.CFO_LIVE_HIGHLIGHT_ID=created.id;toast('New registration: '+(created.user?.name||'student'));}}
+        if(liveRefresh&&changedResources.includes('users')&&state.users){const oldIds=new Set(oldUsers.map(row=>String(row.id)));const created=state.users.find(row=>!oldIds.has(String(row.id)));if(created){window.CFO_LIVE_HIGHLIGHT_ID=created.id;toast('New '+created.role.toLowerCase()+' account: '+created.name);}}
+        if(route==='admin-dashboard') connectedDashboard();
+        else if(route==='admin-all-student') connectedDirectory();
+        else if(route==='admin-course-year') connectedAcademic();
+        else if(['admin-register-this-year','admin-history'].includes(route)) connectedRegistrations(route==='admin-history');
+        else if(route==='admin-announcements') connectedAnnouncements();
+        else if(route==='admin-recollection-schedule') connectedSchedules();
+        else if(route==='admin-add-new-recollection-schedule') connectedScheduleForm(params);
+        else if(route==='admin-student-reciept') connectedReceipts();
+        else if(route==='admin-student-attendance') connectedAttendance();
+        else if(route==='admin-schedule-change-requests') connectedRequests();
+        else if(route==='admin-settings') connectedSettings(params);
+        else if(route==='login') location.href='/#login';
+        else if(route==='admin-certificate') connectedCertificates();
+        else if(route==='admin-certificate-template') connectedTemplate();
+        else if(route==='admin-password-resets') connectedRecovery();
+        else if(route==='admin-activity') connectedActivity();
+        else if(route==='admin-lan-access') connectedLanAccess();
+        else $('#page').innerHTML=empty('Page not found','Choose a page from the navigation.');
+        if(window.CfoSearch)syncAdminSearch();
+        hydrateIcons(); if(!liveRefresh){if(!mySchedulesController?.isModalOpen())($('#ms-page-title') || $('#attendance-heading') || (route==='admin-history'?($('#history-heading') || $('#main-content')):creatingSchedule?$('#main-content'):$('#page-title'))).focus({preventScroll:true});$('#main-content').scrollTo?.({top:0,behavior:'instant'});}
+      } catch(error) { if(liveRefresh)throw error;if(version===cfoRouteVersion) {$('#page').innerHTML=empty('Unable to load records',error.message,button('Retry','connected-reload'));if(!['admin-dashboard','admin-student-attendance','admin-history'].includes(route))window.CfoSearch?.pending($('#cfo-context-search'),'Search unavailable. Use Retry below to reload this page.',true);} }
+    }
+    function connectedDashboard() {
+      $('#page-actions').innerHTML=link('Password reset requests','admin-password-resets','','lock');
+      const students=cfoState.users.filter(u=>u.role==='Student');
+      const next=cfoState.schedules.filter(s=>s.active && !s.finalized_at && s.year===cfoState.current_year && s.date>=cfoState.server_date).sort((a,b)=>a.date.localeCompare(b.date))[0];
+      let summary='<p>No upcoming annual schedule is published.</p>';
+      if(next){
+        const status=window.CfoMySchedules.statusOf(next);
+        const rows=[['Title',escapeHTML(next.title||'—')],['Course(s)',window.CfoMySchedules.courseGroupsHtml(next)],['Date',escapeHTML(window.CfoScheduleCreate.formatDate(next.date))],['Time',escapeHTML(window.CfoMySchedules.calendarTime(next).replace('–',' – '))],['Venue',escapeHTML(next.venue||'Not set')],['Capacity',escapeHTML(next.slot_limit==null||next.slot_limit===''?'No limit':next.slot_limit+' students')],['Status',`<span class="dashboard-schedule-status${status==='Open'?'':' is-closed'}">${escapeHTML(status==='Open'?'Open for Registration':status)}</span>`]];
+        summary='<div class="dashboard-schedule-summary"><dl class="dashboard-schedule-list">'+rows.map(([label,value])=>'<div class="dashboard-schedule-row"><dt>'+escapeHTML(label)+'</dt><dd>'+value+'</dd></div>').join('')+'</dl></div>';
+      }
+      $('#page').innerHTML=`<div class="stack dashboard-overview"><div class="metrics">${metric('Students',students.length,'Student accounts','users','admin-all-student')}${metric('Awaiting approval',students.filter(u=>u.status==='Pending').length,'Approve verified students','register','admin-all-student?status=Pending')}${metric('New registrations',cfoState.registrations.filter(r=>!r.is_archived&&!r.recollection_schedule_id).length,'Awaiting schedule for '+cfoState.current_year,'register','admin-register-this-year')}${metric('Pending receipts',cfoState.registrations.filter(r=>r.has_receipt&&r.receipt_status==='Pending').length,'Review uploaded receipts','receipt','/admin/recollection-registrations?status=Pending')}</div>${panel('Next annual recollection',summary,link('Manage schedules','admin-recollection-schedule'))}</div>`;
+    }
+    function connectedDirectory() {
+      const rows=cfoState.users.filter(u=>u.role==='Student');
+      const params=routeDetails().params;
+      connectedGrid({key:'connected-students',filterQuery:params.toString(),initialFilters:{status:params.get('status')||''},title:'Student accounts',rows:()=>rows,filters:['course','year_level','section','status'].map(k=>objectFilter(k,k.replace('_',' '),rows)),columns:[{label:'Student',html:connectedStudent},{label:'Registered Gmail',get:r=>r.original_email||r.email},{label:'Login email',get:r=>r.login_email||r.system_username||'—'},{label:'Course',get:r=>r.course||'—'},{label:'Year / Section',get:r=>[r.year_level,r.section].filter(Boolean).join(' · ')||'—'},{label:'Status',html:r=>badge(r.status)}],rowActions:r=>button('Edit / Approve','connected-student',r.id,'compact')});
+    }
+    function connectedStudentEdit(id) {
+      const r=cfoState.users.find(r=>String(r.id)===id);
+      const values=type=>unique([...cfoState.academic_options.filter(option=>option.type===type).map(option=>option.name),r[type]||''].filter(Boolean));
+      showDialog('Student account',`<form id="connected-student-form"><div class="form-grid">${field('Student ID','student_id',r.student_id,'text','required')}${field('Registered Gmail','email',r.original_email||r.email,'email','required')}${field('First name','first_name',r.first_name,'text','required')}${field('Middle name','middle_name',r.middle_name||'')}${field('Last name','last_name',r.last_name,'text','required')}${optionalSelectField('Course','course',values('course'),r.course||'')}${optionalSelectField('Year level','year_level',values('year_level'),r.year_level||'')}${optionalSelectField('Section','section',values('section'),r.section||'')}${selectField('Account status','status',['Pending','Approved','Rejected','Inactive'],r.status)}${field('Rejection reason (required when rejecting)','rejection_reason',r.rejection_reason||'')}</div>${note('Saving a different Gmail also changes the student’s generated @cfo.office.com login. Approve only after CFO verification. Inactive accounts cannot access saved records; their history is retained.',true)}<div class="form-actions"><button class="btn primary" type="submit">Save account</button>${link('Password reset requests','admin-password-resets','','lock')}</div></form>`,'' );
+      $('#connected-student-form').onsubmit=e=>{e.preventDefault();const values=Object.fromEntries(new FormData(e.target));saveConnected('/api/admin/users/'+id,'PATCH',values);};
+    }
+    @include('partials.admin-batch-workflow')
+    function connectedRegistrations(history=false) {
+      const rows=history?[...(cfoState.history||[])].sort((a,b)=>b.year-a.year||b.id-a.id):cfoState.registrations.filter(r=>!r.is_archived && !r.recollection_schedule_id);
+      const academic=(r,key)=>r.student_snapshot?.[key]||'Not recorded';
+      const certificateStatus=r=>r.certificate?'Issued':r.certificate_record?.revoked_at?'Withdrawn':'Not issued';
+      const recollectionDate=r=>{
+        if(!r.schedule?.date)return 'Not scheduled';
+        const date=new Date(String(r.schedule.date).slice(0,10)+'T00:00:00');
+        return Number.isNaN(date.getTime())?'Not scheduled':date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      };
+      const yearSection=r=>String(r.details?.yearSection??'').trim()||[r.student_snapshot?.year_level,r.student_snapshot?.section].map(value=>String(value??'').trim()).join('')||'Not recorded';
+      const columns=history?[
+        {label:'Name',get:r=>r.student_snapshot?.name||r.user?.name},
+        {label:'ID number',get:r=>r.student_snapshot?.student_id||r.user?.student_id},
+        {label:'Date of recollection',get:recollectionDate,sort:r=>r.schedule?.date||''},
+        {label:'Course',get:r=>academic(r,'course')},
+        {label:'Year/Section',get:yearSection},
+        {label:'Attendance',get:r=>r.attendance},
+        {label:'Action',get:()=> 'View',sort:false,html:r=>button('View','connected-history-view',r.id,'compact')}
+      ]:[{label:'Name',get:r=>r.user?.name},{label:'ID number',get:r=>r.user?.student_id},{label:'Recollection year',get:r=>r.year},{label:'Schedule',get:connectedSchedule},{label:'Registration',get:r=>r.status},{label:'Receipt',get:r=>r.receipt_status},{label:'Attendance',get:r=>r.attendance},{label:'Certificate',get:certificateStatus}];
+      $('#page-description').textContent=history?'Completed batches and previous years, permanently retained.':'Unscheduled registrations for '+cfoState.current_year;
+      $('#page-actions').innerHTML=history?link('Current-year registrations','admin-register-this-year','','register'):link('Recollection History','admin-history','','history');
+      connectedGrid({key:history?'connected-history':'connected-registrations',title:history?'Recollection History':'Registered students · '+cfoState.current_year,rows:()=>rows,
+        beforeGrid:history?`<section class="panel"><div class="panel-head"><div><h2 id="history-heading" tabindex="-1">Past recollections</h2><p class="muted">Completed batches appear here after you click Move to History. The previous year automatically appears here. Registration details, receipts, attendance records, and certificates are kept.</p></div></div><div class="panel-body"><div class="metrics" id="history-summary" aria-live="polite" aria-label="Filtered history summary"></div></div></section>`:'',
+        ...(history?{historyControls:true,searchDebounce:300,searchOptions:{placeholder:'Search name, ID number, course, or attendance',search:r=>columns.map(column=>column.get(r)).join(' ')},searchMatches:(value,query)=>String(value??'').toLowerCase().includes(query.trim().toLowerCase()),resultCount:count=>`Showing ${count} ${count===1?'student':'students'}`} : {}),
+        filters:history?[{key:'scheduleDate',label:'Recollection date',type:'date',event:'input',get:r=>r.schedule?.date||''}]:[],
+        columns,
+        rowActions:history?null:r=>button('View','connected-registration',r.id,'compact'),
+        afterDraw:filtered=>{
+          if(!history)return;
+          $('#history-summary').innerHTML=metric('Matching records',filtered.length,'Across the selected filters','register')+metric('Recollection years',new Set(filtered.map(r=>r.year)).size,'Years in these results','history')+metric('Present',filtered.filter(r=>r.attendance==='Present').length,'Recorded attendance','check')+metric('Certificates issued',filtered.filter(r=>r.certificate).length,'Available to view or print','certificate');
+          if(!filtered.length){
+            const date=gridState.get('connected-history')?.filters.scheduleDate;
+            $('#data-grid .table-empty').textContent=date?'No students are scheduled on this date.':'No students found.';
+          }
+        }});
+    }
+    function connectedSchedules(options = {}) {
+      $('#page-actions').innerHTML='';
+      mySchedulesController=window.CfoMySchedules.mount({
+        root:$('#page'), state:cfoState, request:backend, toast,
+        onCreate:()=>go('admin-add-new-recollection-schedule'),
+        onEdit:schedule=>{location.href='/admin/schedules/'+encodeURIComponent(schedule.id)+'/edit';},
+        refresh:()=>renderConnectedAdmin(['schedules','registrations','schedule_changes','notifications']),
+        navigate:()=>go('admin-recollection-schedule'),
+        ...options
+      });
+    }
+    function connectedScheduleForm(params) {
+      if(params.has('id')) {
+        const supplied=window.CFO_BACKEND.edit_schedule;
+        if(!supplied||String(supplied.id)!==params.get('id')) {
+          location.replace('/admin/schedules/'+encodeURIComponent(params.get('id'))+'/edit');
+          return;
+        }
+        const saved=cfoState.schedules.find(schedule=>String(schedule.id)===params.get('id'));
+        if(!saved||saved.finalized_at||saved.status==='Cancelled') {
+          toast(!saved?'The schedule was not found.':saved.finalized_at?'Completed schedules are view only.':'Cancelled schedules are view only.');
+          go('admin-recollection-schedule');
+          return;
+        }
+        mySchedulesController?.destroy();
+        mySchedulesController=null;
+        $('#page-actions').innerHTML='';
+        schedulePageController=window.CfoScheduleCreate.mount({
+          root:$('#page'),state:cfoState,userId:window.CFO_BACKEND.user.id,
+          editSchedule:{...saved,assigned_academic_groups:supplied.assigned_academic_groups},
+          request:backend,toast,navigate:()=>go('admin-recollection-schedule'),
+          save:async(values,onSaved)=>{
+            const result=await backend('/api/admin/schedules/'+saved.id,'PUT',values);
+            const index=cfoState.schedules.findIndex(schedule=>schedule.id===result.id);
+            if(index>=0)cfoState.schedules[index]=result;
+            onSaved?.(result);
+            toast('Recollection schedule updated.');
+          }
+        });
+        return;
+      }
+      mySchedulesController?.destroy();
+      mySchedulesController=null;
+      $('#page-actions').innerHTML='';
+      schedulePageController=window.CfoScheduleCreate.mount({
+        root:$('#page'),state:cfoState,userId:window.CFO_BACKEND.user.id,
+        request:backend,toast,
+        navigate:()=>go('admin-recollection-schedule'),
+        save:async(values,onSaved)=>{
+          const result=await backend('/api/admin/schedules','POST',values);
+          const index=cfoState.schedules.findIndex(schedule=>schedule.id===result.id);
+          if(index>=0)cfoState.schedules[index]=result;
+          else cfoState.schedules.push(result);
+          onSaved?.(result);
+          toast('Recollection schedule saved.');
+        }
+      });
+    }
+    function connectedReceipts() {
+      const rows=cfoState.registrations;
+      const params=routeDetails().params;
+      connectedGrid({key:'connected-receipts',filterQuery:params.toString(),initialFilters:{receipt_status:params.get('receipt_status')||''},title:'Registration receipts',rows:()=>rows,filters:[objectFilter('receipt_status','Status',rows)],columns:[{label:'Student',html:connectedStudent},{label:'Schedule',get:connectedSchedule},{label:'Receipt',get:r=>r.has_receipt?'Uploaded':'Not uploaded'},{label:'Status',get:r=>r.receipt_status}],rowActions:r=>button('Review','connected-receipt',r.id,'compact')});
+    }
+    function connectedReceipt(id) {
+      const r=findRegistration(id);
+      showDialog('Receipt review',details([['Student',r.user.name],['Schedule',connectedSchedule(r)]])+(r.has_receipt?`<p><img src="/api/receipts/${r.id}" alt="Uploaded receipt" style="max-width:100%;max-height:65vh;object-fit:contain"></p><p><a class="btn" href="/api/receipts/${r.id}" target="_blank" rel="noopener">Download private receipt</a></p>`:'<p>No receipt has been uploaded.</p>')+`<form id="connected-receipt-form">${selectField('Receipt status','receipt_status',['Pending','Approved','Rejected'],r.receipt_status)}${field('Rejection reason','receipt_reason',r.receipt_reason||'')}<div class="form-actions"><button type="submit" class="btn primary">Save review</button></div></form>`,'');
+      $('#connected-receipt-form').onsubmit=e=>{e.preventDefault();saveConnected('/api/admin/registrations/'+id,'PATCH',Object.fromEntries(new FormData(e.target)));};
+    }
+    function connectedRequests() {
+      const rows=cfoState.requests, cr=window.CfoChangeRequests;
+      connectedGrid({key:'connected-requests',title:'Schedule change requests',noun:'requests',beforeGrid:cr.statsHtml(rows,metric),rows:()=>rows,
+        filters:[objectFilter('status','Status',rows),cr.courseFilter(rows,unique)],columns:cr.columns(),exportColumns:cr.exportColumns(),
+        rowActions:r=>button(r.status==='Pending'?'Review':'View','connected-request',r.id,'compact')});
+    }
+    function connectedRequest(id) {
+      const r=cfoState.requests.find(r=>String(r.id)===String(id));
+      if(!r)return;
+      const pending=r.status==='Pending';
+      showDialog(pending?'Review schedule change request':'Schedule change request details',window.CfoChangeRequests.reviewHtml(r),
+        pending?button('Cancel','close-dialog')+button('Reject request','cr-reject',id,'danger')+button('Approve & assign schedule','cr-approve',id,'primary'):button('Close','close-dialog'),true);
+      const form=$('#connected-request-form');
+      if(form)form.onsubmit=e=>{e.preventDefault();decideChangeRequest(id,'Approved');};
+    }
+    function decideChangeRequest(id,status) {
+      const form=$('#connected-request-form');
+      if(!form)return;
+      const result=window.CfoChangeRequests.decision(form,status);
+      if(!result.ok){toast(result.message);form.elements[result.field]?.focus();return;}
+      saveConnected('/api/admin/change-requests/'+id,'PATCH',result.values);
+    }
+    function connectedAnnouncements() {
+      const rows=cfoState.announcements||[];
+      const bytes=crypto.getRandomValues(new Uint8Array(16));bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;
+      const hex=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+      const publicationKey=[hex.slice(0,8),hex.slice(8,12),hex.slice(12,16),hex.slice(16,20),hex.slice(20)].join('-');
+      const announcementRows=rows.map(a=>`<tr><td>${escapeHTML(a.title)}</td><td>${escapeHTML(a.preview)}</td><td>${escapeHTML(a.author?.name||'Admin')}</td><td>${escapeHTML(a.published_at||'')}</td></tr>`).join('')||'<tr><td colspan="4">No announcements have been published.</td></tr>';
+      $('#page').innerHTML=`<div class="stack">${panel('Publish announcement',`<form id="connected-announcement-form"><input type="hidden" name="publication_key" value="${publicationKey}"><div class="form-grid">${field('Title','title','','text','required maxlength=190')}${field('Short preview shown in notifications','preview','','text','required maxlength=280')}<label class="field full">Full announcement<textarea name="body" rows="6" maxlength="10000" required></textarea></label></div><p class="muted small">Publishing sends approved students one notification containing only the title and short preview. The full announcement appears on their View All Announcements page.</p><div class="form-actions"><button type="submit" class="btn primary">Publish announcement</button></div></form>`)}${panel('Published announcements',`<div class="table-wrap"><table><thead><tr><th>Title</th><th>Notification preview</th><th>Published by</th><th>Published at</th></tr></thead><tbody>${announcementRows}</tbody></table></div>`)}</div>`;
+      $('#connected-announcement-form').onsubmit=e=>{e.preventDefault();saveConnected('/api/admin/announcements','POST',Object.fromEntries(new FormData(e.target)));};
+    }
+    function connectedSettings(params) {
+      if(params.get('tab')==='office'){connectedOffice();return;}
+      const r=window.CFO_BACKEND.user;
+      if(params.get('tab')==='admins') {
+        const rows=cfoState.users.filter(r=>r.role==='Admin');
+        connectedGrid({key:'connected-admins',title:'Administrator accounts',rows:()=>rows,columns:[{label:'Name',get:r=>r.name},{label:'Employee ID',get:r=>r.student_id||'—'},{label:'Email',get:r=>r.email},{label:'Login email',get:r=>r.login_email||r.system_username||r.email},{label:'Status',get:r=>r.status}],rowActions:r=>r.status==='Pending'&&r.id!==window.CFO_BACKEND.user.id?button('Review / Approve','connected-admin-review',r.id,'compact'):''});
+        $('#page').insertAdjacentHTML('afterbegin',note('Public Admin registrations appear here as Pending. Verify the applicant with the CFO before approving administrator access.',true));return;
+      }
+      $('#page').innerHTML=panel('Administrator profile',`<form id="connected-profile-form"><div class="form-grid">${field('First name','first_name',r.first_name,'text','required')}${field('Middle name','middle_name',r.middle_name||'')}${field('Last name','last_name',r.last_name,'text','required')}${field('Email','email',r.email,'email','required')}${field('Current password','current_password','','password','required autocomplete="current-password"')}${field('New password (optional)','password','','password','autocomplete="new-password"')}${field('Confirm new password','password_confirmation','','password','autocomplete="new-password"')}</div><div class="form-actions">${link('Office information','admin-settings?tab=office')}${link('Phone access & QR','admin-lan-access')}${link('Admin accounts','admin-settings?tab=admins')}<button class="btn primary" type="submit">Save profile</button></div></form>`);
+      $('#connected-profile-form').onsubmit=e=>{e.preventDefault();saveConnected('/api/profile','PUT',Object.fromEntries(new FormData(e.target)));};
+    }
+    function connectedAdminReview(id) {
+      const r=cfoState.users.find(row=>String(row.id)===String(id));
+      if(!r||r.role!=='Admin'||r.status!=='Pending')return;
+      showDialog('Review administrator account',details([['Name',r.name],['Employee ID',r.student_id||'—'],['Email',r.email]])+`<form id="connected-admin-review-form">${selectField('Decision','status',['Approved','Rejected'],'Approved')}${field('Rejection reason (required when rejecting)','rejection_reason','')}${note('Approve only after verifying this person is authorized to manage CFO records.',true)}<div class="form-actions"><button class="btn primary" type="submit">Save decision</button></div></form>`,'');
+      $('#connected-admin-review-form').onsubmit=e=>{e.preventDefault();saveConnected('/api/admin/users/'+id+'/review-admin','PATCH',Object.fromEntries(new FormData(e.target)));};
+    }
+    if (window.CFO_BACKEND) {
+      Object.assign(actions, {
+        'connected-admin-review':connectedAdminReview,
+        'connected-reload':renderConnectedAdmin,'connected-student':connectedStudentEdit,'connected-receipt':connectedReceipt,'connected-attendance-edit':connectedAttendanceEdit,'connected-request':connectedRequest,'cr-approve':id=>decideChangeRequest(id,'Approved'),'cr-reject':id=>decideChangeRequest(id,'Rejected'),
+        'connected-registration':connectedRegistration,
+        'connected-print':()=>{if(!activeGrid)return;const rows=activeGrid.filtered();printPreview('Student attendance',`<table><thead><tr><th>Student ID</th><th>Name</th><th>Course</th><th>Year Level</th><th>Section</th><th>Schedule</th><th>Attendance</th></tr></thead><tbody>${rows.map(r=>{const group=attendanceAcademicGroup(r);return `<tr>${[r.user?.student_id,attendanceStudentName(r),group.course,group.year_level,group.section,connectedSchedule(r),r.attendance].map(v=>`<td>${escapeHTML(v)}</td>`).join('')}</tr>`;}).join('')}</tbody></table>`);},
+        'export-grid':()=>{if(!activeGrid)return;const custom=activeGrid.config.exportColumns;if(custom){csvDownload(activeGrid.config.key+'.csv',custom.map(c=>c.label),activeGrid.filtered().map(r=>custom.map(c=>c.get(r))));return;}const columns=activeGrid.config.columns;csvDownload(activeGrid.config.key+'.csv',columns.map(c=>c.label),activeGrid.filtered().map((r,index)=>columns.map(c=>c.rowNumber?index+1:c.get?c.get(r):c.label==='Student'?(r.user?.name||r.name):c.label==='Status'?r.status:'')));},
+        'logout':()=>showDialog('Log out?','<p>Your current session will end.</p>',button('Cancel','close-dialog')+button('Log out','confirm-logout','','danger')),
+        'confirm-logout':async()=>{try{await backend('/api/logout','POST');location.href='/#login';}catch(error){toast(error.message);}},
+        'notifications':()=>showDialog('Notifications',cfoState.notifications.map(n=>'<p>'+escapeHTML(n.message)+'<br><small>'+escapeHTML(n.created_at)+'</small></p>').join('')||'<p>No notifications.</p>')
+      });
+      $$('[data-action=logout]').forEach(e=>e.setAttribute('aria-label','Logout'));
+    }
+    async function connectedHistoryView(id) {
+      const record=await backend('/api/history/'+id);
+      const r=record.registration;
+      const controls=(r.schedule?button('Correct attendance','connected-attendance-edit',id):'')+button('Close','close-dialog');
+      showDialog('Recollection record · '+r.year,window.cfoHistoryDetails(record),controls,true);
+    }
+    actions['connected-history-view']=connectedHistoryView;
+    function connectedCertificates() {
+      $('#page-actions').innerHTML=link('Certificate template','admin-certificate-template','primary');
+      connectedGrid({key:'certificates',title:'Certificate eligibility and issuance',rows:()=>cfoState.registrations,columns:[{label:'Student',html:connectedStudent},{label:'Year',get:r=>r.year},{label:'Attendance',get:r=>r.attendance},{label:'Verified',get:r=>r.attendance_verified_at?'Yes':'No'},{label:'Certificate',get:r=>r.certificate?.certificate_number||'Not issued'}],rowActions:r=>r.certificate?`<a class="btn compact" href="/certificates/${r.certificate.id}" target="_blank" rel="noopener">View / Print</a><a class="btn compact" href="/certificates/${r.certificate.id}?download=1">Download SVG</a>`:'Certificates are generated automatically for Present attendance'});
+    }
+    function connectedTemplate() {
+      $('#page-actions').innerHTML=link('Certificates','admin-certificate');
+      window.mountCertificateEditor({host:$('#page'),template:cfoState.template,request:backend,save:saveConnected});
+    }
+    function connectedAcademic() {
+      connectedGrid({key:'academic',title:'Course, year level and section options',rows:()=>cfoState.academic_options,filters:[objectFilter('type','Type',cfoState.academic_options)],columns:[{label:'Type',get:r=>r.type},{label:'Name',get:r=>r.name}],rowActions:r=>button('Delete unused','connected-academic-delete',r.id,'compact danger')});
+      $('#page').insertAdjacentHTML('afterbegin',panel('Add reference option',`<form id="academic-form"><div class="form-grid">${selectField('Type','type',['course','year_level','section'],'course')}${field('Name','name','','text','required maxlength=190')}</div><div class="form-actions"><button class="btn primary" type="submit">Add option</button></div></form>`));
+      $('#academic-form').onsubmit=e=>{e.preventDefault();saveConnected('/api/admin/academic-options','POST',Object.fromEntries(new FormData(e.target)));};
+      $('#page').insertAdjacentHTML('afterbegin',panel('Sections per course and year level','<div id="course-year-sections-settings"></div>'));
+      window.CfoCourseYearSections.mount({root:$('#course-year-sections-settings'),state:cfoState,request:backend,toast,onChanged:()=>renderConnectedAdmin()});
+    }
+    @include('partials.admin-password-recovery')
+    function connectedActivity() {
+      connectedGrid({key:'activity',title:'Activity log (latest 200)',rows:()=>cfoState.logs,columns:[{label:'Date',get:r=>r.created_at},{label:'Actor',get:r=>r.actor||'Public / system'},{label:'Action',get:r=>r.action},{label:'Record',get:r=>r.record_type+' '+(r.record_id||'')}]});
+    }
+    function connectedOffice() {
+      const r=cfoState.settings;
+      $('#page').innerHTML=panel('Office information',`<form id="office-form"><div class="form-grid">${field('Office name','name',r.name,'text','required')}${field('School','school',r.school,'text','required')}${field('Address','address',r.address||'')}${field('Office head','head',r.head||'')}</div><div class="form-actions">${link('Profile','admin-settings')}<button type="submit" class="btn primary">Save office information</button></div></form>`);
+      $('#office-form').onsubmit=e=>{e.preventDefault();saveConnected('/api/admin/settings/office','POST',Object.fromEntries(new FormData(e.target)));};
+    }
+    function studentAccessUrl() {
+      const configured = {{ Illuminate\Support\Js::from(config('access.url')) }};
+      try {
+        const target = new URL(configured || location.origin);
+        if (!['http:', 'https:'].includes(target.protocol) || target.username || target.password) return null;
+        return new URL('/login', target.origin).href;
+      } catch { return null; }
+    }
+    function connectedLanAccess() {
+      const accessUrl=studentAccessUrl();
+      const hostname=accessUrl ? new URL(accessUrl).hostname : '';
+      const localOnly=!accessUrl || hostname==='localhost' || hostname.endsWith('.localhost') || hostname.endsWith('.test') || hostname==='[::1]' || hostname.startsWith('127.') || hostname==='0.0.0.0';
+      $('#page-actions').innerHTML=link('Office settings','admin-settings?tab=office');
+      if(localOnly){
+        $('#page').innerHTML=panel('Student phone access','<p>This address is available only on the server PC. Set a reachable student URL before sharing a QR code.</p><p>For HTTPS on Android and iPhone, use the configured public HTTPS address. For the same school Wi-Fi, use the server LAN IP and port.</p>');
+        return;
+      }
+      const secure=accessUrl.startsWith('https:');
+      $('#page').innerHTML=panel('Student phone access',`<p>Scan this QR code or open the URL in your phone browser.</p><div class="form-actions"><a id="lan-access-url" style="overflow-wrap:anywhere;min-width:0" href="${escapeHTML(accessUrl)}">${escapeHTML(accessUrl)}</a>${button('Copy access URL','copy-lan-url')}</div><div style="display:grid;place-items:center;padding:20px"><canvas id="lan-access-qr" style="max-width:100%;height:auto" aria-label="QR code for student login"></canvas></div><p class="muted">${secure?'HTTPS address. Keep the server running. Public tunnel access also requires an active internet connection and tunnel.':'Local network address. Connect the phone to the same Wi-Fi/router as the server. This HTTP connection is not encrypted and may show a browser security warning.'}</p>`);
+      const draw=()=>{if(window.CFOCreateQr)window.CFOCreateQr($('#lan-access-qr'),accessUrl).catch(error=>toast('Unable to create QR code: '+error.message));};
+      if(window.CFOCreateQr)draw();else window.addEventListener('cfo:qr-ready',draw,{once:true});
+    }
+    Object.assign(actions,{
+      'connected-confirm-save':async()=>{const pending=pendingConnectedSave;if(pending)await saveConnected(pending.url,pending.method,pending.values,true,pending.onSaved);},
+      'copy-lan-url':async()=>{try{await navigator.clipboard.writeText(studentAccessUrl());toast('Student access URL copied.');}catch{toast('Copy is unavailable; select the URL and copy it.');}},
+      'connected-delete-schedule':id=>{showDialog('Delete unused Recollection Day?','<p>This will permanently remove this day. Days linked to registrations or requests cannot be deleted.</p>',button('Cancel','close-dialog')+button('Delete','connected-delete-schedule-confirm',id,'danger'));},
+      'connected-delete-schedule-confirm':id=>saveConnected('/api/admin/schedules/'+id,'DELETE',{},true),
+      'connected-academic-delete':id=>showDialog('Delete unused option?','<p>Options used by profiles cannot be removed.</p>',button('Cancel','close-dialog')+button('Delete','connected-academic-delete-confirm',id,'danger')),
+      'connected-academic-delete-confirm':id=>saveConnected('/api/admin/academic-options/'+id,'DELETE',{},true),
+      'connected-recovery':connectedRecoveryReview,
+      'recovery-reject':id=>connectedRecoveryDecision(id,'Rejected'),
+      'recovery-view':view=>{recoveryView=view;connectedRecovery();},
+      'recovery-refresh':()=>renderConnectedAdmin()
+    });
+
+    function setLiveStatus(value){const node=$('#live-status');if(node){node.textContent=value;node.classList.toggle('live',value==='Live');}}
+    let adminEventSource=null,adminPollTimer=null,adminVersions=null,adminRefreshBusy=false;
+    const pendingLiveResources=new Set();
+    const isAdminEditing=()=>batchSaveBusy||dialog.open||Boolean(mySchedulesController?.isModalOpen())||Boolean(document.activeElement?.matches?.('input,textarea,select'))||Boolean(document.querySelector('#page form[data-dirty="true"]'))||Boolean(document.querySelector('.cfo-search-results:not([hidden])'));
+    for(const type of ['input','change'])document.addEventListener(type,event=>{const form=event.target.closest?.('#page form');if(form)form.dataset.dirty='true';});
+    async function readLiveVersions(){return backend('/api/live/versions');}
+    async function applyLiveVersions(next){
+      if(!adminVersions){adminVersions=next;Object.keys(next).forEach(resource=>pendingLiveResources.add(resource));await refreshAdminWhenSafe();return;}
+      const changed=Object.keys(next).filter(resource=>Number(next[resource])!==Number(adminVersions[resource]));
+      adminVersions=next;
+      changed.forEach(resource=>pendingLiveResources.add(resource));
+      await refreshAdminWhenSafe();
+    }
+    async function refreshAdminWhenSafe(){
+      if(adminRefreshBusy||document.hidden||!pendingLiveResources.size||isAdminEditing())return;
+      adminRefreshBusy=true;
+      const resources=[...pendingLiveResources];pendingLiveResources.clear();
+      try{await renderConnectedAdmin(resources);}catch(error){resources.forEach(resource=>pendingLiveResources.add(resource));setLiveStatus('Reconnecting');}
+      finally{adminRefreshBusy=false;if(pendingLiveResources.size)setTimeout(refreshAdminWhenSafe,2000);}
+    }
+    async function pollAdminVersions(){try{await applyLiveVersions(await readLiveVersions());setLiveStatus('Live');}catch{setLiveStatus('Reconnecting');}}
+    function startAdminPolling(){if(!adminPollTimer)adminPollTimer=setInterval(pollAdminVersions,2000);}
+    function stopAdminPolling(){if(adminPollTimer){clearInterval(adminPollTimer);adminPollTimer=null;}}
+    function connectAdminEvents(){
+      if(document.hidden)return;
+      if(window.CFO_BACKEND?.live_transport==='polling'){startAdminPolling();return;}
+      if(!('EventSource'in window)){setLiveStatus('Reconnecting');startAdminPolling();return;}
+      if(adminEventSource)adminEventSource.close();
+      adminEventSource=new EventSource('/api/admin/events');
+      adminEventSource.onopen=()=>{setLiveStatus('Live');stopAdminPolling();};
+      adminEventSource.addEventListener('versions',event=>{try{applyLiveVersions(JSON.parse(event.data)).catch(()=>setLiveStatus('Reconnecting'));}catch{setLiveStatus('Reconnecting');}});
+      adminEventSource.onerror=()=>{setLiveStatus('Reconnecting');startAdminPolling();};
+    }
+    async function startAdminLive(){
+      if(!window.CFO_BACKEND?.user||window.CFO_BACKEND.user.role!=='Admin')return;
+      try{adminVersions=await readLiveVersions();await renderConnectedAdmin();connectAdminEvents();}catch{setLiveStatus('Reconnecting');startAdminPolling();}
+    }
+    document.addEventListener('focusout',()=>setTimeout(refreshAdminWhenSafe,200));
+    dialog.addEventListener('close',()=>setTimeout(refreshAdminWhenSafe,200));
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden){adminEventSource?.close();adminEventSource=null;stopAdminPolling();}
+      else{pollAdminVersions().finally(connectAdminEvents);}
+    });
+    hydrateIcons();syncNavigation();
+    window.addEventListener('hashchange', renderRoute);
+    renderRoute().then(()=>{if(window.CFO_BACKEND.notice)toast(window.CFO_BACKEND.notice);startAdminLive();});
+  </script>
+@vite('resources/js/qr.js')
+@include('partials.history-details')
+</body>
+</html>

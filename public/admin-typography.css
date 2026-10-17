@@ -1,0 +1,163 @@
+/* Local admin fonts. No font service is contacted by the browser. */
+@font-face {
+    font-family: "Inter";
+    src: url("./fonts/Inter-Regular.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Inter";
+    src: url("./fonts/Inter-Medium.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Inter";
+    src: url("./fonts/Inter-SemiBold.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Inter";
+    src: url("./fonts/Inter-Bold.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+}
+
+@media screen {
+    body.admin-background {
+        --admin-font-family: "Inter", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+        --admin-preview-font-family: "Segoe UI", Arial, sans-serif;
+        --admin-font-weight-regular: 400;
+        --admin-font-weight-medium: 500;
+        --admin-font-weight-semibold: 600;
+        --admin-font-weight-bold: 700;
+        --admin-title-size: clamp(26px, 2.6vw, 36px);
+        --admin-panel-title-size: 20px;
+        --admin-metric-label-size: 14px;
+        --admin-metric-value-size: 38px;
+        --admin-body-size: 14px;
+        --admin-hint-size: 13px;
+        --admin-sidebar-group-size: 12px;
+        --admin-sidebar-menu-size: 15px;
+        --admin-button-size: 14px;
+        --admin-input-size: 15px;
+        --admin-phone-input-size: 16px;
+        --admin-badge-size: 12px;
+        --admin-minimum-size: 12px;
+        font-family: var(--admin-font-family);
+    }
+
+    /* Preserve inherited document type sizes as the admin UI changes. */
+    body.admin-background {
+        --admin-preview-body-size: 15px;
+    }
+    body.registrations-page.admin-background {
+        --admin-preview-body-size: 14px;
+    }
+    body.admin-background :is(.ce-stage, .certificate, .receipt-viewer,
+        #receipt-image-dialog, #dialog:has(img[src^="/api/receipts/"]), .poster) {
+        font-family: var(--admin-preview-font-family);
+        font-size: var(--admin-preview-body-size);
+        font-weight: var(--admin-font-weight-regular);
+    }
+
+    /* Only screen typography changes; document previews are excluded from
+       every role below. Both admin layouts use the same adjustable tokens. */
+    body.admin-background :is(.shell, .sidebar, #dialog:not(:has(img[src^="/api/receipts/"], .ce-stage, .certificate, .receipt-viewer, .poster)), #registration-dialog, .cfo-search):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-body-size);
+        font-weight: var(--admin-font-weight-medium);
+    }
+    body.admin-background :is(button, input, select, textarea, .cfo-search):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-family: var(--admin-font-family);
+    }
+    body.admin-background :is(.metric, .stat-card, table, [data-count], [data-range], [data-page], .entries, .pagination, .selection-status):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-variant-numeric: tabular-nums;
+    }
+
+    body.admin-background :is(#page-title, .overview-heading h1, .attendance-heading h1):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-title-size);
+        font-weight: var(--admin-font-weight-bold);
+    }
+    body.admin-background :is(h2, .management-heading h3, .information-section h3, .attendance-health-filters h3, .ce-panel > h3, .topbar-heading > strong):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-panel-title-size);
+        font-weight: var(--admin-font-weight-semibold);
+    }
+    body.admin-background :is(.metric-top, .stat-card > div > span):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-metric-label-size);
+        font-weight: var(--admin-font-weight-semibold);
+    }
+    body.admin-background :is(.metric > strong, .stat-card > div > strong):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-metric-value-size);
+        font-weight: var(--admin-font-weight-bold);
+    }
+    body.admin-background :is(p, li, label, legend, table, td, .detail-list, .information-section, .information-fields dt, .information-fields dd, .sacrament-values dt, .sacrament-values dd, .workflow-form, .schedule-preview, .check-label, .notice, .selection-status, .topbar-title):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-body-size);
+        font-weight: var(--admin-font-weight-medium);
+    }
+    body.admin-background :is(th, .name-cell strong, .attendance-student, .attendance-course, label.field, h3):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-body-size);
+        font-weight: var(--admin-font-weight-semibold);
+    }
+    body.admin-background :is(.management-heading h3, .information-section h3, .attendance-health-filters h3, .ce-panel > h3):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-panel-title-size);
+        font-weight: var(--admin-font-weight-semibold);
+    }
+    body.admin-background :is(small, .small, .muted, .form-help, .panel-head p, .page-foot, .metric > a, .metric > p, .detail-list dt, .workspace-label, .sidebar-shortcut p, .sidebar-footer strong, .account strong, .toast, .cfo-breadcrumb, .name-cell span, .recovery-status-help, .table-footer, [data-count], [data-range], .list-note, .entries, .attendance-heading p, .attendance-schedule-meta, .attendance-groups > span:first-child, .attendance-cell-detail, .attendance-unrecorded, .attendance-payment-note, .attendance-completion p, .attendance-health-filters p, .cfo-search-scope, .cfo-search-help, .cfo-search-status, .cfo-search-result span, .cfo-form-note, .cfo-filter-help, .ce-note, .ce-status, .dialog-heading p, .schedule-help, .topbar-heading nav):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-hint-size);
+        font-weight: var(--admin-font-weight-medium);
+    }
+    body.admin-background :is(.sidebar-footer strong, .account strong, .task-link strong):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-weight: var(--admin-font-weight-semibold);
+    }
+    body.admin-background :is(.eyebrow, .sidebar .nav-group, .attendance-schedule-label, .event-date small, .cfo-search-list h3):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-sidebar-group-size);
+        font-weight: var(--admin-font-weight-bold);
+    }
+    body.admin-background :is(.cfo-required):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-minimum-size);
+        font-weight: var(--admin-font-weight-semibold);
+    }
+    body.admin-background :is(.sidebar .nav-link):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-sidebar-menu-size);
+        font-weight: var(--admin-font-weight-medium);
+    }
+    body.admin-background :is(button:not(.icon-button, .icon-btn, .nav-close), .btn, .button, .sidebar-shortcut a, .attendance-filter-menu summary, .receipt-decision summary):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-button-size);
+        font-weight: var(--admin-font-weight-semibold);
+    }
+    body.admin-background :is(.icon-button, .icon-btn, .nav-close):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-weight: var(--admin-font-weight-semibold);
+    }
+    body.admin-background :is(input, select, textarea):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-input-size);
+        font-weight: var(--admin-font-weight-medium);
+    }
+    body.admin-background :is(.badge, .status-badge, .preview-tag, .attendance-pill, .attendance-chip, .attendance-filter-badge, .upload-badge, .schedule-state):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-badge-size);
+        font-weight: var(--admin-font-weight-semibold);
+    }
+    body.admin-background :is(.avatar):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-weight: var(--admin-font-weight-bold);
+    }
+    /* The shared mobile search stylesheet marks this size important. */
+    body.admin-background .cfo-search-clear:not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-button-size) !important;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    body.admin-background :is(input, select, textarea):not(.ce-stage, .ce-stage *, .certificate, .certificate *, .receipt-viewer, .receipt-viewer *, #receipt-image-dialog, #receipt-image-dialog *, #dialog:has(img[src^="/api/receipts/"]), #dialog:has(img[src^="/api/receipts/"]) *, .poster, .poster *, .print-area, .print-area *) {
+        font-size: var(--admin-phone-input-size);
+    }
+}
+
+@media screen and (min-width: 1500px) {
+    body.registrations-page.admin-background {
+        --admin-preview-body-size: 15px;
+    }
+}

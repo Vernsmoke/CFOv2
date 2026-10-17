@@ -1,0 +1,336 @@
+/* Consistent geometry and supporting surfaces for the shared login palette. */
+#app > .registration-shell {
+  --auth-card-radius: 12px;
+  display: grid;
+  grid-template-columns: minmax(270px, 30%) minmax(0, 1fr);
+  align-items: stretch;
+  width: calc(100% - 48px);
+  max-width: 1240px;
+  min-height: 0;
+  margin: 32px auto;
+  overflow: hidden;
+  border: 1px solid var(--cfo-border);
+  border-radius: 16px;
+  background: var(--cfo-panel);
+  color: var(--cfo-text);
+  box-shadow: 0 20px 65px rgba(4, 27, 49, .3);
+}
+
+#app > .registration-shell .brand-panel.auth-brand-panel {
+  padding-top: 48px;
+  border-right: 1px solid var(--cfo-border);
+  border-radius: 0;
+  background: linear-gradient(180deg, var(--cfo-navy) 44%, #062542d9 75%, #062542b3),
+    url("images/admin-campus-bg.png") center bottom / auto 65% no-repeat;
+}
+
+#app > .registration-shell .registration-main {
+  min-width: 0;
+  padding: 32px;
+  border-radius: 0;
+  background: var(--cfo-panel);
+  color: var(--cfo-text);
+}
+
+#app > .registration-shell .topbar {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+
+#app > .registration-shell .topbar p {
+  margin-left: auto;
+  color: var(--cfo-text-muted);
+}
+
+#app > .registration-shell .register-heading {
+  margin: 32px 0 28px;
+}
+
+#app > .registration-shell .register-heading h1 {
+  color: var(--cfo-text);
+  font-size: clamp(2rem, 3.2vw, 2.8rem);
+}
+
+#app > .registration-shell .register-heading p,
+#app > .registration-shell :is(.recovery-notes, .reset-preview-note, .cfo-form-note) {
+  color: var(--cfo-text-muted);
+}
+
+#app > .registration-shell .field {
+  margin-bottom: 24px;
+}
+
+#app > .registration-shell .field > label {
+  color: var(--cfo-text);
+  font-size: 1rem;
+}
+
+#app > .registration-shell .role-field {
+  width: 100%;
+}
+
+#app > .registration-shell .input-wrap :is(input, select) {
+  height: 54px;
+  border-radius: 8px;
+}
+
+#app > .registration-shell .steps {
+  margin-bottom: 28px;
+}
+
+#app > .registration-shell .steps li {
+  color: var(--cfo-text-muted);
+  font-size: .9rem;
+}
+
+#app > .registration-shell .steps li::before {
+  top: 21px;
+  background: var(--cfo-border);
+}
+
+#app > .registration-shell .step-number {
+  width: 43px;
+  height: 43px;
+  background: var(--cfo-navy-hover);
+  color: var(--cfo-text);
+}
+
+#app > .registration-shell .steps .active {
+  color: var(--cfo-text);
+}
+
+#app > .registration-shell .active .step-number {
+  background: var(--cfo-info);
+  color: var(--cfo-navy);
+}
+
+#app > .registration-shell .done .step-number {
+  background: var(--cfo-success);
+  color: var(--cfo-navy);
+}
+
+#app > .registration-shell .steps li:is(.active, .done)::before {
+  background: var(--cfo-info);
+}
+
+#app > .registration-shell :is(.banner, .reminder, .requirements, .details, .reset-credentials) {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--cfo-border);
+  border-radius: var(--auth-card-radius);
+  background: var(--cfo-navy);
+  color: var(--cfo-text);
+}
+
+#app > .registration-shell :is(.banner, .reminder, .requirements, .reset-credentials) {
+  padding: 20px;
+  gap: 16px;
+}
+
+#app > .registration-shell .banner {
+  min-height: 0;
+  margin-bottom: 24px;
+  background: var(--cfo-navy-hover);
+}
+
+#app > .registration-shell :is(.reminder, .requirements) {
+  margin-top: 24px;
+}
+
+#app > .registration-shell .reset-credentials {
+  margin-bottom: 24px;
+}
+
+#app > .registration-shell :is(.banner strong, .reminder strong, .requirements h2, .review-heading h2) {
+  color: var(--cfo-text);
+}
+
+#app > .registration-shell :is(.banner > .icon, .reminder > .icon, .requirements > .icon) {
+  color: var(--cfo-info);
+}
+
+#app > .registration-shell :is(.reminder, .requirements li) {
+  color: var(--cfo-text-muted);
+}
+
+#app > .registration-shell .requirements li.valid {
+  color: var(--cfo-success);
+}
+
+#app > .registration-shell .rule-dot {
+  border-color: var(--cfo-border);
+}
+
+#app > .registration-shell .valid .rule-dot {
+  border-color: var(--cfo-success);
+  background: var(--cfo-success);
+  color: var(--cfo-navy);
+}
+
+#app > .registration-shell .detail-row {
+  border-bottom-color: var(--cfo-navy-hover);
+}
+
+#app > .registration-shell .detail-row dt::after {
+  color: var(--cfo-text-muted);
+}
+
+#app > .registration-shell .credential-value {
+  min-height: 54px;
+  gap: 12px;
+  padding: 0 12px;
+  border: 1px solid var(--cfo-border);
+  border-radius: 8px;
+  background: var(--cfo-panel);
+  color: var(--cfo-text);
+}
+
+#app > .registration-shell .credential-value input {
+  color: var(--cfo-text);
+}
+
+#app > .registration-shell .credential-highlight :is(input, .icon) {
+  color: var(--cfo-yellow);
+}
+
+#app > .registration-shell .credential-value input:focus {
+  outline-color: var(--cfo-info);
+}
+
+#app > .registration-shell .copy-button:hover {
+  background: var(--cfo-navy-hover);
+}
+
+#app > .registration-shell .copy-button {
+  color: var(--cfo-text);
+}
+
+#app > .registration-shell .credential-highlight .copy-button {
+  color: var(--cfo-yellow);
+}
+
+#app > .registration-shell :is(.reset-heading-icon, .recovery-status-icon) {
+  background: var(--cfo-info);
+  color: var(--cfo-navy);
+}
+
+#app > .registration-shell .reset-heading-icon {
+  width: 76px;
+  height: 76px;
+}
+
+#app > .registration-shell .reset-heading-icon .icon {
+  width: 36px;
+  height: 36px;
+}
+
+#app > .registration-shell .form-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+#app > .registration-shell .form-actions button {
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  padding: 12px 16px;
+}
+
+#app > .registration-shell :is(.reset-send, .reset-login .outline) {
+  min-height: 54px;
+}
+
+#app > .registration-shell .cfo-required {
+  color: var(--cfo-error-text);
+}
+
+#app > .registration-shell .cfo-form-error {
+  color: var(--cfo-error-text);
+  border-color: var(--cfo-error-text);
+  background: var(--cfo-navy);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .auth-confirm-dialog {
+  border: 1px solid var(--cfo-border);
+  border-radius: 16px;
+  background: var(--cfo-panel);
+  color: var(--cfo-text);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .auth-confirm-dialog::backdrop {
+  background: rgba(4, 27, 49, .6);
+}
+
+.auth-confirm-dialog #action-confirm-text {
+  color: var(--cfo-text-muted);
+}
+
+.auth-confirm-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.auth-confirm-actions button {
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px;
+}
+
+@media (max-width: 900px) {
+  #app > .registration-shell {
+    grid-template-columns: minmax(0, 1fr);
+    width: calc(100% - 32px);
+    margin: 16px auto;
+  }
+
+  #app > .registration-shell .brand-panel.auth-brand-panel {
+    padding: 18px 22px;
+    border-right: 0;
+    border-bottom: 1px solid var(--cfo-border);
+    background: var(--cfo-navy);
+  }
+
+  #app > .registration-shell .registration-main {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  #app > .registration-shell {
+    width: calc(100% - 20px);
+    margin: 10px auto;
+  }
+
+  #app > .registration-shell .registration-main {
+    padding: 24px 16px;
+  }
+
+  #app > .registration-shell .register-heading p {
+    font-size: 1rem;
+  }
+
+  #app > .registration-shell .steps li {
+    font-size: .78rem;
+  }
+
+  #app > .registration-shell :is(.banner, .reminder, .requirements, .reset-credentials) {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  #app > .registration-shell .form-actions {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  #app > .registration-shell .brand-panel.auth-brand-panel {
+    padding: 16px;
+  }
+}

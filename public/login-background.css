@@ -1,0 +1,171 @@
+/* Shared CFO palette for Login, Create Account and Forgot Password. */
+body:has(#app > :is(.login-page, .registration-shell)) {
+  --cfo-text: #EFF7FF;
+  --cfo-navy: #062542;
+  --cfo-panel: #0A3157;
+  --cfo-navy-hover: #123F6B;
+  --cfo-page-bg: #041B31;
+  --cfo-yellow: #FFD444;
+  --cfo-error-text: #F47D8F;
+  --cfo-danger: #A52B42;
+  --cfo-border: #8B8B94;
+  --cfo-text-muted: #B0C4D8;
+  --cfo-success: #00BD83;
+  --cfo-info: #3A86FF;
+  --green: var(--cfo-info);
+  --dark: var(--cfo-navy);
+  --muted: var(--cfo-text-muted);
+  --border: var(--cfo-border);
+  --field: var(--cfo-navy);
+  color-scheme: dark;
+  color: var(--cfo-text);
+  position: relative;
+  isolation: isolate;
+  background: var(--cfo-navy);
+}
+
+/* Match the admin campus photograph and fixed navy overlay. */
+body:has(#app > :is(.login-page, .registration-shell))::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--cfo-navy);
+  background-image: linear-gradient(rgba(4,27,49,.88), rgba(4,27,49,.88)),
+    url("./images/admin-campus-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@media screen and (max-width: 700px) {
+  body:has(#app > :is(.login-page, .registration-shell))::before {
+    background-position: 70% center;
+  }
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) > .campus {
+  display: none;
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .login-heading,
+body:has(#app > :is(.login-page, .registration-shell)) .login-heading h1,
+body:has(#app > :is(.login-page, .registration-shell)) .login-title,
+body:has(#app > :is(.login-page, .registration-shell)) .field > label,
+body:has(#app > :is(.login-page, .registration-shell)) .remember {
+  color: var(--cfo-text);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .login-heading p,
+body:has(#app > :is(.login-page, .registration-shell)) .login-description,
+body:has(#app > :is(.login-page, .registration-shell)) .field small,
+body:has(#app > :is(.login-page, .registration-shell)) .divider {
+  color: var(--cfo-text-muted);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .quick-card {
+  background: var(--cfo-yellow);
+  color: var(--cfo-navy);
+  border-color: var(--cfo-yellow);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .quick-card.secondary {
+  background: var(--cfo-navy-hover);
+  color: var(--cfo-text);
+  border-color: var(--cfo-border);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .quick-card.secondary > .icon:first-child {
+  background: var(--cfo-navy);
+  color: var(--cfo-info);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .login-card {
+  background: var(--cfo-panel);
+  color: var(--cfo-text);
+  box-shadow: 0 10px 24px rgba(4,27,49,.28);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) :is(.title-icon,.dialog-icon) {
+  background: var(--cfo-info);
+  color: var(--cfo-navy);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .input-wrap :is(input,select) {
+  background: var(--cfo-navy);
+  color: var(--cfo-text);
+  border-color: var(--cfo-border);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .input-wrap input::placeholder,
+body:has(#app > :is(.login-page, .registration-shell)) .input-wrap > .icon,
+body:has(#app > :is(.login-page, .registration-shell)) .reveal {
+  color: var(--cfo-text-muted);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .input-wrap :is(input,select):focus {
+  border-color: var(--cfo-info);
+  box-shadow: 0 0 0 3px rgba(58,134,255,.18);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .input-wrap input:autofill {
+  -webkit-text-fill-color: var(--cfo-text);
+  box-shadow: 0 0 0 1000px var(--cfo-navy) inset;
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .remember input {
+  accent-color: var(--cfo-info);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .primary {
+  background: var(--cfo-yellow);
+  color: var(--cfo-navy);
+  border-color: var(--cfo-yellow);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .outline {
+  background: var(--cfo-navy);
+  color: var(--cfo-text);
+  border-color: var(--cfo-border);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .primary:disabled {
+  background: var(--cfo-navy-hover);
+  color: var(--cfo-text-muted);
+  border-color: var(--cfo-border);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .divider::before,
+body:has(#app > :is(.login-page, .registration-shell)) .divider::after {
+  background: var(--cfo-navy-hover);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) :is(button,a):focus-visible {
+  outline-color: var(--cfo-info);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) :is(.error,[aria-invalid="true"]) {
+  color: var(--cfo-error-text);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) .input-wrap input[aria-invalid="true"] {
+  border-color: var(--cfo-error-text);
+  color: var(--cfo-text);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) #notice {
+  background: var(--cfo-panel);
+  color: var(--cfo-text);
+  border-color: var(--cfo-border);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) #notice-text {
+  color: var(--cfo-text-muted);
+}
+
+body:has(#app > :is(.login-page, .registration-shell)) #notice::backdrop {
+  background: rgba(4,27,49,.6);
+}

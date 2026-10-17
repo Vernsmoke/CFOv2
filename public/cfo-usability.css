@@ -1,0 +1,46 @@
+/* Shared, local styling that extends the existing navy/green panel design. */
+.cfo-search { position:relative; min-width:0; margin:0 0 22px; padding:16px 18px; border:1px solid #d2e2dd; border-radius:12px; background:#f7fbf9; color:#192c3a; font:14px/1.5 "Segoe UI",Arial,sans-serif; }
+.cfo-search-heading,.cfo-search-controls,.cfo-search-tools { display:flex; align-items:center; gap:12px; }
+.cfo-search-heading { justify-content:space-between; margin-bottom:8px; }
+.cfo-search-heading label { font-weight:650; }
+.cfo-search-scope { color:#3e6359; font-size:12px; white-space:nowrap; }
+.cfo-search input[type=search] { flex:1; width:100%; min-width:0; min-height:44px; border:1px solid #94ada5; border-radius:8px; padding:10px 12px; background:#fff; color:#192c3a; font:inherit; }
+.cfo-search button,.cfo-search select { min-height:42px; width:auto; border:1px solid #b3c8c0; border-radius:7px; padding:8px 12px; background:white; color:#20594b; font:inherit; cursor:pointer; }
+.cfo-search button:disabled { opacity:.55; cursor:default; }
+.cfo-search-help { margin:8px 0 0; color:#526c62; font-size:12px; }
+.cfo-search-results { position:absolute; top:100%; left:0; right:0; z-index:25; max-height:min(65vh,560px); overflow-y:auto; overscroll-behavior:contain; padding:16px; border:1px solid #b3c8c0; border-radius:10px; background:white; box-shadow:0 12px 30px #15372a26; }
+.cfo-search [hidden] { display:none !important; }
+.cfo-search-tools { justify-content:space-between; flex-wrap:wrap; }
+.cfo-search-tools label { display:flex; align-items:center; gap:8px; }
+.cfo-search-status { margin:12px 0; font-size:13px; color:#526c62; }
+.cfo-search-list h3 { padding:10px 4px 6px; font-size:12px; font-weight:700; color:#526c62; }
+.cfo-search .cfo-search-result { display:block; width:100%; min-height:52px; padding:10px; text-align:left; text-decoration:none; border:0; border-radius:6px; background:white; color:#192c3a; overflow-wrap:anywhere; }
+.cfo-search-result strong,.cfo-search-result span { display:block; }
+.cfo-search-result span { margin-top:3px; font-size:12px; color:#526c62; }
+.cfo-search .cfo-search-result:hover { background:#edf5f2; }
+.cfo-search :focus-visible { outline:3px solid #2785bd; outline-offset:2px; }
+.cfo-search-more { margin-top:12px; }
+.dash-main-pane > .cfo-search { margin:18px clamp(16px,3vw,40px) 0; flex-shrink:0; }
+.grid-sort { border:0; background:transparent; color:inherit; font:inherit; font-weight:inherit; padding:4px 0; text-align:left; display:inline-flex; gap:6px; align-items:center; }
+.grid-sort:hover { text-decoration:underline; }
+.grid-sort span { color:#426b60; }
+.cfo-required { color:#8a313d; font-size:11px; font-weight:600; margin-left:5px; }
+.cfo-form-error { margin:12px 0; padding:12px 14px; color:#8c2933; background:#fff2f3; border:1px solid #dda8ae; border-radius:8px; white-space:pre-line; overflow-wrap:anywhere; }
+.cfo-form-note { color:#526c62; font-size:12px; margin-bottom:16px; }
+.cfo-filter-help { color:#526c62; font-size:12px; padding:0 24px 12px; }
+.cfo-breadcrumb { font-size:12px; color:#526c62; margin:0 0 12px; }
+@media(max-width:600px) {
+  .cfo-search { padding:12px; margin-bottom:16px; }
+  .cfo-search-heading { align-items:flex-start; }
+  .cfo-search-scope { display:none; }
+  .cfo-search-controls { gap:8px; }
+  .cfo-search-clear { font-size:12px !important; padding:8px !important; }
+  .cfo-search-results { max-height:55vh; padding:12px; }
+  .cfo-search-tools label,.cfo-search-tools select { min-width:0; max-width:100%; }
+  .cfo-search-tools { align-items:stretch; }
+  .cfo-search-tools label { flex:1 1 100%; }
+  .cfo-search-tools select { flex:1; }
+  .cfo-filter-help { padding:0 16px 12px; }
+}
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+@media print { .cfo-search,.cfo-breadcrumb { display:none !important; } }
