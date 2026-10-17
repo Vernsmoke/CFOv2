@@ -314,6 +314,59 @@
         else if(entry.kind==='filter'&&activeGrid){activeGrid.state.q=entry.query;activeGrid.state.page=1;$('#data-grid [data-search]').value=entry.query;activeGrid.draw();$('#data-grid [data-search]').focus();}
       });
     }
+    function adminRouteResources(route,params) {
+      if(route==='admin-dashboard')return ['users','schedules'];
+      if(route==='admin-all-student')return ['users'];
+      if(route==='admin-course-year')return ['academic_options'];
+      if(['admin-history','admin-student-reciept','admin-student-attendance','admin-certificate'].includes(route))return ['registrations'];
+      if(route==='admin-announcements')return ['announcements'];
+      if(['admin-recollection-schedule','admin-add-new-recollection-schedule'].includes(route))return ['schedules','academic_options'];
+      if(route==='admin-schedule-change-requests')return ['schedule_changes'];
+      if(route==='admin-settings')return [params.get('tab')==='admins'?'users':params.get('tab')==='office'?'settings':'notifications'];
+      if(route==='admin-certificate-template')return ['settings'];
+      if(route==='admin-password-resets')return ['password_resets'];
+      if(route==='admin-activity')return ['activity_logs'];
+      return ['notifications'];
+    }
+    function adminRouteStateKeys(route,params) {
+      if(route==='admin-dashboard')return ['users','registrations','schedules'];
+      if(route==='admin-all-student')return ['users'];
+      if(route==='admin-course-year')return ['academic_options','course_year_sections'];
+      if(route==='admin-history')return ['history'];
+      if(['admin-student-reciept','admin-certificate'].includes(route))return ['registrations'];
+      if(route==='admin-student-attendance')return ['registrations','schedules'];
+      if(route==='admin-announcements')return ['announcements'];
+      if(route==='admin-recollection-schedule')return ['schedules','academic_options'];
+      if(route==='admin-add-new-recollection-schedule')return ['schedules','academic_options','course_year_sections'];
+      if(route==='admin-schedule-change-requests')return ['requests'];
+      if(route==='admin-settings')return params.get('tab')==='admins'?['users']:params.get('tab')==='office'?['settings']:[];
+      if(route==='admin-certificate-template')return ['template'];
+      if(route==='admin-password-resets')return ['resets'];
+      if(route==='admin-activity')return ['logs'];
+      return [];
+    }
+    function renderAdminRouteContent(route,params) {
+      if(route==='admin-dashboard') connectedDashboard();
+      else if(route==='admin-all-student') connectedDirectory();
+      else if(route==='admin-course-year') connectedAcademic();
+      else if(['admin-register-this-year','admin-history'].includes(route)) connectedRegistrations(route==='admin-history');
+      else if(route==='admin-announcements') connectedAnnouncements();
+      else if(route==='admin-recollection-schedule') connectedSchedules();
+      else if(route==='admin-add-new-recollection-schedule') connectedScheduleForm(params);
+      else if(route==='admin-student-reciept') connectedReceipts();
+      else if(route==='admin-student-attendance') connectedAttendance();
+      else if(route==='admin-schedule-change-requests') connectedRequests();
+      else if(route==='admin-settings') connectedSettings(params);
+      else if(route==='login') location.href='/#login';
+      else if(route==='admin-certificate') connectedCertificates();
+      else if(route==='admin-certificate-template') connectedTemplate();
+      else if(route==='admin-password-resets') connectedRecovery();
+      else if(route==='admin-activity') connectedActivity();
+      else if(route==='admin-lan-access') connectedLanAccess();
+      else $('#page').innerHTML=empty('Page not found','Choose a page from the navigation.');
+      if(window.CfoSearch)syncAdminSearch();
+      hydrateIcons();
+    }
     async function renderConnectedAdmin(changedResources = null) {
       const liveRefresh = Array.isArray(changedResources) && changedResources.length > 0;
       const version=++cfoRouteVersion;
@@ -331,50 +384,35 @@
         if(filterGrid)gridState.delete(filterGrid);
       }
       const meta=pages[route]||['Page not found','','Workspace'];
+      const requestedResources=liveRefresh?changedResources:adminRouteResources(route,params);
+      const canRenderCached=!liveRefresh&&!scheduleWorkspace&&cfoState!==null&&adminRouteStateKeys(route,params).every(key=>Object.hasOwn(cfoState,key));
       const headerName=editingSchedule?'Edit Recollection Schedule':$$('.nav-link').find(link=>link.dataset.route===route)?.querySelector('span')?.textContent || meta[0];
       const headerAncestors=route==='admin-dashboard'?[]:[{name:'Dashboard',href:'/admin#admin-dashboard'}];
       if(route==='admin-add-new-recollection-schedule')headerAncestors.push({name:navLabel('admin-recollection-schedule'),href:'/admin#admin-recollection-schedule'});
       window.AdminHeader?.setPage(headerName,headerAncestors);
-      if (!liveRefresh) { $('#page-title').textContent=meta[0]; $('#page-description').textContent=meta[1]; $('#page-category').textContent=meta[2]; $('#page-actions').innerHTML=''; $('#page').innerHTML=note('Loading saved records',true); }
+      if (!liveRefresh) { $('#page-title').textContent=meta[0]; $('#page-description').textContent=meta[1]; $('#page-category').textContent=meta[2]; $('#page-actions').innerHTML=''; if(!canRenderCached)$('#page').innerHTML=note('Loading saved records',true); }
       if(window.CfoSearch&&!liveRefresh){if(['admin-dashboard','admin-student-attendance','admin-schedule-change-requests','admin-password-resets','admin-history','admin-activity','admin-certificate','admin-certificate-template','admin-settings','admin-lan-access'].includes(route)||scheduleWorkspace)window.CfoSearch.mount($('#cfo-context-search'),null);else window.CfoSearch.pending($('#cfo-context-search'));}
-      window.CfoAdminSettingsNavigation.mount().sync(route,params);
-      const parent={'admin-add-new-recollection-schedule':'admin-recollection-schedule','admin-lan-access':'admin-settings'}[route]||route;
-      $$('.nav-link').forEach(a=>{a.classList.toggle('active',a.dataset.route===parent);if(a.dataset.route===parent)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
       try {
-        const url='/api/admin/state?include_history='+(route==='admin-history'?'1':'0')+(liveRefresh?'&resources='+encodeURIComponent(changedResources.join(',')):'' );
+        window.CfoAdminSettingsNavigation?.mount()?.sync(route,params);
+        const parent={'admin-add-new-recollection-schedule':'admin-recollection-schedule','admin-lan-access':'admin-settings'}[route]||route;
+        $$('.nav-link').forEach(a=>{a.classList.toggle('active',a.dataset.route===parent);if(a.dataset.route===parent)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+        if(canRenderCached)renderAdminRouteContent(route,params);
+        const url='/api/admin/state?include_history='+(route==='admin-history'?'1':'0')+'&resources='+encodeURIComponent(requestedResources.join(','));
         const state=await backend(url);
         if(version!==cfoRouteVersion)return;
         if(liveRefresh&&isAdminEditing()){changedResources.forEach(resource=>pendingLiveResources.add(resource));return;}
         const oldRegistrations=cfoState?.registrations||[];
         const oldUsers=cfoState?.users||[];
-        cfoState=liveRefresh?{...cfoState,...state}:state;
+        cfoState={...(cfoState||{}),...state};
         const currentUser=state.users?.find(user=>user.id===window.CFO_BACKEND.user.id);
         if(currentUser)window.CFO_BACKEND.user=currentUser;
         $$('.account:not(.admin-header-account) strong, .sidebar-footer strong, .sidebar-profile-name').forEach(e=>e.textContent=window.CFO_BACKEND.user.name);
         $$('.avatar:not(#admin-header-avatar)').forEach(e=>e.textContent=window.CFO_BACKEND.user.name.slice(0,2).toUpperCase());
         if(liveRefresh&&changedResources.includes('registrations')&&state.registrations){const oldIds=new Set(oldRegistrations.map(row=>String(row.id)));const created=state.registrations.find(row=>!oldIds.has(String(row.id)));if(created){window.CFO_LIVE_HIGHLIGHT_ID=created.id;toast('New registration: '+(created.user?.name||'student'));}}
         if(liveRefresh&&changedResources.includes('users')&&state.users){const oldIds=new Set(oldUsers.map(row=>String(row.id)));const created=state.users.find(row=>!oldIds.has(String(row.id)));if(created){window.CFO_LIVE_HIGHLIGHT_ID=created.id;toast('New '+created.role.toLowerCase()+' account: '+created.name);}}
-        if(route==='admin-dashboard') connectedDashboard();
-        else if(route==='admin-all-student') connectedDirectory();
-        else if(route==='admin-course-year') connectedAcademic();
-        else if(['admin-register-this-year','admin-history'].includes(route)) connectedRegistrations(route==='admin-history');
-        else if(route==='admin-announcements') connectedAnnouncements();
-        else if(route==='admin-recollection-schedule') connectedSchedules();
-        else if(route==='admin-add-new-recollection-schedule') connectedScheduleForm(params);
-        else if(route==='admin-student-reciept') connectedReceipts();
-        else if(route==='admin-student-attendance') connectedAttendance();
-        else if(route==='admin-schedule-change-requests') connectedRequests();
-        else if(route==='admin-settings') connectedSettings(params);
-        else if(route==='login') location.href='/#login';
-        else if(route==='admin-certificate') connectedCertificates();
-        else if(route==='admin-certificate-template') connectedTemplate();
-        else if(route==='admin-password-resets') connectedRecovery();
-        else if(route==='admin-activity') connectedActivity();
-        else if(route==='admin-lan-access') connectedLanAccess();
-        else $('#page').innerHTML=empty('Page not found','Choose a page from the navigation.');
-        if(window.CfoSearch)syncAdminSearch();
-        hydrateIcons(); if(!liveRefresh){if(!mySchedulesController?.isModalOpen())($('#ms-page-title') || $('#attendance-heading') || (route==='admin-history'?($('#history-heading') || $('#main-content')):creatingSchedule?$('#main-content'):$('#page-title'))).focus({preventScroll:true});$('#main-content').scrollTo?.({top:0,behavior:'instant'});}
-      } catch(error) { if(liveRefresh)throw error;if(version===cfoRouteVersion) {$('#page').innerHTML=empty('Unable to load records',error.message,button('Retry','connected-reload'));if(!['admin-dashboard','admin-student-attendance','admin-schedule-change-requests','admin-password-resets','admin-history','admin-activity','admin-certificate','admin-certificate-template','admin-settings','admin-lan-access'].includes(route))window.CfoSearch?.pending($('#cfo-context-search'),'Search unavailable. Use Retry below to reload this page.',true);} }
+        renderAdminRouteContent(route,params);
+        if(!liveRefresh){if(!mySchedulesController?.isModalOpen())($('#ms-page-title') || $('#attendance-heading') || (route==='admin-history'?($('#history-heading') || $('#main-content')):creatingSchedule?$('#main-content'):$('#page-title'))).focus({preventScroll:true});$('#main-content').scrollTo?.({top:0,behavior:'instant'});}
+      } catch(error) { if(liveRefresh)throw error;if(version===cfoRouteVersion) {if(canRenderCached)toast('Unable to refresh records: '+error.message);else{$('#page').innerHTML=empty('Unable to load records',error.message,button('Retry','connected-reload'));if(!['admin-dashboard','admin-student-attendance','admin-schedule-change-requests','admin-password-resets','admin-history','admin-activity','admin-certificate','admin-certificate-template','admin-settings','admin-lan-access'].includes(route))window.CfoSearch?.pending($('#cfo-context-search'),'Search unavailable. Use Retry below to reload this page.',true);}} }
     }
     function connectedDashboard() {
       $('#page-actions').innerHTML='';
@@ -1321,7 +1359,7 @@ async function submitRecoveryDecision(form, id, decision) {
     }
     async function startAdminLive(){
       if(!window.CFO_BACKEND?.user||window.CFO_BACKEND.user.role!=='Admin')return;
-      try{adminVersions=await readLiveVersions();await renderConnectedAdmin();connectAdminEvents();}catch{setLiveStatus('Reconnecting');startAdminPolling();}
+      try{adminVersions=await readLiveVersions();connectAdminEvents();}catch{setLiveStatus('Reconnecting');startAdminPolling();}
     }
     document.addEventListener('focusout',()=>setTimeout(refreshAdminWhenSafe,200));
     dialog.addEventListener('close',()=>setTimeout(refreshAdminWhenSafe,200));
