@@ -313,6 +313,7 @@ async function verifyCreateHandlers() {
     catalogMounted.select(0, 'sbGroupDepartment', 'College of Business Education');
     assert.equal(cardControl(catalogMounted, 0, 'sbGroupCourse').disabled, false); assert.match(catalogMounted.cards.get('0').html, /Bachelor of Science in Business Administration/);
     catalogMounted.select(0, 'sbGroupCourse', '50');
+    assert.equal(cardControl(catalogMounted, 0, 'sbGroupCourse').options[0].disabled, true, 'Select course cannot be reselected after a real course is chosen');
     assert.equal(cardControl(catalogMounted, 0, 'sbGroupMajor').disabled, false, 'Major unlocks for a course that offers majors');
     assert.ok(catalogMounted.cards.get('0').entries.filter(input => input.dataset.sbGroupYear !== undefined).every(input => input.disabled), 'Year stays locked until the required major is selected');
     catalogMounted.select(0, 'sbGroupMajor', 'Marketing Management');
