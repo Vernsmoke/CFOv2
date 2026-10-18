@@ -125,6 +125,41 @@
   html.cfo-design .my-schedules :is(.ms-modal,.ms-detail){background:#fff;border-color:var(--brand-line);box-shadow:none}
   html.cfo-design .my-schedules .ms-detail>span{color:var(--brand-muted)}
   html.cfo-design :is(.my-schedules,.dashboard-schedule-summary) :is(.ms-section-chip,.ms-course-chip){background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-blue)}
+  /* The dashboard schedule is an at-a-glance briefing, rather than a flat label/value list. */
+  html.cfo-design .dashboard-schedule-summary{display:grid;gap:18px;padding:22px;border:1px solid var(--brand-line);border-radius:16px;background:linear-gradient(135deg,#f7fbff 0%,#fff 58%);box-shadow:0 14px 30px #1131630d}
+  html.cfo-design .dashboard-schedule-hero{display:flex;align-items:center;gap:16px;min-width:0}
+  html.cfo-design .dashboard-schedule-date{display:grid;place-content:center;flex:0 0 68px;min-height:74px;overflow:hidden;border-radius:14px;background:var(--brand-night);color:#fff;text-align:center;box-shadow:0 8px 18px #11316324}
+  html.cfo-design .dashboard-schedule-date span{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#dce9fb}
+  html.cfo-design .dashboard-schedule-date strong{font:800 32px/.95 var(--brand-heading);letter-spacing:-.06em}
+  html.cfo-design .dashboard-schedule-identity{display:grid;gap:5px;min-width:0}
+  html.cfo-design .dashboard-schedule-eyebrow{color:var(--brand-blue);font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+  html.cfo-design .dashboard-schedule-identity h3{max-width:900px;font-size:clamp(18px,2vw,24px);line-height:1.18;text-wrap:balance}
+  html.cfo-design .dashboard-schedule-status{justify-self:start;display:inline-flex;align-items:center;min-height:26px;padding:4px 9px;border:1px solid #b6dfcc;border-radius:7px;background:#edf8f1;color:#176342;font-size:11px;font-weight:700}
+  html.cfo-design .dashboard-schedule-status.is-closed{border-color:#f2c5cf;background:#fff1f4;color:var(--brand-danger)}
+  html.cfo-design .dashboard-schedule-courses{display:grid;gap:10px;padding:15px 16px;border:1px solid #dce7f2;border-radius:12px;background:#fff}
+  html.cfo-design .dashboard-schedule-section-title{display:flex;align-items:center;gap:8px;color:var(--brand-muted);font-size:12px;font-weight:700}
+  html.cfo-design .dashboard-schedule-section-title .icon{width:17px;height:17px;color:var(--brand-blue)}
+  html.cfo-design .dashboard-schedule-summary .ms-course-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:0;padding:0;list-style:none}
+  html.cfo-design .dashboard-schedule-summary .ms-course-group{display:grid;gap:9px;padding:12px;border:1px solid var(--brand-line);border-radius:10px;background:var(--brand-soft)}
+  html.cfo-design .dashboard-schedule-summary .ms-course-group-name{color:var(--brand-ink);font-size:13px;line-height:1.35}
+  html.cfo-design .dashboard-schedule-summary .ms-section-chips{display:flex;flex-wrap:wrap;gap:6px}
+  html.cfo-design .dashboard-schedule-summary .ms-section-chip{padding:4px 8px;border:1px solid var(--brand-line);border-radius:6px;background:#fff;color:var(--brand-blue);font-size:11px;font-weight:700}
+  html.cfo-design .dashboard-schedule-details{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0}
+  html.cfo-design .dashboard-schedule-detail{min-width:0;padding:12px 13px;border:1px solid #e0eaf4;border-radius:8px;background:#fff}
+  html.cfo-design .dashboard-schedule-detail dt{display:flex;align-items:center;gap:7px;color:var(--brand-muted);font-size:11px;font-weight:700}
+  html.cfo-design .dashboard-schedule-detail dt .icon{width:15px;height:15px;color:var(--brand-blue)}
+  html.cfo-design .dashboard-schedule-detail dd{margin:5px 0 0;color:var(--brand-ink);font-size:13px;font-weight:700;overflow-wrap:anywhere}
+  html.cfo-design .dashboard-schedule-empty{display:flex;align-items:flex-start;gap:14px;max-width:680px;padding:8px 2px;color:var(--brand-muted)}
+  html.cfo-design .dashboard-schedule-empty>.icon{flex:0 0 38px;width:38px;height:38px;padding:9px;border-radius:12px;background:var(--brand-soft);color:var(--brand-blue)}
+  html.cfo-design .dashboard-schedule-empty h3{margin:3px 0 5px;font-size:18px}
+  html.cfo-design .dashboard-schedule-empty p{max-width:58ch;font-size:13px}
+  @media (max-width:760px){
+    html.cfo-design .dashboard-schedule-summary{gap:14px;padding:16px}
+    html.cfo-design .dashboard-schedule-date{flex-basis:58px;min-height:64px;border-radius:12px}
+    html.cfo-design .dashboard-schedule-date strong{font-size:27px}
+    html.cfo-design .dashboard-schedule-details{grid-template-columns:repeat(2,minmax(0,1fr))}
+    html.cfo-design .dashboard-schedule-summary .ms-course-groups{grid-template-columns:1fr}
+  }
   html.cfo-design .my-schedules .ms-danger{background:var(--brand-danger)!important;border-color:var(--brand-danger)!important;color:#fff}
   html.cfo-design .my-schedules .ms-day.ms-today .ms-day-num{color:var(--brand-blue)}
   html.cfo-design body.admin-background #main-content #page.my-schedules .ms-open-event{color:#fff}

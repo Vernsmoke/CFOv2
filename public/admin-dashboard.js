@@ -486,11 +486,26 @@
       $('#page-actions').innerHTML='';
       const students=cfoState.users.filter(u=>u.role==='Student');
       const next=cfoState.schedules.filter(s=>s.active && !s.finalized_at && s.year===cfoState.current_year && s.date>=cfoState.server_date).sort((a,b)=>a.date.localeCompare(b.date))[0];
-      let summary='<p>No upcoming annual schedule is published.</p>';
+      let summary=`<div class="dashboard-schedule-empty">${icon('calendar')}<div><span class="dashboard-schedule-eyebrow">Schedule watch</span><h3>No annual recollection has been published</h3><p>Publish a schedule to show its date, student groups, and registration status here.</p></div></div>`;
       if(next){
         const status=window.CfoMySchedules.statusOf(next);
-        const rows=[['Title',escapeHTML(next.title||'—')],['Course(s)',window.CfoMySchedules.courseGroupsHtml(next)],['Date',escapeHTML(window.CfoScheduleCreate.formatDate(next.date))],['Time',escapeHTML(window.CfoMySchedules.calendarTime(next).replace('–',' – '))],['Venue',escapeHTML(next.venue||'Not set')],['Capacity',escapeHTML(next.slot_limit==null||next.slot_limit===''?'No limit':next.slot_limit+' students')],['Status',`<span class="dashboard-schedule-status${status==='Open'?'':' is-closed'}">${escapeHTML(status==='Open'?'Open for Registration':status)}</span>`]];
-        summary='<div class="dashboard-schedule-summary"><dl class="dashboard-schedule-list">'+rows.map(([label,value])=>'<div class="dashboard-schedule-row"><dt>'+escapeHTML(label)+'</dt><dd>'+value+'</dd></div>').join('')+'</dl></div>';
+        const date=new Date(next.date+'T12:00:00');
+        const month=new Intl.DateTimeFormat('en-US',{month:'short'}).format(date);
+        const day=new Intl.DateTimeFormat('en-US',{day:'2-digit'}).format(date);
+        const details=[
+          ['calendar','Date',window.CfoScheduleCreate.formatDate(next.date)],
+          ['clock','Time',window.CfoMySchedules.calendarTime(next).replace('–',' – ')],
+          ['home','Venue',next.venue||'Not set'],
+          ['users','Capacity',next.slot_limit==null||next.slot_limit===''?'No limit':next.slot_limit+' students']
+        ];
+        summary=`<article class="dashboard-schedule-summary">
+          <header class="dashboard-schedule-hero">
+            <time class="dashboard-schedule-date" datetime="${escapeHTML(next.date)}"><span>${escapeHTML(month)}</span><strong>${escapeHTML(day)}</strong></time>
+            <div class="dashboard-schedule-identity"><span class="dashboard-schedule-eyebrow">Upcoming annual recollection</span><h3>${escapeHTML(next.title||'Untitled recollection')}</h3><span class="dashboard-schedule-status${status==='Open'?'':' is-closed'}">${escapeHTML(status==='Open'?'Open for Registration':status)}</span></div>
+          </header>
+          <section class="dashboard-schedule-courses" aria-label="Student groups"><div class="dashboard-schedule-section-title">${icon('course')}<span>Student groups</span></div>${window.CfoMySchedules.courseGroupsHtml(next)}</section>
+          <dl class="dashboard-schedule-details">${details.map(([symbol,label,value])=>`<div class="dashboard-schedule-detail"><dt>${icon(symbol)}<span>${escapeHTML(label)}</span></dt><dd>${escapeHTML(value)}</dd></div>`).join('')}</dl>
+        </article>`;
       }
       $('#page').innerHTML=`<div class="stack dashboard-overview"><div class="metrics">${metric('Students',students.length,'Student accounts','users','admin-all-student')}${metric('Awaiting approval',students.filter(u=>u.status==='Pending').length,'Approve verified students','register','admin-all-student?status=Pending')}${metric('New registrations',cfoState.registrations.filter(r=>!r.is_archived&&!r.recollection_schedule_id).length,'Awaiting schedule for '+cfoState.current_year,'register','admin-register-this-year')}${metric('Pending receipts',cfoState.registrations.filter(r=>r.has_receipt&&r.receipt_status==='Pending').length,'Review uploaded receipts','receipt','/admin/recollection-registrations?status=Pending')}</div>${panel('Next annual recollection',summary,link('Manage schedules','admin-recollection-schedule'))}</div>`;
     }
