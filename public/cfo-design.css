@@ -35,7 +35,7 @@
   html.cfo-design button:disabled{cursor:not-allowed;opacity:.55}
   html.cfo-design :is(.btn,.button,.primary,.outline):not(.certificate *,.ce-stage *,.print-area *){border-radius:8px;font-weight:600;box-shadow:none}
   html.cfo-design :is(.primary,.btn.primary,.button.primary):not(.certificate *,.ce-stage *,.print-area *){background:var(--brand-blue);border-color:var(--brand-blue);color:#fff}
-  html.cfo-design :is(.primary,.btn.primary,.button.primary):not(:disabled):hover{background:var(--brand-night);border-color:var(--brand-night)}
+  html.cfo-design :is(.primary,.btn.primary,.button.primary):not(:disabled):hover{background:var(--brand-night);border-color:var(--brand-night);color:#fff}
   html.cfo-design :is(input,select,textarea):not([type=checkbox],[type=radio],[type=file],[type=range],[type=color],.certificate *,.ce-stage *,.cert-stage *){
     background-color:#fff;color:var(--brand-ink);border-color:var(--brand-line);border-radius:8px;
   }
@@ -96,7 +96,7 @@
   html.cfo-design body.admin-background .sidebar .nav-link{min-height:46px;padding:11px 12px;border-radius:10px;font-weight:600}
   html.cfo-design body.admin-background .sidebar .nav-group{color:var(--sidebar-muted);letter-spacing:.08em}
   html.cfo-design body.admin-background .sidebar .sidebar-footer{margin-top:auto;background:transparent}
-  html.cfo-design body.admin-background .sidebar .nav-close:hover{background:var(--brand-blue)}
+  html.cfo-design body.admin-background .sidebar .nav-close:hover{background:var(--brand-blue);color:#fff}
   html.cfo-design body.admin-background .shell > .admin-header{min-height:72px;border-color:var(--brand-line);box-shadow:none}
   html.cfo-design body.admin-background .admin-header .admin-header-control{border-color:var(--brand-line)}
   html.cfo-design body.admin-background .admin-header #live-status{border-color:#d5e8de;background:#edf6f0;color:var(--brand-success)}
@@ -179,6 +179,10 @@
   html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-btn{background:#fff;color:var(--brand-ink)!important;border-color:var(--brand-line)}
   html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-btn-blue,.sb-add-course,.sb-add-section,[data-sb-draft],.sb-btn-green){background:var(--brand-blue);border-color:var(--brand-blue);color:#fff!important}
   html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-btn-red,.sb-remove-group){background:#fff0f3;border-color:#e8bbca;color:var(--brand-danger)!important}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-btn:hover:not(:disabled){background:var(--brand-night);border-color:var(--brand-night);color:#fff!important}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-btn-blue,.sb-add-course,.sb-add-section,[data-sb-draft]):hover:not(:disabled){background:var(--brand-night);border-color:var(--brand-night);color:#fff!important}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-btn-green:hover:not(:disabled){background:var(--brand-success);border-color:var(--brand-success);color:#fff!important}
+  html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-btn-red,.sb-remove-group):hover:not(:disabled){background:var(--brand-danger);border-color:var(--brand-danger);color:#fff!important}
   html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) :is(.sb-step,.sb-summary-icon,.sb-summary-section,.sb-tag){background:var(--brand-soft);color:var(--brand-blue)}
   html.cfo-design body.admin-background #main-content .schedule-builder:is(.sb-create,[data-edit-schedule-id]) .sb-actions{background:#fff!important;border-color:var(--brand-line)}
   html.cfo-design .cert-info{background:var(--brand-soft);color:var(--brand-ink);border-color:var(--brand-line)}
@@ -223,7 +227,7 @@
   html.cfo-design body.dashboard-mode .dash-panel h2{font-size:21px;color:var(--brand-ink)}
   html.cfo-design body.dashboard-mode :is(.dash-panel h2>.icon,.dash-status-icon){color:var(--brand-blue);background:var(--brand-soft)}
   html.cfo-design body.dashboard-mode :is(.dash-view-schedule,.dash-quick-grid button){background:var(--brand-blue);color:#fff;border:1px solid var(--brand-blue);border-radius:8px;box-shadow:none}
-  html.cfo-design body.dashboard-mode :is(.dash-view-schedule,.dash-quick-grid button):hover{background:var(--brand-night)}
+  html.cfo-design body.dashboard-mode :is(.dash-view-schedule,.dash-quick-grid button):hover{background:var(--brand-night);border-color:var(--brand-night);color:#fff}
   html.cfo-design .sp{--green:var(--brand-blue);--green-dark:var(--brand-night);--green-mid:var(--brand-blue);--green-soft:var(--brand-soft);--ink:var(--brand-ink);--muted:var(--brand-muted);--line:var(--brand-line);--page:var(--brand-canvas);font-family:var(--brand-body)}
   html.cfo-design .sp :is(h1,.metric-number,.main-text){color:var(--brand-ink)}
   html.cfo-design .sp :is(.metric-icon,.announce-icon,.btn.soft){background:var(--brand-soft);color:var(--brand-blue);border-color:var(--brand-line)}
