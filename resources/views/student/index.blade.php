@@ -5680,7 +5680,7 @@ function dashboard({ content = null, active = "dashboard", titleId = "recollecti
 
 // This form is a local UI preview. Values and receipt files stay in page memory.
 const registrationFieldLabels = {
-  name:'Name',nickname:'Nickname',age:'Age',sex:'Sex',course:'Course / program',yearSection:'Year / section',email:'Email',phone:'Contact number',
+  name:'Name',nickname:'Nickname',age:'Age',sex:'Sex',department:'Department',course:'Course / program',major:'Major',yearSection:'Year / section',email:'Email',phone:'Contact number',
   emergencyName:'Emergency contact',relationship:'Relationship',emergencyPhone:'Emergency contact number',medical:'Medical conditions',allergies:'Allergies',medications:'Medications',
   religion:'Religion',parish:'Parish',baptism:'Baptism',communion:'Holy Communion',confirmation:'Confirmation',ministry:'Ministry involvement',firstRecollection:'First Catholic recollection',
   previousRecollections:'Previous recollections',expectations:'Expectations',reflection:'Personal reflection',participation:'Participation consent',photos:'Photo consent'
@@ -5699,7 +5699,8 @@ function recollectionAcademicGroups(schedules = cfoStudent.registration_schedule
       const mapped=Object.hasOwn(schedule.course_sections||{},id)?schedule.course_sections[id]:pivot;
       const flat=Array.isArray(mapped)?mapped:list(schedule,'sections','section');
       for(const year of years)for(const section of (nested?(Array.isArray(nested[year])?nested[year]:[]):flat)) {
-        const group={course:course.name,yearLevel:String(year),section:String(section)};
+        const group={course:course.name,yearLevel:String(year),section:String(section)},major=String(schedule.course_majors?.[id]||'');
+        if(major)group.major=major;
         if(group.yearLevel&&group.section)groups.set(JSON.stringify(Object.values(group)),group);
       }
     }
@@ -5712,17 +5713,52 @@ function recollectionStudentCourse() {
 function recollectionStudentAcademicGroups() {
   return recollectionAcademicGroups();
 }
+function recollectionCatalog() {
+  const catalog=window.CFO_BACKEND?.academic_catalog;
+  return Array.isArray(catalog?.departments)&&catalog.departments.length?catalog:null;
+}
+function recollectionCatalogDepartment(name) {
+  const same=(left,right)=>String(left??'').trim().toLocaleUpperCase()===String(right??'').trim().toLocaleUpperCase();
+  return recollectionCatalog()?.departments.find(department=>same(department.name,name));
+}
+function recollectionDepartmentForCourse(course) {
+  const same=(left,right)=>String(left??'').trim().toLocaleUpperCase()===String(right??'').trim().toLocaleUpperCase();
+  return recollectionCatalog()?.departments.find(department=>(department.courses||[]).some(option=>same(option.name,course)));
+}
+function recollectionCatalogCourse(values=recollectionState.values) {
+  const same=(left,right)=>String(left??'').trim().toLocaleUpperCase()===String(right??'').trim().toLocaleUpperCase();
+  const department=recollectionCatalogDepartment(values.department)||recollectionDepartmentForCourse(values.course);
+  return (department?.courses||[]).find(course=>same(course.name,values.course));
+}
 function recollectionAcademicChoices(values = recollectionState.values) {
   const groups=recollectionAcademicGroups(),unique=items=>[...new Set(items)],configured=type=>(cfoStudent.academic_options||[]).filter(option=>option.type===type).map(option=>String(option.name));
+  const availableCourses=unique(cfoStudent.registration_courses||[]).sort((a,b)=>a.localeCompare(b)),catalog=recollectionCatalog();
+  if(!catalog)return {
+    course:availableCourses,
+    yearLevel:recollectionAcademicDropdownOptions('yearLevel',unique([...configured('year_level'),...groups.map(group=>group.yearLevel)])),
+    section:recollectionAcademicDropdownOptions('section',unique([...configured('section'),...groups.map(group=>group.section)]))
+  };
+  const same=(left,right)=>String(left??'').trim().toLocaleUpperCase()===String(right??'').trim().toLocaleUpperCase();
+  const department=recollectionCatalogDepartment(values.department)||recollectionDepartmentForCourse(values.course);
+  const courses=(department?.courses||[]).filter(course=>availableCourses.some(name=>same(name,course.name)));
+  const course=courses.find(course=>same(course.name,values.course));
   return {
-    course:unique(cfoStudent.registration_courses||[]).sort((a,b)=>a.localeCompare(b)),
+    department:catalog.departments.map(item=>item.name),
+    course:courses.map(item=>item.name),
+    major:(course?.majors||[]).map(String),
     yearLevel:recollectionAcademicDropdownOptions('yearLevel',unique([...configured('year_level'),...groups.map(group=>group.yearLevel)])),
     section:recollectionAcademicDropdownOptions('section',unique([...configured('section'),...groups.map(group=>group.section)]))
   };
 }
 function cleanRecollectionAcademicValues(values) {
   const same=(left,right)=>String(left??'').trim().toLocaleUpperCase()===String(right).trim().toLocaleUpperCase();
+  const catalog=recollectionCatalog();
+  if(catalog) {
+    const fallbackDepartment=recollectionDepartmentForCourse(values.course)?.name||window.CFO_BACKEND?.user?.department||'';
+    values.department=recollectionAcademicChoices(values).department.find(department=>same(values.department||fallbackDepartment,department))||'';
+  }
   values.course=recollectionAcademicChoices(values).course.find(course=>same(values.course,course))||'';
+  if(catalog)values.major=recollectionAcademicChoices(values).major.find(major=>same(values.major,major))||'';
   if(values.yearLevel===undefined&&values.section===undefined) {
     const choices=recollectionAcademicChoices(values);
     const candidates=choices.yearLevel.flatMap(yearLevel=>choices.section.map(section=>({yearLevel,section}))).filter(group=>[group.yearLevel+group.section,group.yearLevel+'-'+group.section].some(value=>same(values.yearSection,value)));
@@ -5732,7 +5768,11 @@ function cleanRecollectionAcademicValues(values) {
   values.section=recollectionAcademicChoices(values).section.find(section=>same(values.section,section))||'';
   values.yearSection=values.yearLevel&&values.section?values.yearLevel+values.section:'';
 }
-const recollectionAcademicLabels={course:'Course/Program',yearLevel:'Year Level',section:'Section'};
+const recollectionAcademicLabels={department:'Department',course:'Course / Program',major:'Major',yearLevel:'Year Level',section:'Section'};
+function recollectionAcademicFieldNames(values=recollectionState.values) {
+  if(!recollectionCatalog())return ['course','yearLevel','section'];
+  return ['department','course',...(recollectionAcademicChoices(values).major.length?['major']:[]),'yearLevel','section'];
+}
 function recollectionAcademicDropdownOptions(name, available) {
   const standard=name==='yearLevel'?['1','2','3','4']:name==='section'?Array.from({length:26},(_,index)=>String.fromCharCode(65+index)):[];
   return [...new Set([...standard,...available])];
@@ -5740,25 +5780,28 @@ function recollectionAcademicDropdownOptions(name, available) {
 function recollectionAcademicFieldsHtml() {
   const choices=recollectionAcademicChoices(),values=recollectionState.values;
   const available=choices.course.length>0;
-  return Object.entries(recollectionAcademicLabels).map(([name,label])=>{
+  return recollectionAcademicFieldNames(values).map(name=>{
+    const label=recollectionAcademicLabels[name];
     const id='recollection-'+name,selected=choices[name].includes(values[name]);
-    const hint=!available?'No courses have been configured by the admin yet.':name==='course'?'Select your course/program.':'Select your year level and section.';
-    const placeholder=name==='course'?'Select course/program':name==='yearLevel'?'Select year level':'Select section';
+    const hint=!available&&name!=='department'?'No matching courses are currently available for recollection registration.':name==='department'?'Select your college or department first.':name==='course'?'Courses are limited to the selected department.':name==='major'?'This course requires a major.':'Select your year level and section.';
+    const placeholder=name==='department'?'Select department':name==='course'?'Select course/program':name==='major'?'Select major':name==='yearLevel'?'Select year level':'Select section';
     const options=recollectionAcademicDropdownOptions(name,choices[name]).map(value=>'<option value="'+escapeHTML(value)+'"'+(value===values[name]&&selected?' selected':'')+(!choices[name].includes(value)?' disabled':'')+'>'+escapeHTML(value)+'</option>').join('');
-    return '<fieldset class="recollection-academic-field" data-recollection-academic-field="'+name+'" tabindex="-1"><legend id="'+id+'-label">'+label+' <span class="cfo-required" aria-hidden="true">*</span></legend><select id="'+id+'" name="'+name+'" required data-recollection-academic="'+name+'" aria-labelledby="'+id+'-label" aria-describedby="'+id+'-hint '+id+'-error"><option value="" disabled'+(!selected?' selected':'')+'>'+placeholder+'</option>'+options+'</select><p id="'+id+'-hint" class="recollection-academic-hint">'+hint+'</p><p id="'+id+'-error" class="error" role="alert"></p></fieldset>';
+    const disabled=(name==='course'&&!values.department)||(name==='major'&&!values.course);
+    return '<fieldset class="recollection-academic-field" data-recollection-academic-field="'+name+'" tabindex="-1"><legend id="'+id+'-label">'+label+' <span class="cfo-required" aria-hidden="true">*</span></legend><select id="'+id+'" name="'+name+'" required data-recollection-academic="'+name+'" aria-labelledby="'+id+'-label" aria-describedby="'+id+'-hint '+id+'-error"'+(disabled?' disabled':'')+'><option value="" disabled'+(!selected?' selected':'')+'>'+placeholder+'</option>'+options+'</select><p id="'+id+'-hint" class="recollection-academic-hint">'+hint+'</p><p id="'+id+'-error" class="error" role="alert"></p></fieldset>';
   }).join('');
 }
 function validateRecollectionAcademicSelection(form, showError = false) {
   const choices=recollectionAcademicChoices();
   const values=recollectionState.values,same=(a,b)=>String(a).trim().toLocaleUpperCase()===String(b).trim().toLocaleUpperCase();
-  const noSchedule=Object.keys(recollectionAcademicLabels).every(name=>choices[name].includes(values[name]))&&!recollectionAcademicGroups().some(group=>Object.keys(recollectionAcademicLabels).every(name=>same(group[name],values[name])));
+  const scheduleFields=['course','yearLevel','section'];
+  const noSchedule=scheduleFields.every(name=>choices[name].includes(values[name]))&&!recollectionAcademicGroups().some(group=>scheduleFields.every(name=>same(group[name],values[name]))&&(!group.major||same(group.major,values.major)));
   let invalid=null;
-  for(const name of Object.keys(recollectionAcademicLabels)) {
+  for(const name of recollectionAcademicFieldNames(values)) {
     const valid=choices[name].includes(values[name])&&!(name==='section'&&noSchedule);
     if(!valid&&!invalid)invalid=name;
     const field=form.querySelector('[data-recollection-academic-field="'+name+'"]');
     if(!field)continue;
-    const message=valid?'':name==='section'&&noSchedule?'No recollection schedule is available yet for '+values.course+' '+values.yearLevel+'-'+values.section+'.':'Select '+(name==='course'?'a course/program':name==='yearLevel'?'a year level':'a section')+' from the admin’s available options.';
+    const message=valid?'':name==='section'&&noSchedule?'No recollection schedule is available yet for '+values.course+' '+values.yearLevel+'-'+values.section+'.':'Select '+({department:'a department',course:'a course/program',major:'a major',yearLevel:'a year level',section:'a section'}[name])+' from the available options.';
     field.querySelector('.error').textContent=showError?message:'';
     field.setAttribute('aria-invalid',String(showError&&!valid));
     const input=field.querySelector('select');
@@ -5784,7 +5827,8 @@ function bindRecollectionAcademicFields(form) {
     const input=event.target,name=input.dataset?.recollectionAcademic;
     if(!Object.hasOwn(recollectionAcademicLabels,name||''))return;
     recollectionState.values[name]=input.value;
-    if(name==='course'){recollectionState.values.yearLevel='';recollectionState.values.section='';}
+    if(name==='department'){recollectionState.values.course='';recollectionState.values.major='';recollectionState.values.yearLevel='';recollectionState.values.section='';}
+    if(name==='course'){recollectionState.values.major='';recollectionState.values.yearLevel='';recollectionState.values.section='';}
     if(name==='yearLevel')recollectionState.values.section='';
     cleanRecollectionAcademicValues(recollectionState.values);
     recollectionState.dirty=true;form.dataset.dirty='true';
@@ -5918,7 +5962,7 @@ function initializeRecollectionDraft(registration = null) {
   const user=window.CFO_BACKEND.user;
   const previous=cfoStudent.registrations.filter(r=>r.year<cfoStudent.current_year).sort((a,b)=>b.year-a.year||b.id-a.id)[0];
   const source=registration||previous;
-  const defaults={name:user.name,course:recollectionStudentCourse(),email:user.email,yearSection:[user.year_level,user.section].filter(Boolean).join('-')};
+  const defaults={name:user.name,department:user.department||'',course:recollectionStudentCourse(),major:user.major||'',email:user.email,yearSection:[user.year_level,user.section].filter(Boolean).join('-')};
   const values=Object.fromEntries(Object.keys(registrationFieldLabels).map(key=>[key,registration?(registration.details?.[key]??''):(source?.details?.[key]??defaults[key]??'')]));
   if(source)values.yearSection=source.details?.yearSection??'';
   if(!registration)values.course=defaults.course;
@@ -5947,7 +5991,7 @@ function showSubmittedRegistration(record) {
     ...(record.rejection_reason?[['Registration review reason',record.rejection_reason]]:[])];
   const reviewRows=registrationReview(record.details);
   const detailGroups=[
-    ['Personal information',['name','nickname','age','sex','course','yearSection','email','phone'],'wide'],
+    ['Personal information',['name','nickname','age','sex','department','course','major','yearSection','email','phone'],'wide'],
     ['Emergency information',['emergencyName','relationship','emergencyPhone'],''],
     ['Health and safety',['medical','allergies','medications'],''],
     ['Faith and sacramental background',['religion','parish','baptism','communion','confirmation','ministry'],'wide'],

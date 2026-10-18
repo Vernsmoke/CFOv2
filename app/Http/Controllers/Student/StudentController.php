@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 
 use App\Models\{Announcement, Registration, Schedule, ScheduleChange, User};
+use App\Services\AcademicCatalog;
 use App\Services\CfoService as Cfo;
 use App\Services\StudentRegistrationOptions;
 use Carbon\Carbon;
@@ -17,6 +18,7 @@ class StudentController extends Controller
         return response()->view('student.index', ['cfoBackend' => [
             'user' => $request->user(),
             'csrf_token' => csrf_token(),
+            'academic_catalog' => AcademicCatalog::frontend(),
             'live_transport' => config('cfo.live_transport'),
         ]])->header('Cache-Control', 'no-store');
     }
@@ -41,13 +43,15 @@ class StudentController extends Controller
             $latest = isset($state['registrations']) ? $state['registrations']->firstWhere('year', now()->year)
                 : $user->registrations()->where('year', now()->year)->orderByDesc('attempt_no')->first();
             $group = $latest?->academicGroup();
-            $group ??= ['year_level' => $user->year_level, 'section' => $user->section];
+            $group ??= ['year_level' => $user->year_level, 'section' => $user->section, 'major' => $user->major];
             $group['course'] = $course;
+            $group['major'] ??= $user->major;
             $state['schedules'] = Schedule::open()
                 ->whereDate('date', '>=', today())
                 ->whereHas('courses', $matchingCourse)
                 ->with(['courses' => $matchingCourse])->withCount(['registrations' => fn ($query) => $query->active()])->orderBy('date')->get()
                 ->filter(fn ($schedule) => $schedule->year_levels !== [] && $schedule->sections !== []
+                    && $schedule->includesMajorForCourse($schedule->courses->first()->name, $group['major'])
                     && $schedule->includesYearLevel($group['year_level'])
                     && $schedule->includesSectionForCourse($schedule->courses->first()->name, $group['section'], $group['year_level'])
                     && $schedule->registrations_count < ($schedule->slot_limit ?? $schedule->capacity))->values();
@@ -60,6 +64,7 @@ class StudentController extends Controller
                 'year_levels' => $schedule->year_levels,
                 'course_sections_by_year' => $schedule->course_sections_by_year,
                 'course_sections' => $schedule->course_sections,
+                'course_majors' => $schedule->course_majors,
                 'sections' => $schedule->sections,
             ]);
         }
@@ -162,11 +167,13 @@ class StudentController extends Controller
 
     private function registrationRules(): array
     {
-        $rules = ['details' => 'required|array:name,nickname,age,sex,course,yearLevel,section,yearSection,email,phone,emergencyName,relationship,emergencyPhone,medical,allergies,medications,religion,parish,baptism,communion,confirmation,ministry,firstRecollection,previousRecollections,expectations,reflection,participation,photos', 'receipt' => 'nullable|file|mimes:jpg,jpeg,png|max:5120'];
+        $rules = ['details' => 'required|array:name,nickname,age,sex,department,course,major,yearLevel,section,yearSection,email,phone,emergencyName,relationship,emergencyPhone,medical,allergies,medications,religion,parish,baptism,communion,confirmation,ministry,firstRecollection,previousRecollections,expectations,reflection,participation,photos', 'receipt' => 'nullable|file|mimes:jpg,jpeg,png|max:5120'];
         foreach (['name', 'sex', 'emergencyName', 'relationship'] as $field) $rules['details.'.$field] = 'required|string|max:190';
         foreach (['phone', 'emergencyPhone'] as $field) $rules['details.'.$field] = ['bail', 'required', 'string', 'regex:/^09[0-9]{9}$/D', 'not_regex:/^09([0-9])\1{8}$/D'];
         $rules['details.emergencyPhone'][] = 'different:details.phone';
         $rules['details.course'] = 'required|string|max:190';
+        $rules['details.department'] = 'nullable|string|max:190';
+        $rules['details.major'] = 'nullable|string|max:190';
         $rules['details.yearSection'] = 'required|string|max:380';
         $rules['details.yearLevel'] = 'required_with:details.section|string|max:190';
         $rules['details.section'] = 'required_with:details.yearLevel|string|max:190';
@@ -221,7 +228,7 @@ class StudentController extends Controller
                 if ($request->hasFile('receipt')) $path = Storage::disk(config('filesystems.upload_disk'))->putFile('receipts', $request->file('receipt'));
                 $registration = Registration::create(['user_id' => $request->user()->id, 'year' => now()->year, 'details' => $input['details'], 'receipt_path' => $path, 'receipt_status' => $path ? 'Pending' : 'Not uploaded']);
                 if (! $registration->is_archived && $registration->year === now()->year) {
-                    $student->update(['course' => $input['details']['course'], 'year_level' => $input['details']['yearLevel'], 'section' => $input['details']['section']]);
+                    $student->update(['department' => $input['details']['department'] ?? null, 'course' => $input['details']['course'], 'major' => $input['details']['major'] ?? null, 'year_level' => $input['details']['yearLevel'], 'section' => $input['details']['section']]);
                 }
                 Cfo::audit('registration.created', 'registration', $registration->id);
                 Cfo::notifyAdmins('A yearly registration is awaiting review.');
@@ -253,12 +260,12 @@ class StudentController extends Controller
                 }
                 $changed = array_values(array_filter(array_unique([...array_keys($record->details ?? []), ...array_keys($input['details'])]), fn ($key) => ($record->details[$key] ?? null) != ($input['details'][$key] ?? null)));
                 $record->details = $input['details'];
-                $record->student_snapshot = [...($record->student_snapshot ?? []), 'name' => $input['details']['name'], 'course' => $input['details']['course'], 'year_level' => $input['details']['yearLevel'], 'section' => $input['details']['section'], 'submitted_year_section' => $input['details']['yearSection']];
+                $record->student_snapshot = [...($record->student_snapshot ?? []), 'name' => $input['details']['name'], 'department' => $input['details']['department'] ?? null, 'course' => $input['details']['course'], 'major' => $input['details']['major'] ?? null, 'year_level' => $input['details']['yearLevel'], 'section' => $input['details']['section'], 'submitted_year_section' => $input['details']['yearSection']];
                 if ($record->isDirty()) {
                     $record->save();
                     Cfo::audit('registration.student_updated', 'registration', $record->id, ['fields' => $changed, 'receipt_replaced' => (bool) $newPath]);
                 }
-                $student->update(['course' => $input['details']['course'], 'year_level' => $input['details']['yearLevel'], 'section' => $input['details']['section']]);
+                $student->update(['department' => $input['details']['department'] ?? null, 'course' => $input['details']['course'], 'major' => $input['details']['major'] ?? null, 'year_level' => $input['details']['yearLevel'], 'section' => $input['details']['section']]);
                 return $record;
             });
         } catch (\Throwable $exception) {
@@ -300,7 +307,7 @@ class StudentController extends Controller
                 $new = Registration::create(['user_id' => $previous->user_id, 'year' => now()->year, 'attempt_no' => $previous->attempt_no + 1,
                     'details' => $input['details'], 'receipt_path' => $path, 'receipt_status' => $path ? 'Pending' : 'Not uploaded']);
                 if (! $new->is_archived && $new->year === now()->year) {
-                    $student->update(['course' => $input['details']['course'], 'year_level' => $input['details']['yearLevel'], 'section' => $input['details']['section']]);
+                    $student->update(['department' => $input['details']['department'] ?? null, 'course' => $input['details']['course'], 'major' => $input['details']['major'] ?? null, 'year_level' => $input['details']['yearLevel'], 'section' => $input['details']['section']]);
                 }
                 Cfo::audit('registration.resubmitted_after_absence', 'registration', $new->id, ['previous_registration_id' => $previous->id, 'previous_schedule_id' => $previous->recollection_schedule_id]);
                 Cfo::notifyAdmins('A student marked Absent has resubmitted a recollection registration for review and a new schedule.');

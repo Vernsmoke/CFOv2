@@ -27,7 +27,7 @@ class CfoWorkflowTest extends TestCase
     public function test_registration_approval_login_role_and_logout(): void
     {
         $admin=$this->account('Admin');
-        $input=['student_id'=>'24-10723','first_name'=>'New','last_name'=>'Student','email'=>'new@gmail.com','password'=>'CfoTest!234','password_confirmation'=>'CfoTest!234'];
+        $input=[...$this->studentAcademicSelection(),'student_id'=>'24-10723','first_name'=>'New','last_name'=>'Student','email'=>'new@gmail.com','password'=>'CfoTest!234','password_confirmation'=>'CfoTest!234'];
         $this->postJson('/api/register',[...$input,'role'=>'SuperAdmin'])->assertUnprocessable();
         $this->postJson('/api/register',[...$input,'email'=>'new@outlook.com'])->assertUnprocessable();
         $this->withVerifiedRegistrationEmail($input['email'])->postJson('/api/register',$input)->assertCreated()->assertJsonPath('login_email','new@cfo.office.com');

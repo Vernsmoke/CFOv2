@@ -116,12 +116,12 @@ class RecollectionRegistrationController extends Controller
         return response()->streamDownload(function () use ($query) {
             $output = fopen('php://output', 'w');
             fwrite($output, "\xEF\xBB\xBF");
-            fputcsv($output, ['Student Name', 'ID Number', 'Course', 'Year & Section', 'Date Registered', 'Status'], ',', '"', '');
+            fputcsv($output, ['Student Name', 'ID Number', 'Course', 'Year & Section', 'Department', 'Major', 'Date Registered', 'Status'], ',', '"', '');
             // Chunked eager loading bounds memory while retaining the table's ordering.
             foreach ($query->lazy(500) as $row) {
-                $group = $row->academicGroup();
+                $group = $row->academicProfile();
                 $values = [$row->student_display_name, $row->user->student_id, $group['course'],
-                    ($group['year_level'] ?? '').($group['section'] ?? ''), $row->created_at?->format('Y-m-d H:i:s'), $row->receipt_label];
+                    ($group['year_level'] ?? '').($group['section'] ?? ''), $group['department'], $group['major'], $row->created_at?->format('Y-m-d H:i:s'), $row->receipt_label];
                 $values = array_map(function ($value) {
                     $value = (string) $value;
 

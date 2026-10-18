@@ -3,7 +3,8 @@
 
     const escape = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[character]));
     const unique = values => [...new Set(values)];
-    const blank = () => ({draft_version: 2, course_groups: [{course_id: '', year_level: '', sections: []}], date: '', start_time: '08:00', end_time: '16:00', venue: '', slot_limit: '', status: 'Open for Registration'});
+    const blankGroup = () => ({department: '', course_id: '', major: '', year_level: '', sections: []});
+    const blank = () => ({draft_version: 3, course_groups: [blankGroup()], date: '', start_time: '08:00', end_time: '16:00', venue: '', slot_limit: '', status: 'Open for Registration'});
     const standardOptions = {
         year_level: ['1', '2', '3', '4'],
         section: Array.from({length: 26}, (_, index) => String.fromCharCode(65 + index)),
@@ -55,23 +56,32 @@
     const createOptions = (state, type) => Object.hasOwn(standardOptions, type)
         ? optionNames(type).map(name => ({type, name}))
         : (state.academic_options || []).filter(option => option.type === type).map(option => ({...option, name: String(option.name)}));
+    const legacyDepartment = 'Other / Legacy Courses';
+    const catalogDepartments = state => Array.isArray(state.academic_catalog?.departments) ? state.academic_catalog.departments : [];
+    const catalogCourse = (state, name) => catalogDepartments(state).flatMap(department => (department.courses || []).map(course => ({...course, department: department.name}))).find(course => course.name === name);
+    const courseDepartment = (state, course) => course ? catalogCourse(state, course.name)?.department || legacyDepartment : '';
+    const courseMajors = (state, course) => catalogCourse(state, course?.name)?.majors || [];
+    const majorMap = cards => Object.fromEntries(cards.filter(card => card.course_id && card.major).map(card => [card.course_id, card.major]));
     const createSectionOptions = sectionOptions;
     function createGroups(values) {
-        if (Array.isArray(values.course_groups)) return values.course_groups.map(group => ({course_id: String(group?.course_id ?? ''), year_level: String(group?.year_level ?? ''), sections: Array.isArray(group?.sections) ? [...group.sections] : []}));
+        if (Array.isArray(values.course_groups)) return values.course_groups.map(group => ({department: String(group?.department ?? ''), course_id: String(group?.course_id ?? ''), major: String(group?.major ?? values.course_majors?.[group?.course_id] ?? ''), year_level: String(group?.year_level ?? ''), sections: Array.isArray(group?.sections) ? [...group.sections] : []}));
         const ids = Array.isArray(values.course_ids) ? values.course_ids.map(String) : [];
         const years = selection(values, 'year_levels', 'year_level').map(String);
         const nested = isSectionMap(values.course_sections_by_year) ? values.course_sections_by_year : null;
-        const groups = ids.flatMap(id => (nested && isSectionMap(nested[id]) ? Object.keys(nested[id]) : years.length ? years : ['']).map(year => ({course_id: id, year_level: year, sections: nested ? Array.isArray(nested[id]?.[year]) ? [...nested[id][year]] : [] : selectedSections(values, id)})));
-        return groups.length ? groups : [{course_id: '', year_level: years[0] || '', sections: []}];
+        const groups = ids.flatMap(id => (nested && isSectionMap(nested[id]) ? Object.keys(nested[id]) : years.length ? years : ['']).map(year => ({department: '', course_id: id, major: String(values.course_majors?.[id] ?? ''), year_level: year, sections: nested ? Array.isArray(nested[id]?.[year]) ? [...nested[id][year]] : [] : selectedSections(values, id)})));
+        return groups.length ? groups : [{...blankGroup(), year_level: years[0] || ''}];
     }
     function restoreDraft(value, state) {
         const source = value && typeof value === 'object' ? value : {};
         const result = blank(), ids = new Set(createOptions(state, 'course').map(option => String(option.id))), years = new Set(createOptions(state, 'year_level').map(option => option.name));
         result.course_groups = createGroups(source).map(group => {
             const courseId = ids.has(group.course_id) ? group.course_id : '', year = years.has(group.year_level) ? group.year_level : '';
-            return {course_id: courseId, year_level: year, sections: courseId && year ? unique(group.sections.filter(section => typeof section === 'string' && createSectionOptions(state, courseId, year).includes(section))) : []};
+            const course = createOptions(state, 'course').find(option => String(option.id) === courseId);
+            const department = courseDepartment(state, course);
+            const majors = courseMajors(state, course);
+            return {department, course_id: courseId, major: majors.includes(group.major) ? group.major : '', year_level: year, sections: courseId && year ? unique(group.sections.filter(section => typeof section === 'string' && createSectionOptions(state, courseId, year).includes(section))) : []};
         });
-        if (!result.course_groups.length) result.course_groups = [{course_id: '', year_level: '', sections: []}];
+        if (!result.course_groups.length) result.course_groups = [blankGroup()];
         for (const name of ['date', 'start_time', 'end_time', 'venue', 'slot_limit']) if (typeof source[name] === 'string') result[name] = source[name];
         if (source.status === 'Open' || source.status === 'Open for Registration') result.status = 'Open for Registration';
         else if (['Draft', 'Closed'].includes(source.status)) result.status = source.status;
@@ -81,6 +91,7 @@
         const cards = createGroups(values), availableCourses = createOptions(state, 'course'), yearNames = createOptions(state, 'year_level').map(option => option.name);
         const courseIds = unique(cards.map(card => card.course_id).filter(Boolean)), courses = availableCourses.filter(course => courseIds.includes(String(course.id)));
         const courseValid = cards.length > 0 && cards.every(card => card.course_id && availableCourses.some(course => String(course.id) === card.course_id));
+        const majorValid = courseValid && cards.every(card => { const majors = courseMajors(state, availableCourses.find(course => String(course.id) === card.course_id)); return majors.length === 0 || majors.includes(card.major); });
         const yearValid = cards.length > 0 && cards.every(card => yearNames.includes(card.year_level)) && unique(cards.map(card => JSON.stringify([card.course_id, card.year_level]))).length === cards.length;
         const sectionValid = courseValid && yearValid && cards.every(card => validSelection(card.sections, createSectionOptions(state, card.course_id, card.year_level)));
         const yearLevels = unique(cards.map(card => card.year_level).filter(Boolean)), sections = unique(cards.flatMap(card => card.sections));
@@ -91,7 +102,7 @@
         }
         const groups = cards.flatMap((card, groupIndex) => {
             const course = availableCourses.find(course => String(course.id) === card.course_id);
-            return course && yearNames.includes(card.year_level) ? card.sections.filter(section => typeof section === 'string' && createSectionOptions(state, card.course_id, card.year_level).includes(section)).map(section => ({id: JSON.stringify([card.course_id, card.year_level, section]), groupIndex, courseId: card.course_id, year_level: card.year_level, section, label: course.name + ' - ' + card.year_level + section})) : [];
+            return course && yearNames.includes(card.year_level) ? card.sections.filter(section => typeof section === 'string' && createSectionOptions(state, card.course_id, card.year_level).includes(section)).map(section => ({id: JSON.stringify([card.course_id, card.year_level, section]), groupIndex, courseId: card.course_id, major: card.major, year_level: card.year_level, section, label: course.name + (card.major ? ' (' + card.major + ')' : '') + ' - ' + card.year_level + section})) : [];
         });
         const dateValid = validDate(values.date), start = timeMinutes(values.start_time), end = timeMinutes(values.end_time), timeValid = start !== null && end !== null && end > start;
         const venue = String(values.venue ?? '').trim(), venueValid = venue.length > 0 && venue.length <= 190;
@@ -104,18 +115,21 @@
         const studentConflicts = overlaps.filter(schedule => groups.some(group => {
             const course = (schedule.courses || []).find(course => String(course.id) === group.courseId), years = selection(schedule, 'year_levels', 'year_level').map(String);
             if (!course || (years.length && !years.includes(group.year_level))) return false;
+            const otherMajor = String(schedule.course_majors?.[group.courseId] || '');
+            if (group.major && otherMajor && group.major !== otherMajor) return false;
             const available = scheduleSections(schedule, group.courseId, group.year_level), nested = isSectionMap(schedule.course_sections_by_year?.[group.courseId]) || isSectionMap(course.pivot?.sections);
             return (!nested && !available.length) || available.map(String).includes(group.section);
         }));
         const venueConflicts = venue ? overlaps.filter(schedule => String(schedule.venue || '').trim().toLocaleLowerCase() === venue.toLocaleLowerCase()) : [];
-        const requiredValid = courseValid && yearValid && sectionValid && dateValid && timeValid && venueValid && settingsValid;
-        return {courses, course_ids: courseIds, course_groups: cards, year_levels: yearLevels, sections, course_sections_by_year: courseSectionsByYear, groups, courseValid, yearValid, sectionValid, dateValid, timeValid, venueValid, capacityValid, settingsValid, requiredValid, studentConflicts, venueConflicts, canSave: requiredValid && !studentConflicts.length && !venueConflicts.length};
+        const requiredValid = courseValid && majorValid && yearValid && sectionValid && dateValid && timeValid && venueValid && settingsValid;
+        return {courses, course_ids: courseIds, course_majors: majorMap(cards), course_groups: cards, year_levels: yearLevels, sections, course_sections_by_year: courseSectionsByYear, groups, courseValid, majorValid, yearValid, sectionValid, dateValid, timeValid, venueValid, capacityValid, settingsValid, requiredValid, studentConflicts, venueConflicts, canSave: requiredValid && !studentConflicts.length && !venueConflicts.length};
     }
     function payload(values, state, action = 'another') {
         action = action === true ? 'publish' : action === false ? 'another' : action;
         if (!['draft', 'another', 'publish'].includes(action)) throw Error('Choose a valid save action.');
         const effective = action === 'draft' ? {...values, status: 'Draft'} : values, result = evaluate(effective, state);
         if (!result.courseValid) throw Error('Select one valid course in every course group.');
+        if (!result.majorValid) throw Error('Select a valid major for every course that offers majors.');
         if (!result.yearValid) throw Error('Select one year level per course group. The same course and year level cannot be selected twice.');
         if (!result.sectionValid) throw Error('Select at least one configured section for every course group.');
         if (!result.requiredValid) throw Error('Complete the course, year level, sections, date, time and venue. End time must be after start time and capacity must be a positive whole number.');
@@ -126,7 +140,7 @@
         if (result.venueConflicts.length) throw Error('The venue is already reserved by ' + (result.venueConflicts[0].title || 'another Recollection Day') + ' at the selected date and time.');
         if (action === 'publish' && effective.status === 'Draft') throw Error('Change registration status from Draft before publishing.');
         const status = effective.status === 'Open for Registration' ? 'Open' : effective.status;
-        return {course_ids: result.course_ids.map(Number), year_levels: [...result.year_levels], sections: [...result.sections], course_sections_by_year: result.course_sections_by_year, course_groups: result.course_groups.map(group => ({course_id: Number(group.course_id), year_level: group.year_level, sections: [...group.sections]})), date: values.date, start_time: values.start_time, end_time: values.end_time, venue: String(values.venue).trim(), slot_limit: String(values.slot_limit ?? '').trim() === '' ? null : Number(values.slot_limit), status, active: status === 'Open', save_action: action};
+        return {course_ids: result.course_ids.map(Number), course_majors: result.course_majors, year_levels: [...result.year_levels], sections: [...result.sections], course_sections_by_year: result.course_sections_by_year, course_groups: result.course_groups.map(group => ({course_id: Number(group.course_id), year_level: group.year_level, sections: [...group.sections]})), date: values.date, start_time: values.start_time, end_time: values.end_time, venue: String(values.venue).trim(), slot_limit: String(values.slot_limit ?? '').trim() === '' ? null : Number(values.slot_limit), status, active: status === 'Open', save_action: action};
     }
 
     const required = '<span class="cfo-required" aria-hidden="true">*</span>';
@@ -137,6 +151,7 @@
     // rules stay in the existing evaluators and payload builders.
     function mount(context) {
         const {root, state, request, toast, editSchedule: schedule} = context, editing = !!schedule;
+        state.academic_catalog ||= context.academicCatalog || window.CFO_BACKEND?.academic_catalog || {departments: []};
         if (editing && ['Completed', 'Cancelled'].includes(editStatus(schedule))) {
             root.innerHTML = `<div class="schedule-builder"><p role="status">${escape(editStatus(schedule))} schedules are view only.</p><a class="sb-btn" href="#admin-recollection-schedule">Back to Schedules</a></div>`;
             return {read: () => restoreEdit(schedule), destroy() {}};
@@ -146,13 +161,22 @@
         const draftKey = 'cfo-admin-schedule-draft-v1:' + context.userId;
         let values = editing ? restoreEdit(schedule) : blank(), attempted = false, saving = false, addingCourse = false, addingSection = false, courseTarget = 0, sectionTarget = null, pendingCourseName = '', confirmAction = null;
         if (!editing) try { values = restoreDraft(JSON.parse(storage?.getItem(draftKey) || 'null'), state); } catch (_) { /* Draft recovery is optional. */ }
+        values.course_groups = createGroups(values).map(group => {
+            const course = (editing ? editCourseOptions(state, schedule) : createOptions(state, 'course')).find(option => String(option.id) === group.course_id);
+            const majors = courseMajors(state, course);
+            return {...group, department: group.department || courseDepartment(state, course), major: majors.includes(group.major) ? group.major : ''};
+        });
         const original = editing ? editFingerprint(values) : JSON.stringify(blank()), oldKeys = new Set(editing ? savedGroups(schedule).map(groupKey) : []);
         const lockedGroups = (schedule?.assigned_academic_groups || []).map(group => ({courseId: String(group.course_id), year_level: String(group.year_level), section: String(group.section)})).filter(group => oldKeys.has(groupKey(group)));
         const isLocked = (group, section) => lockedGroups.some(locked => locked.courseId === group.course_id && locked.year_level === group.year_level && (section == null || locked.section === section));
         const assignedCount = editing ? Math.max(0, Number(schedule.registrations_total_count ?? schedule.registrations_count) || 0) : 0, attendanceRecorded = editing && Number(schedule.registrations_recorded_attendance_count) > 0;
         const courseOptions = () => editing ? editCourseOptions(state, schedule) : createOptions(state, 'course');
         const yearOptions = group => editing ? editYearNames(schedule, group.course_id).map(name => ({name})) : createOptions(state, 'year_level');
-        const availableSections = group => !group.course_id || !group.year_level ? [] : editing ? unique([...sectionOptions(state, group.course_id, group.year_level), ...savedGroups(schedule).filter(saved => saved.courseId === group.course_id && saved.year_level === group.year_level).map(saved => saved.section)]) : createSectionOptions(state, group.course_id, group.year_level);
+        const availableSections = group => {
+            const course = courseOptions().find(option => String(option.id) === group.course_id), majors = courseMajors(state, course);
+            if (!course || (majors.length && !majors.includes(group.major)) || !group.year_level) return [];
+            return editing ? unique([...sectionOptions(state, group.course_id, group.year_level), ...savedGroups(schedule).filter(saved => saved.courseId === group.course_id && saved.year_level === group.year_level).map(saved => saved.section)]) : createSectionOptions(state, group.course_id, group.year_level);
+        };
         const dirty = () => (editing ? editFingerprint(values) : JSON.stringify(values)) !== original;
         const fieldNames = ['date', 'start_time', 'end_time', 'venue', 'slot_limit', 'status'];
         const lockedAttribute = attendanceRecorded ? ' disabled aria-describedby="sb-attendance-lock"' : '';
@@ -190,7 +214,7 @@
             errorBox.hidden = false; errorBox.focus(); errorBox.scrollIntoView?.({block: 'nearest'});
         }
         function read() {
-            values.course_groups = [...cardsRoot.querySelectorAll('[data-sb-course-group]')].map(card => ({course_id: String(card.querySelector('[data-sb-group-course]').value), year_level: card.querySelector('[data-sb-group-year]:checked')?.value || '', sections: [...card.querySelectorAll('[data-sb-group-section]:checked')].map(input => input.value)}));
+            values.course_groups = [...cardsRoot.querySelectorAll('[data-sb-course-group]')].map(card => ({department: String(card.querySelector('[data-sb-group-department]').value), course_id: String(card.querySelector('[data-sb-group-course]').value), major: String(card.querySelector('[data-sb-group-major]').value), year_level: card.querySelector('[data-sb-group-year]:checked')?.value || '', sections: [...card.querySelectorAll('[data-sb-group-section]:checked')].map(input => input.value)}));
             for (const name of fieldNames) values[name] = String(form.elements[name].value || '');
             return values;
         }
@@ -199,11 +223,15 @@
             const courses = courseOptions();
             cardsRoot.innerHTML = values.course_groups.map((group, index) => {
                 const course = courses.find(course => String(course.id) === group.course_id), years = yearOptions(group), allowedSections = availableSections(group), sections = unique([...optionNames('section'), ...allowedSections]), locked = isLocked(group);
-                const combinations = course && group.year_level ? group.sections.map(section => ({section, label: course.name + ' - ' + group.year_level + section})) : [];
+                const departments = catalogDepartments(state).map(department => department.name), hasLegacy = courses.some(option => courseDepartment(state, option) === legacyDepartment);
+                if (hasLegacy) departments.push(legacyDepartment);
+                const departmentCourses = group.department ? courses.filter(option => courseDepartment(state, option) === group.department) : [];
+                const majors = courseMajors(state, course), pathReady = !!course && (!majors.length || majors.includes(group.major));
+                const combinations = pathReady && group.year_level ? group.sections.map(section => ({section, label: course.name + (group.major ? ' (' + group.major + ')' : '') + ' - ' + group.year_level + section})) : [];
                 const usedPair = (courseId, year) => !!courseId && !!year && values.course_groups.some((other, otherIndex) => otherIndex !== index && other.course_id === courseId && other.year_level === year);
                 const lockNote = locked ? '<p class="sb-hint">🔒 Students are already assigned to this group.</p>' : '';
-                return `<article class="sb-course-group" data-sb-course-group="${index}"><div class="sb-course-group-head"><span class="sb-course-group-number">${index + 1}</span><div class="sb-course-group-title"><label class="sb-field" for="sb-group-course-${index}">Course Selection ${required}</label><div class="sb-course-choice"><select id="sb-group-course-${index}" data-sb-group-course="${index}" aria-label="Course for group ${index + 1}" required${locked ? ' disabled title="Students are already assigned to this group."' : ''}><option value=""${!group.course_id ? ' selected' : ''}>Select course</option>${courses.map(option => `<option value="${escape(option.id)}"${String(option.id) === group.course_id ? ' selected' : ''}${usedPair(String(option.id), group.year_level) ? ' disabled' : ''}>${escape(option.name)}</option>`).join('')}</select><button class="sb-btn sb-btn-blue sb-add-course" type="button" data-sb-add-course="${index}">＋ Add Course</button></div><p class="sb-hint">Select a course from the dropdown, or add a new course name.</p>${lockNote}</div><button class="sb-btn sb-remove-group" type="button" data-sb-remove-group="${index}"${values.course_groups.length === 1 || locked ? ` disabled title="${locked ? 'Students are already assigned to this group.' : 'At least one course group must remain.'}"` : ''}>Remove Group</button></div><div class="sb-course-group-grid">
-                  <div class="sb-field"><div class="sb-label-row"><span id="sb-group-year-label-${index}">Year Level ${required}</span></div><div class="sb-options" role="radiogroup" aria-labelledby="sb-group-year-label-${index}">${years.map(year => `<label class="sb-option"><input type="radio" name="sb-year-${index}" value="${escape(year.name)}" data-sb-group-year="${index}"${group.year_level === year.name ? ' checked' : ''}${!group.course_id || usedPair(group.course_id, year.name) || locked ? ' disabled' : ''}><span>${escape(year.name)}${!optionNames('year_level').includes(year.name) ? ' <span class="sb-group-badge">Already included</span>' : ''}</span></label>`).join('')}</div><p class="sb-hint">Choose exactly one year level from 1–4 for this course.${years.some(year => !optionNames('year_level').includes(year.name)) ? ' Other saved year levels are preserved for this course.' : ''}</p></div>
+                return `<article class="sb-course-group" data-sb-course-group="${index}"><div class="sb-course-group-head"><span class="sb-course-group-number">${index + 1}</span><div class="sb-course-group-title"><div class="sb-academic-path"><label class="sb-field" for="sb-group-department-${index}">Department ${required}<select id="sb-group-department-${index}" data-sb-group-department="${index}" aria-label="Department for group ${index + 1}" required${locked ? ' disabled title="Students are already assigned to this group."' : ''}><option value=""${!group.department ? ' selected' : ''}>Select department</option>${departments.map(name => `<option value="${escape(name)}"${name === group.department ? ' selected' : ''}>${escape(name)}</option>`).join('')}</select></label><label class="sb-field" for="sb-group-course-${index}">Course ${required}<select id="sb-group-course-${index}" data-sb-group-course="${index}" aria-label="Course for group ${index + 1}" required${!group.department || locked ? ` disabled${locked ? ' title="Students are already assigned to this group."' : ''}` : ''}><option value=""${!group.course_id ? ' selected' : ''}>${group.department ? 'Select course' : 'Select a department first'}</option>${departmentCourses.map(option => `<option value="${escape(option.id)}"${String(option.id) === group.course_id ? ' selected' : ''}${usedPair(String(option.id), group.year_level) ? ' disabled' : ''}>${escape(option.name)}</option>`).join('')}</select></label><label class="sb-field" for="sb-group-major-${index}">Major${majors.length ? ' ' + required : ''}<select id="sb-group-major-${index}" data-sb-group-major="${index}" aria-label="Major for group ${index + 1}"${majors.length ? ' required' : ''}${!course || !majors.length || locked ? ` disabled${locked ? ' title="Students are already assigned to this group."' : ''}` : ''}><option value=""${!group.major ? ' selected' : ''}>${!course ? 'Select a course first' : majors.length ? 'Select major' : 'No major required'}</option>${majors.map(major => `<option value="${escape(major)}"${major === group.major ? ' selected' : ''}>${escape(major)}</option>`).join('')}</select></label></div><div class="sb-course-choice"><p class="sb-hint">Choose a department first; its courses will unlock, followed by majors when available.</p><button class="sb-btn sb-btn-blue sb-add-course" type="button" data-sb-add-course="${index}">＋ Add Course</button></div>${lockNote}</div><button class="sb-btn sb-remove-group" type="button" data-sb-remove-group="${index}"${values.course_groups.length === 1 || locked ? ` disabled title="${locked ? 'Students are already assigned to this group.' : 'At least one course group must remain.'}"` : ''}>Remove Group</button></div><div class="sb-course-group-grid">
+                  <div class="sb-field"><div class="sb-label-row"><span id="sb-group-year-label-${index}">Year Level ${required}</span></div><div class="sb-options" role="radiogroup" aria-labelledby="sb-group-year-label-${index}">${years.map(year => `<label class="sb-option"><input type="radio" name="sb-year-${index}" value="${escape(year.name)}" data-sb-group-year="${index}"${group.year_level === year.name ? ' checked' : ''}${!pathReady || usedPair(group.course_id, year.name) || locked ? ' disabled' : ''}><span>${escape(year.name)}${!optionNames('year_level').includes(year.name) ? ' <span class="sb-group-badge">Already included</span>' : ''}</span></label>`).join('')}</div><p class="sb-hint">${!pathReady ? 'Complete the department, course, and required major first.' : `Choose exactly one year level from 1–4 for this course.${years.some(year => !optionNames('year_level').includes(year.name)) ? ' Other saved year levels are preserved for this course.' : ''}`}</p></div>
                   <div class="sb-field"><div class="sb-label-row"><span id="sb-group-section-label-${index}">Sections ${required}</span></div><div class="sb-options sb-section-options" role="group" aria-labelledby="sb-group-section-label-${index}"><label class="sb-option"><input type="checkbox" data-sb-group-select-all="${index}" aria-describedby="sb-group-section-help-${index}"${allowedSections.length && allowedSections.every(section => group.sections.includes(section)) ? ' checked' : ''}${!allowedSections.some(section => !isLocked(group, section)) ? ' disabled' : ''}><span>Select All</span></label>${sections.map(section => { const checked = group.sections.includes(section), sectionLocked = checked && isLocked(group, section), allowed = allowedSections.includes(section), note = sectionLocked ? 'Students are already assigned to this group.' : !group.course_id || !group.year_level ? 'Select a course and year level first.' : !allowed ? 'Not configured for this course and year level.' : ''; return `<label class="sb-option"${note ? ` title="${note}"` : ''}><input type="checkbox" value="${escape(section)}" data-sb-group-section="${index}" aria-describedby="sb-group-section-help-${index}"${checked ? ' checked' : ''}${sectionLocked || !allowed ? ' disabled aria-disabled="true"' : ''}${note ? ` title="${note}"` : ''}><span>${escape(section)}${sectionLocked ? ' <span aria-hidden="true">🔒</span><span class="sr-only"> Students are already assigned to this group.</span>' : ''}</span>${checked ? groupBadge(group, section) : ''}</label>`; }).join('')}</div><p class="sb-hint" id="sb-group-section-help-${index}">${!group.course_id || !group.year_level ? 'Select a course and year level to enable their sections.' : 'Sections A–Z are shown. Only sections configured for this course and year level can be selected. When none are configured, all A–Z sections are available.'}${editing && allowedSections.some(section => !optionNames('section').includes(section)) ? ' Additional configured or saved section names are preserved.' : ''}</p>${editing && course && group.year_level ? `<button type="button" class="sb-btn sb-add-section" data-sb-add-section="${index}" data-sb-course-id="${escape(group.course_id)}">+ Add section</button>` : ''}</div>
                   <div class="sb-field sb-course-group-combinations"><div class="sb-label-row"><span>Selected Combination</span><span class="sb-group-count" data-sb-group-count="${index}">${combinations.length} sections</span></div><div class="sb-groups" data-sb-groups="${index}" aria-live="polite">${combinations.map(combination => `<div class="sb-group"><span>${escape(combination.label)} ${groupBadge(group, combination.section)}</span><button type="button" data-sb-remove-section="${index}" data-sb-section="${escape(combination.section)}" aria-label="Remove ${escape(combination.label)}"${isLocked(group, combination.section) ? ' disabled title="Students are already assigned to this group."' : ''}>×</button></div>`).join('') || '<p class="sb-hint">Select a year level and section to create combinations.</p>'}</div></div></div></article>`;
             }).join('');
@@ -220,7 +248,7 @@
                 if (!course) return '';
                 const year = group.year_level ? yearLabel(group.year_level) : 'Year not selected';
                 const sections = unique(group.sections).map(section => '<span class="sb-summary-section">' + escape(group.year_level + section) + '</span>').join('');
-                return '<li class="sb-summary-course"><strong class="sb-summary-course-name">' + escape(course.name) + ' · ' + escape(year) + '</strong><div class="sb-summary-sections" aria-label="' + escape(course.name + ' ' + year + ' sections') + '">' + (sections || '<span class="sb-summary-empty">Sections not selected</span>') + '</div></li>';
+                return '<li class="sb-summary-course"><strong class="sb-summary-course-name">' + escape(course.name) + (group.major ? ' · ' + escape(group.major) : '') + ' · ' + escape(year) + '</strong><div class="sb-summary-sections" aria-label="' + escape(course.name + ' ' + year + ' sections') + '">' + (sections || '<span class="sb-summary-empty">Sections not selected</span>') + '</div></li>';
             }).join('');
             const courses = courseGroups ? '<ul class="sb-summary-courses">' + courseGroups + '</ul>' : '<span class="sb-summary-empty">Not selected</span>';
             const statusLabel = ['Open', 'Open for Registration'].includes(values.status) ? 'Open for Registration' : values.status;
@@ -229,7 +257,7 @@
             builder.querySelector('.sb-summary-status').textContent = values.status === 'Open for Registration' ? 'Open' : values.status;
             if (editing) builder.querySelector('[data-sb-added-summary]').textContent = result.changes.added.length ? `You are adding: ${result.changes.added.map(group => group.label).join(', ')}. ${capacitySummary(values, schedule)}` : 'No new groups selected.';
             const ready = result.dateValid && result.timeValid && result.venueValid, venueBlocked = result.venueConflicts.length && (!editing || !result.venueBookingUnchanged);
-            const checks = [[result.courseValid, 'One course selected in every course group'], [result.yearValid, 'One year level per course group; no duplicate course/year groups'], [result.sectionValid, 'At least one section selected for every course group'], [result.dateValid && result.timeValid && (!editing || (result.attendanceValid && result.calendarYearValid)), 'Date and time are set'], [result.venueValid, 'Venue is set'], [result.timeValid, 'End time is after start time'], [result.capacityValid, 'Capacity is valid (optional)'], [result.settingsValid, 'Registration settings are valid'], [ready && result.sectionValid && !result.studentConflicts.length, 'No student schedule conflict'], [ready && !venueBlocked, 'No venue conflict'], ...(editing ? [[result.assignedValid, 'Assigned student groups stay included']] : []), [result.requiredValid, 'Schedule details are valid']];
+            const checks = [[result.courseValid, 'Department and course selected in every group'], [result.majorValid, 'Major selected when the course requires one'], [result.yearValid, 'One year level per course group; no duplicate course/year groups'], [result.sectionValid, 'At least one section selected for every course group'], [result.dateValid && result.timeValid && (!editing || (result.attendanceValid && result.calendarYearValid)), 'Date and time are set'], [result.venueValid, 'Venue is set'], [result.timeValid, 'End time is after start time'], [result.capacityValid, 'Capacity is valid (optional)'], [result.settingsValid, 'Registration settings are valid'], [ready && result.sectionValid && !result.studentConflicts.length, 'No student schedule conflict'], [ready && !venueBlocked, 'No venue conflict'], ...(editing ? [[result.assignedValid, 'Assigned student groups stay included']] : []), [result.requiredValid, 'Schedule details are valid']];
             builder.querySelector('[data-sb-checks]').innerHTML = checks.map(([valid, label]) => '<li class="sb-check ' + (valid ? 'is-valid' : attempted ? 'is-invalid' : 'is-pending') + '"><span class="sb-check-icon" aria-hidden="true">' + (valid ? '✓' : '!') + '</span><span>' + label + '<span class="sr-only">: ' + (valid ? 'valid' : 'not yet satisfied') + '</span></span></li>').join('');
             const conflict = !ready ? 'pending' : result.studentConflicts.length || venueBlocked ? 'invalid' : result.venueConflicts.length ? 'warning' : 'valid';
             builder.querySelector('[data-sb-conflict]').className = 'sb-conflict is-' + conflict;
@@ -239,28 +267,44 @@
         }
         function rememberDraft() { if (!editing) try { storage?.setItem(draftKey, JSON.stringify(values)); } catch (_) { /* Server saving works without local storage. */ } }
         function changed(event) {
-            const target = event?.target, isCardControl = target?.matches?.('[data-sb-group-course],[data-sb-group-year],[data-sb-group-section],[data-sb-group-select-all]');
+            const target = event?.target, isCardControl = target?.matches?.('[data-sb-group-department],[data-sb-group-course],[data-sb-group-major],[data-sb-group-year],[data-sb-group-section],[data-sb-group-select-all]');
+            const index = Number(target?.dataset?.sbGroupDepartment ?? target?.dataset?.sbGroupCourse ?? target?.dataset?.sbGroupMajor ?? target?.dataset?.sbGroupYear ?? target?.dataset?.sbGroupSection ?? target?.dataset?.sbGroupSelectAll);
+            const before = Number.isInteger(index) ? {...values.course_groups[index]} : null;
             if (target?.matches?.('[data-sb-group-select-all]')) {
                 const card = cardsRoot.querySelector('[data-sb-course-group="' + target.dataset.sbGroupSelectAll + '"]');
                 for (const input of card.querySelectorAll('[data-sb-group-section]')) if (!input.disabled) input.checked = target.checked;
             }
             read();
-            if (target?.matches?.('[data-sb-group-course],[data-sb-group-year]')) {
-                const group = values.course_groups[Number(target.dataset.sbGroupCourse ?? target.dataset.sbGroupYear)];
+            if (target?.matches?.('[data-sb-group-department]')) {
+                const group = values.course_groups[index];
+                group.course_id = ''; group.major = ''; group.year_level = ''; group.sections = [];
+            }
+            if (target?.matches?.('[data-sb-group-course]')) {
+                const group = values.course_groups[index];
+                if (before?.course_id !== group.course_id) { group.major = ''; group.year_level = ''; group.sections = []; }
+                const selected = courseOptions().find(option => String(option.id) === group.course_id);
+                group.department = courseDepartment(state, selected) || group.department;
+            }
+            if (target?.matches?.('[data-sb-group-major]')) {
+                const group = values.course_groups[index];
+                if (before?.major !== group.major) group.sections = [];
+                for (const other of values.course_groups) if (other.course_id === group.course_id) other.major = group.major;
+            }
+            if (target?.matches?.('[data-sb-group-course],[data-sb-group-major],[data-sb-group-year]')) {
+                const group = values.course_groups[index];
                 if (!yearOptions(group).some(year => year.name === group.year_level)) group.year_level = '';
                 group.sections = group.sections.filter(section => group.course_id && group.year_level && availableSections(group).includes(section));
             }
             if (isCardControl || !event) renderCards();
             update(); rememberDraft(); if (!attempted) errorBox.hidden = true;
             if (isCardControl) {
-                const index = target.dataset.sbGroupCourse ?? target.dataset.sbGroupYear ?? target.dataset.sbGroupSection ?? target.dataset.sbGroupSelectAll;
-                const card = cardsRoot.querySelector('[data-sb-course-group="' + index + '"]'), attr = target.matches('[data-sb-group-course]') ? '[data-sb-group-course]' : target.matches('[data-sb-group-year]') ? '[data-sb-group-year]' : target.matches('[data-sb-group-section]') ? '[data-sb-group-section]' : '[data-sb-group-select-all]';
+                const card = cardsRoot.querySelector('[data-sb-course-group="' + index + '"]'), attr = target.matches('[data-sb-group-department]') ? '[data-sb-group-department]' : target.matches('[data-sb-group-course]') ? '[data-sb-group-course]' : target.matches('[data-sb-group-major]') ? '[data-sb-group-major]' : target.matches('[data-sb-group-year]') ? '[data-sb-group-year]' : target.matches('[data-sb-group-section]') ? '[data-sb-group-section]' : '[data-sb-group-select-all]';
                 [...card.querySelectorAll(attr)].find(input => input.value === target.value)?.focus();
             }
         }
         function confirm(title, text, label, action) { confirmAction = action; builder.querySelector('#sb-create-confirm-title').textContent = title; builder.querySelector('[data-sb-create-confirm-text]').textContent = text; builder.querySelector('[data-sb-create-confirm-action]').textContent = label; confirmDialog.showModal(); builder.querySelector('[data-sb-close-create-confirm]').focus(); }
         function leave() { form.dataset.dirty = 'false'; if (!editing) try { storage?.removeItem(draftKey); } catch (_) {} window.removeEventListener?.('beforeunload', beforeUnload); context.navigate?.(); }
-        function resetForm() { values = blank(); attempted = false; errorBox.hidden = true; applyValues(); try { storage?.removeItem(draftKey); } catch (_) {} form.dataset.dirty = 'false'; cardsRoot.querySelector('[data-sb-group-course]')?.focus(); }
+        function resetForm() { values = blank(); attempted = false; errorBox.hidden = true; applyValues(); try { storage?.removeItem(draftKey); } catch (_) {} form.dataset.dirty = 'false'; cardsRoot.querySelector('[data-sb-group-department]')?.focus(); }
         async function commit(body, mode) {
             if (saving) return;
             saving = true; errorBox.hidden = true;
@@ -286,12 +330,12 @@
         }
         const beforeUnload = event => { if (form.dataset.dirty === 'true') { event.preventDefault(); event.returnValue = ''; } };
         window.addEventListener?.('beforeunload', beforeUnload);
-        form.addEventListener('input', event => { if (!event.target.matches?.('[data-sb-group-course],[data-sb-group-year],[data-sb-group-section],[data-sb-group-select-all]')) changed(event); });
+        form.addEventListener('input', event => { if (!event.target.matches?.('[data-sb-group-department],[data-sb-group-course],[data-sb-group-major],[data-sb-group-year],[data-sb-group-section],[data-sb-group-select-all]')) changed(event); });
         form.addEventListener('change', changed);
         form.addEventListener('submit', event => { event.preventDefault(); saveSchedule(editing ? event.submitter?.value === 'publish' ? 'publish' : 'changes' : event.submitter?.value === 'another' ? 'another' : 'publish'); });
         builder.addEventListener('click', event => {
             const target = event.target, add = target.closest('[data-sb-add-group]'), remove = target.closest('[data-sb-remove-group]'), chip = target.closest('[data-sb-remove-section]'), back = target.closest('[data-sb-create-back]');
-            if (add && !saving) { read(); values.course_groups.push({course_id: '', year_level: '', sections: []}); renderCards(); update(); rememberDraft(); const card = cardsRoot.querySelector('[data-sb-course-group="' + (values.course_groups.length - 1) + '"]'); card.scrollIntoView?.({block: 'nearest'}); card.querySelector('[data-sb-group-course]').focus(); }
+            if (add && !saving) { read(); values.course_groups.push(blankGroup()); renderCards(); update(); rememberDraft(); const card = cardsRoot.querySelector('[data-sb-course-group="' + (values.course_groups.length - 1) + '"]'); card.scrollIntoView?.({block: 'nearest'}); card.querySelector('[data-sb-group-department]').focus(); }
             if (remove && !remove.disabled && !saving) { read(); const index = Number(remove.dataset.sbRemoveGroup); confirm('Remove course group?', 'Remove this course group and its selected sections from the schedule?', 'Remove Group', () => { values.course_groups.splice(index, 1); renderCards(); update(); rememberDraft(); }); }
             if (chip && !chip.disabled && !saving) { read(); const group = values.course_groups[Number(chip.dataset.sbRemoveSection)]; group.sections = group.sections.filter(section => section !== chip.dataset.sbSection); renderCards(); update(); rememberDraft(); }
             if (target.closest('[data-sb-draft]')) saveSchedule('draft');
@@ -337,9 +381,9 @@
                 if (!added) throw Error('The new course could not be found.');
                 if (editing && values.course_groups[courseTarget].course_id) {
                     const year = values.course_groups[courseTarget].year_level;
-                    values.course_groups.push({course_id: String(added.id), year_level: optionNames('year_level').includes(year) ? year : '', sections: []});
+                    values.course_groups.push({department: legacyDepartment, course_id: String(added.id), major: '', year_level: optionNames('year_level').includes(year) ? year : '', sections: []});
                 }
-                else { const group = values.course_groups[courseTarget]; group.course_id = String(added.id); group.sections = []; }
+                else { const group = values.course_groups[courseTarget]; group.department = legacyDepartment; group.course_id = String(added.id); group.major = ''; group.sections = []; }
                 pendingCourseName = ''; courseManager.render(); renderCards(); update(); rememberDraft(); courseDialog.close(); event.target.reset(); toast?.('Course added.');
             } catch (failure) { courseError.textContent = courseAdded ? 'Course was added. Click Add Course again to refresh the list.' : failure.errors ? unique(Object.values(failure.errors).flat()).join(' ') : failure.message; courseError.hidden = false; }
             finally { addingCourse = false; controls.forEach(control => { control.disabled = false; }); }
@@ -378,13 +422,13 @@
     };
     function savedGroups(schedule) {
         const years = selection(schedule, 'year_levels', 'year_level').map(String);
-        return (schedule.courses || []).flatMap(course => years.flatMap(year => scheduleSections(schedule, course.id, year).map(section => ({courseId: String(course.id), year_level: year, section: String(section), label: `${course.name} ${year}${section}`}))));
+        return (schedule.courses || []).flatMap(course => years.flatMap(year => scheduleSections(schedule, course.id, year).map(section => ({courseId: String(course.id), major: String(schedule.course_majors?.[course.id] || ''), year_level: year, section: String(section), label: `${course.name}${schedule.course_majors?.[course.id] ? ` (${schedule.course_majors[course.id]})` : ''} ${year}${section}`}))));
     }
     const editYearNames = (schedule, courseId) => unique([...optionNames('year_level'), ...savedGroups(schedule).filter(group => group.courseId === String(courseId)).map(group => group.year_level)]);
     function restoreEdit(schedule) {
         const years = selection(schedule, 'year_levels', 'year_level').map(String);
-        const courseGroups = years.flatMap(year => (schedule.courses || []).filter(course => scheduleSections(schedule, course.id, year).length > 0).map(course => ({course_id: String(course.id), year_level: year, sections: scheduleSections(schedule, course.id, year).map(String)})));
-        if (!courseGroups.length) courseGroups.push({course_id: '', year_level: '', sections: []});
+        const courseGroups = years.flatMap(year => (schedule.courses || []).filter(course => scheduleSections(schedule, course.id, year).length > 0).map(course => ({department: '', course_id: String(course.id), major: String(schedule.course_majors?.[course.id] || ''), year_level: year, sections: scheduleSections(schedule, course.id, year).map(String)})));
+        if (!courseGroups.length) courseGroups.push(blankGroup());
         return {course_groups: courseGroups, date: String(schedule.date || '').slice(0, 10), start_time: String(schedule.start_time || '').slice(0, 5), end_time: String(schedule.end_time || '').slice(0, 5), venue: String(schedule.venue || ''), slot_limit: schedule.slot_limit == null ? '' : String(schedule.slot_limit), status: editStatus(schedule)};
     }
     // Older consumers can still provide the former year-block shape. The shared
@@ -409,6 +453,7 @@
         const availableCourses = editCourseOptions(state, schedule), courseIds = unique(cards.map(card => card.course_id).filter(Boolean));
         const courses = availableCourses.filter(course => courseIds.includes(String(course.id)));
         const courseValid = cards.length > 0 && cards.every(card => card.course_id && availableCourses.some(course => String(course.id) === card.course_id)) && (!blocks || blocks.every(block => Array.isArray(block.course_ids) && block.course_ids.length > 0 && unique(block.course_ids.map(String)).length === block.course_ids.length));
+        const majorValid = courseValid && cards.every(card => { const majors = courseMajors(state, availableCourses.find(course => String(course.id) === card.course_id)); return majors.length === 0 || majors.includes(card.major); });
         const years = unique(cards.map(card => card.year_level));
         const yearValid = cards.length > 0 && cards.every(card => editYearNames(schedule, card.course_id).includes(card.year_level)) && unique(cards.map(card => JSON.stringify([card.course_id, card.year_level]))).length === cards.length && (!blocks || unique(blocks.map(block => block.year_level)).length === blocks.length);
         const sectionValid = courseValid && yearValid && (!blocks || blocks.every(block => isSectionMap(block.course_sections) && Object.keys(block.course_sections).every(id => block.course_ids.map(String).includes(id)))) && cards.every(card => {
@@ -419,7 +464,7 @@
                 return previous.has(groupKey(group)) || sectionOptions(state, id, card.year_level).includes(section);
             });
         });
-        const previewGroups = cards.flatMap(card => card.sections.map(section => ({courseId: card.course_id, year_level: card.year_level, section: String(section), label: `${availableCourses.find(course => String(course.id) === card.course_id)?.name || card.course_id} ${card.year_level}${section}`})));
+        const previewGroups = cards.flatMap(card => card.sections.map(section => ({courseId: card.course_id, major: card.major, year_level: card.year_level, section: String(section), label: `${availableCourses.find(course => String(course.id) === card.course_id)?.name || card.course_id}${card.major ? ` (${card.major})` : ''} ${card.year_level}${section}`})));
         const changes = editChanges(schedule, previewGroups);
         const locked = (schedule.assigned_academic_groups || []).map(group => ({courseId: String(group.course_id), year_level: String(group.year_level), section: String(group.section)}));
         const chosenKeys = new Set(previewGroups.map(groupKey));
@@ -439,6 +484,8 @@
         const studentConflicts = overlaps.filter(other => checkedGroups.some(group => {
             const course = (other.courses || []).find(row => String(row.id) === group.courseId);
             if (!course) return false;
+            const otherMajor = String(other.course_majors?.[group.courseId] || '');
+            if (group.major && otherMajor && group.major !== otherMajor) return false;
             const otherYears = selection(other, 'year_levels', 'year_level').map(String);
             if (otherYears.length && !otherYears.includes(group.year_level)) return false;
             const sections = scheduleSections(other, group.courseId, group.year_level), nested = isSectionMap(other.course_sections_by_year?.[group.courseId]) || isSectionMap(course.pivot?.sections);
@@ -446,13 +493,14 @@
         }));
         const venueConflicts = overlaps.filter(other => String(other.venue || '').trim().toLocaleLowerCase() === venue.toLocaleLowerCase());
         const venueBookingUnchanged = calendarUnchanged && venue === String(schedule.venue || '');
-        const requiredValid = courseValid && yearValid && sectionValid && dateValid && calendarYearValid && timeValid && venueValid && settingsValid && assignedValid && attendanceValid;
-        return {courses, course_ids: courseIds, course_groups: cards, year_levels: years, groups: previewGroups, changes, courseValid, yearValid, sectionValid, dateValid, calendarYearValid, timeValid, venueValid, capacityValid, settingsValid, assignedValid, attendanceValid, attendanceRecorded, assignedCount, requiredValid, studentConflicts, venueConflicts, venueBookingUnchanged, canSave: requiredValid && !studentConflicts.length && (venueBookingUnchanged || !venueConflicts.length) && !['Completed', 'Cancelled'].includes(editStatus(schedule))};
+        const requiredValid = courseValid && majorValid && yearValid && sectionValid && dateValid && calendarYearValid && timeValid && venueValid && settingsValid && assignedValid && attendanceValid;
+        return {courses, course_ids: courseIds, course_majors: majorMap(cards), course_groups: cards, year_levels: years, groups: previewGroups, changes, courseValid, majorValid, yearValid, sectionValid, dateValid, calendarYearValid, timeValid, venueValid, capacityValid, settingsValid, assignedValid, attendanceValid, attendanceRecorded, assignedCount, requiredValid, studentConflicts, venueConflicts, venueBookingUnchanged, canSave: requiredValid && !studentConflicts.length && (venueBookingUnchanged || !venueConflicts.length) && !['Completed', 'Cancelled'].includes(editStatus(schedule))};
     }
     function editPayload(values, state, schedule, publish = false) {
         const next = {...values, status: publish ? 'Open' : values.status}, result = evaluateEdit(next, state, schedule);
         if (['Completed', 'Cancelled'].includes(editStatus(schedule))) throw Error(editStatus(schedule) + ' schedules are view only.');
         if (!result.courseValid) throw Error('Select one valid course in every course group.');
+        if (!result.majorValid) throw Error('Select a valid major for every course that offers majors.');
         if (!result.yearValid) throw Error('Select one year level per course group. The same course and year level cannot be selected twice.');
         if (!result.sectionValid) {
             const previous = new Set(savedGroups(schedule).map(groupKey)), invalid = result.groups.find(group => !previous.has(groupKey(group)) && !sectionOptions(state, group.courseId, group.year_level).includes(group.section));
@@ -471,7 +519,7 @@
         if (!result.venueBookingUnchanged && result.venueConflicts.length) throw Error('The venue is already reserved by ' + (result.venueConflicts[0].title || 'another Recollection Day') + ' at the selected date and time.');
         const byYear = {};
         for (const card of result.course_groups) { byYear[card.course_id] ||= {}; byYear[card.course_id][card.year_level] = [...card.sections]; }
-        return {course_ids: result.course_ids.map(Number), year_levels: [...result.year_levels], sections: unique(result.groups.map(group => group.section)), course_sections_by_year: byYear, date: values.date, start_time: values.start_time, end_time: values.end_time, venue: String(values.venue).trim(), slot_limit: String(values.slot_limit ?? '').trim() === '' ? null : Number(values.slot_limit), status: next.status, active: next.status === 'Open'};
+        return {course_ids: result.course_ids.map(Number), course_majors: result.course_majors, year_levels: [...result.year_levels], sections: unique(result.groups.map(group => group.section)), course_sections_by_year: byYear, date: values.date, start_time: values.start_time, end_time: values.end_time, venue: String(values.venue).trim(), slot_limit: String(values.slot_limit ?? '').trim() === '' ? null : Number(values.slot_limit), status: next.status, active: next.status === 'Open'};
     }
     const capacitySummary = (values, schedule) => String(values.slot_limit ?? '').trim() === '' ? 'No capacity limit.'
         : Number(values.slot_limit) === Number(schedule.slot_limit) ? `Capacity stays at ${values.slot_limit}.` : `Capacity will be ${values.slot_limit}.`;

@@ -13,7 +13,7 @@ class RegistrationEmailVerificationTest extends TestCase
 
     private function registration(string $email = 'verified.student@gmail.com'): array
     {
-        return [
+        return [...$this->studentAcademicSelection(),
             'student_id' => '24-10723',
             'first_name' => 'Verified',
             'last_name' => 'Student',

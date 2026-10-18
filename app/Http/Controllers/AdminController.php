@@ -220,13 +220,20 @@ class AdminController extends Controller
         $input['status'] = $input['status'] ?? ($input['active'] ? 'Open' : 'Closed');
         $input['active'] = $input['status'] === 'Open';
         $courseIds = $input['course_ids'];
+        $courseMajors = collect($input['course_majors'] ?? ($schedule?->course_majors ?? []))
+            ->mapWithKeys(fn ($major, $courseId) => [(string) $courseId => trim((string) $major)])
+            ->filter(fn ($major, $courseId) => $major !== '' && in_array((int) $courseId, array_map('intval', $courseIds), true))
+            ->all();
+        if ($request->exists('course_majors')) {
+            $input['course_majors'] = $courseMajors;
+        }
         $courseSections = $input['course_sections'] ?? null;
         $yearBlocks = $input['course_sections_by_year'] ?? null;
         unset($input['course_ids'], $input['course_sections'], $input['course_sections_by_year'], $input['course_groups'], $input['save_action']);
         $input['year_levels'] = $input['year_levels'] ?? [$input['year_level']];
         $input['sections'] = $input['sections'] ?? (isset($input['section']) ? [$input['section']] : []);
         $input['year_level'] = $input['year_levels'][0];
-        $saved = DB::transaction(function () use ($input, $schedule, $courseIds, $courseSections, $yearBlocks, $sections) {
+        $saved = DB::transaction(function () use ($input, $schedule, $courseIds, $courseMajors, $courseSections, $yearBlocks, $sections) {
             // Venue conflicts can involve disjoint courses. Lock the existing
             // course rows in a consistent order to serialize all schedule saves.
             DB::table('academic_options')->where('type', 'course')->orderBy('id')->lockForUpdate()->get();
@@ -276,8 +283,13 @@ class AdminController extends Controller
             if ($schedule?->exists) {
                 $this->validateAddedAcademicGroups($addedGroups, $sections);
             }
+            $currentMajors = $schedule?->exists
+                ? collect($schedule->course_majors ?? [])->mapWithKeys(fn ($major, $id) => [(string) $id => trim((string) $major)])->filter()->sortKeys()->all()
+                : [];
+            $nextMajors = collect($courseMajors)->sortKeys()->all();
             $pureAddition = $schedule?->exists && $previousGroups !== [] && $addedGroups !== []
                 && $schedule->courses->every(fn ($course) => $schedule->sectionsForCourse($course->id) !== [])
+                && $currentMajors === $nextMajors
                 && array_diff_key($previousGroups, $nextGroups) === [];
             $sameWindow = $schedule?->exists && $input['date'] === $schedule->date
                 && $input['start_time'] === $schedule->start_time && $input['end_time'] === $schedule->end_time;
@@ -288,7 +300,7 @@ class AdminController extends Controller
                 $this->assertNoScheduleOverlap([...$input, 'course_sections' => $mapping], $courseIds, $schedule?->id);
             }
 
-            $input['title'] = $this->generatedScheduleTitle($courseIds, $input['year_levels'], $input['sections'], $mapping, $input['date']);
+            $input['title'] = $this->generatedScheduleTitle($courseIds, $input['year_levels'], $input['sections'], $mapping, $input['date'], $courseMajors);
             if ($schedule?->exists) {
                 Cfo::require(! $schedule->finalized_at && $schedule->status !== 'Cancelled', 'Completed and Cancelled schedules are view only.');
                 $limit = $input['slot_limit'] ?? 100000;
@@ -302,18 +314,21 @@ class AdminController extends Controller
                 $nextYears = collect($input['year_levels'])->sort()->values()->all();
                 $currentSections = collect($schedule->sections)->sort()->values()->all();
                 $nextSections = collect($input['sections'])->sort()->values()->all();
-                if (! $pureAddition && ($currentCourses !== $nextCourses || $currentYears !== $nextYears || $currentSections !== $nextSections
+                if (! $pureAddition && ($currentCourses !== $nextCourses || $currentYears !== $nextYears || $currentSections !== $nextSections || $currentMajors !== $nextMajors
                     || $this->normalizedCourseSections($this->scheduleCourseSections($schedule)) !== $this->normalizedCourseSections($mapping))) {
                     $names = DB::table('academic_options')->whereIn('id', $courseIds)->pluck('name');
                     $courseNames = DB::table('academic_options')->whereIn('id', $courseIds)->pluck('id', 'name');
-                    $excluded = $schedule->registrations()->with('user')->get()->contains(function ($registration) use ($names, $courseNames, $input, $mapping) {
+                    $excluded = $schedule->registrations()->with('user')->get()->contains(function ($registration) use ($names, $courseNames, $input, $mapping, $courseMajors) {
                         if (! $registration->user) {
                             return false;
                         }
                         $group = $registration->academicGroup();
                         $courseId = $courseNames[$group['course']] ?? null;
 
-                        return ! $names->contains($group['course']) || ! in_array($group['year_level'], $input['year_levels'], true)
+                        $requiredMajor = trim((string) ($courseMajors[(string) $courseId] ?? ''));
+
+                        return ! $names->contains($group['course']) || ($requiredMajor !== '' && strcasecmp($requiredMajor, trim((string) $registration->user->major)) !== 0)
+                            || ! in_array($group['year_level'], $input['year_levels'], true)
                             || ! in_array($group['section'], $this->mappedSections($mapping, $courseId, $group['year_level'], $input['sections']), true);
                     });
                     Cfo::require(! $excluded, 'These course, year level or section changes would exclude assigned students. Keep their eligibility or reassign them first.');
@@ -389,6 +404,11 @@ class AdminController extends Controller
                 }
                 foreach ($other->courses as $course) {
                     if (! in_array((int) $course->id, array_map('intval', $courseIds), true)) {
+                        continue;
+                    }
+                    $nextMajor = trim((string) (($input['course_majors'] ?? [])[(string) $course->id] ?? ''));
+                    $otherMajor = trim((string) $other->majorForCourse($course->id));
+                    if ($nextMajor !== '' && $otherMajor !== '' && strcasecmp($nextMajor, $otherMajor) !== 0) {
                         continue;
                     }
                     foreach ($years as $year) {
@@ -545,17 +565,18 @@ class AdminController extends Controller
         }
     }
 
-    private function generatedScheduleTitle(array $courseIds, array $years, array $sections, array $mapping, string $date): string
+    private function generatedScheduleTitle(array $courseIds, array $years, array $sections, array $mapping, string $date, array $courseMajors = []): string
     {
         $yearLabels = array_map(fn ($year) => in_array($year, ['1', '2', '3', '4'], true)
             ? $year.['1' => 'st', '2' => 'nd', '3' => 'rd', '4' => 'th'][$year].' Year' : $year, $years);
         $suffix = ' – '.$date;
         $prefix = $this->shortenGeneratedTitle('Recollection – '.implode(', ', $yearLabels), 190 - $this->titleLength($suffix) - 4).' – ';
         $names = DB::table('academic_options')->whereIn('id', $courseIds)->orderBy('name')->get(['id', 'name']);
-        $description = $names->map(function ($course) use ($mapping, $sections, $years) {
+        $description = $names->map(function ($course) use ($mapping, $sections, $years, $courseMajors) {
             $selected = $mapping[$course->id] ?? $sections;
+            $courseName = $course->name.(! empty($courseMajors[(string) $course->id]) ? ' ('.$courseMajors[(string) $course->id].')' : '');
             if (! $this->isYearBlockSections($selected)) {
-                return $course->name.' '.implode(', ', $selected);
+                return $courseName.' '.implode(', ', $selected);
             }
             $groups = [];
             foreach ($years as $year) {
@@ -564,7 +585,7 @@ class AdminController extends Controller
                 }
             }
 
-            return $course->name.' '.implode(', ', $groups);
+            return $courseName.' '.implode(', ', $groups);
         })->implode(' / ');
 
         return $prefix.$this->shortenGeneratedTitle($description, 190 - $this->titleLength($prefix) - $this->titleLength($suffix)).$suffix;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\RegistrationVerificationCode;
 use App\Models\PasswordResetRequest;
 use App\Models\User;
+use App\Services\AcademicCatalog;
 use App\Services\AccountId;
 use App\Services\CfoService as Cfo;
 use App\Services\RecoveryRequestLimiter;
@@ -103,6 +104,11 @@ class AuthController extends Controller
             'student_id' => ['bail', 'required', 'string', 'regex:'.AccountId::PATTERN, 'unique:users'],
             'first_name' => ['required', 'string', 'max:80'], 'middle_name' => ['nullable', 'string', 'max:80'],
             'last_name' => ['required', 'string', 'max:80'], 'email' => ['required', 'email', 'ends_with:@gmail.com', 'max:190', 'unique:users'],
+            'department' => ['required', 'string', 'max:190'],
+            'course' => ['required', 'string', 'max:190'],
+            'major' => ['nullable', 'string', 'max:190'],
+            'year_level' => ['required', Rule::in(config('academic-programs.year_levels', []))],
+            'section' => ['required', Rule::in(config('academic-programs.sections', []))],
             'password' => ['required', 'confirmed', self::passwordRule()],
             'role' => ['sometimes', Rule::in([User::ROLE_STUDENT])],
         ], ['student_id.regex' => AccountId::MESSAGE, 'email.ends_with' => 'Enter a valid Gmail address ending in @gmail.com.']);
@@ -111,6 +117,7 @@ class AuthController extends Controller
             throw ValidationException::withMessages(['email' => 'Verify this Gmail address before creating your account.']);
         }
         $input['email'] = $normalizedEmail;
+        $input = [...$input, ...AcademicCatalog::normalizeSelection($input)];
         $input['role'] = User::ROLE_STUDENT;
         $input['original_email'] = $normalizedEmail;
         $input['login_email'] = Str::before($normalizedEmail, '@').'@cfo.office.com';

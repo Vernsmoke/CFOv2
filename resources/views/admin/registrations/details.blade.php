@@ -1,6 +1,6 @@
 @php
     $details = $registration->details ?? [];
-    $group = $registration->academicGroup();
+    $group = $registration->academicProfile();
     $value = fn ($key, $fallback = '—') => isset($details[$key]) && is_scalar($details[$key]) && trim((string) $details[$key]) !== '' ? (string) $details[$key] : $fallback;
     $consented = fn ($key) => in_array($details[$key] ?? null, [true, 1, '1', 'yes', 'on'], true);
     $canSchedule = $registration->receipt_status === 'Approved' && $registration->has_receipt;
@@ -20,7 +20,9 @@
                     <div><dt>Nickname:</dt><dd>{{ $value('nickname') }}</dd></div>
                     <div><dt>Age:</dt><dd>{{ $value('age') }}</dd></div>
                     <div><dt>Sex:</dt><dd>{{ $value('sex') }}</dd></div>
+                    <div class="field-wide"><dt>Department:</dt><dd>{{ $group['department'] ?: '—' }}</dd></div>
                     <div class="field-wide"><dt>Course/Program:</dt><dd>{{ $group['course'] ?: '—' }}</dd></div>
+                    @if($group['major'])<div class="field-wide"><dt>Major:</dt><dd>{{ $group['major'] }}</dd></div>@endif
                     <div><dt>Yr. / Section:</dt><dd>{{ ($group['year_level'] ?? '').($group['section'] ?? '') ?: '—' }}</dd></div>
                     <div class="field-wide"><dt>Email:</dt><dd>{{ $value('email', $registration->user->original_email ?: $registration->user->email) }}</dd></div>
                     <div class="field-wide"><dt>Contact Number:</dt><dd>{{ $value('phone') }}</dd></div>

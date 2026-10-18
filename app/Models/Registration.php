@@ -60,6 +60,19 @@ class Registration extends Model
             'section' => $section ?? (isset($legacy[2]) ? strtoupper($legacy[2]) : null)
                 ?? (isset($snapshotLegacy[2]) ? strtoupper($snapshotLegacy[2]) : null) ?? $value($snapshot['section'] ?? null) ?? $value($student?->section)];
     }
+    public function academicProfile(): array
+    {
+        $details = $this->details ?? [];
+        $snapshot = $this->student_snapshot ?? [];
+        $student = $this->user;
+        $value = static fn ($value) => is_scalar($value) && trim((string) $value) !== '' ? trim((string) $value) : null;
+
+        return [
+            'department' => $value($details['department'] ?? null) ?? $value($snapshot['department'] ?? null) ?? $value($student?->department),
+            ...$this->academicGroup(),
+            'major' => $value($details['major'] ?? null) ?? $value($snapshot['major'] ?? null) ?? $value($student?->major),
+        ];
+    }
     public function certificate() { return $this->hasOne(Certificate::class)->whereNull('revoked_at'); }
     public function certificateRecord() { return $this->hasOne(Certificate::class); }
     public function changes() { return $this->hasMany(ScheduleChange::class)->with(['currentSchedule', 'requestedSchedule', 'assignedSchedule']); }
@@ -85,8 +98,10 @@ class Registration extends Model
                 $details = $registration->details ?? [];
                 $registration->student_snapshot = $student ? [
                     'name' => $details['name'] ?? $student->name,
+                    'department' => $details['department'] ?? $student->department,
                     'student_id' => $student->student_id,
                     'course' => $details['course'] ?? $student->course,
+                    'major' => $details['major'] ?? $student->major,
                     'year_level' => $details['yearLevel'] ?? $student->year_level,
                     'section' => $details['section'] ?? $student->section,
                     'submitted_year_section' => $details['yearSection'] ?? null,

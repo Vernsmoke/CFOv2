@@ -159,10 +159,10 @@
 
   function profileHtml(state, user) {
     const line = (label, value) => `<div class="profile-line"><label>${label}</label><strong>${value}</strong></div>`;
-    const course = [user.course, user.year_level, user.section].filter(Boolean).join(' · ') || '—';
+    const yearSection = [user.year_level, user.section].filter(Boolean).join(' / ') || 'Not recorded';
     return wrap('profile', `${heading('STUDENT ACCOUNT', 'my-profile-title', 'My Profile', 'View your account and academic information.', '<button class="btn" type="button" id="profileEditBtn">Edit Basic Information</button>')}
     <div class="profile-grid"><div class="profile-summary"><div class="big-avatar">${esc(initials(user))}</div><h2>${esc(user.name)}</h2><p>Student ID: ${esc(user.student_id || '—')}</p><p style="margin-top:7px">Account status: ${esc(user.status || '—')}</p></div>
-    <div class="panel" style="margin:0"><div class="panel-head"><div><h2>Personal Information</h2><p>Your saved account details.</p></div></div><div class="panel-body"><div class="profile-list">${line('Full Name', esc(user.name))}${line('Registered Gmail', mail(user.email))}${line('Login Email', mail(user.login_email || user.system_username || user.email))}${line('Course / Year / Section', esc(course))}</div></div></div></div>
+    <div class="panel" style="margin:0"><div class="panel-head"><div><h2>Personal Information</h2><p>Your saved account details.</p></div></div><div class="panel-body"><div class="profile-list">${line('Full Name', esc(user.name))}${line('Registered Gmail', mail(user.email))}${line('Login Email', mail(user.login_email || user.system_username || user.email))}${line('Department', esc(user.department || 'Not recorded'))}${line('Course / Program', esc(user.course || 'Not recorded'))}${user.major ? line('Major', esc(user.major)) : ''}${line('Year Level / Section', esc(yearSection))}</div></div></div></div>
     `);
   }
 

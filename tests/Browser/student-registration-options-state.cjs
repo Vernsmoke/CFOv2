@@ -88,6 +88,22 @@ const escaped=run('recollectionAcademicFieldsHtml()');
 assert.doesNotMatch(escaped,/<img\b/);
 assert.match(escaped,/&lt;img src=x&gt; &amp; &quot;Tech&quot;/);
 
+// The supplied catalog adds a department > course > optional major dependency over the schedule choices.
+context.window.CFO_BACKEND.academic_catalog={departments:[
+  {name:'College of Information Technology',courses:[{name:'BSIT',majors:[]}]},
+  {name:'College of Business Education',courses:[{name:'BSA',majors:['Marketing Management','Financial Management']}]},
+],year_levels:yearOptions,sections:sectionOptions};
+run("recollectionState.values={...recollectionState.values,department:'College of Business Education',course:'BSA',major:'Marketing Management',yearLevel:'2',section:'B',yearSection:'2B'}");
+assert.deepEqual(plain('recollectionAcademicFieldNames()'),['department','course','major','yearLevel','section']);
+assert.deepEqual(plain('recollectionAcademicChoices().course'),['BSA']);
+assert.deepEqual(plain('recollectionAcademicChoices().major'),['Marketing Management','Financial Management']);
+form=academicForm();context.form=form;run('bindRecollectionAcademicFields(form)');
+choose('department','College of Information Technology');
+assert.equal(run('recollectionState.values.course'),'','Changing department clears the course.');
+assert.equal(run('recollectionState.values.major'),'','Changing department clears the major.');
+assert.deepEqual(plain('recollectionAcademicChoices().course'),['BSIT']);
+context.window.CFO_BACKEND.academic_catalog=null;
+
 // Run the live-refresh entry point with a dirty form; options update independently of route rendering.
 const refreshStart=source.indexOf('let studentLiveVersions='),refreshEnd=source.indexOf("document.addEventListener('focusout'",refreshStart);
 assert.ok(refreshStart>0&&refreshEnd>refreshStart);

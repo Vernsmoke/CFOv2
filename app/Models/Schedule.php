@@ -11,7 +11,7 @@ class Schedule extends Model
     protected $hidden = ['theme', 'facilitator', 'description'];
     protected $attributes = ['active' => true];
     private bool $statusExplicitlyAssigned = false;
-    protected $casts = ['active' => 'boolean', 'capacity' => 'integer', 'slot_limit' => 'integer', 'year_levels' => 'array', 'sections' => 'array'];
+    protected $casts = ['active' => 'boolean', 'capacity' => 'integer', 'slot_limit' => 'integer', 'year_levels' => 'array', 'sections' => 'array', 'course_majors' => 'array'];
     protected $appends = ['time', 'year', 'display_status', 'course_sections', 'course_sections_by_year'];
     public function getTimeAttribute(): string { return $this->start_time.' – '.$this->end_time; }
     public function getYearAttribute(): int { return (int) substr($this->date, 0, 4); }
@@ -110,10 +110,27 @@ class Schedule extends Model
         return $this->includesSection($section);
     }
 
+    public function majorForCourse(int|string $courseId): ?string
+    {
+        $major = trim((string) (($this->course_majors ?? [])[(string) $courseId] ?? ''));
+
+        return $major === '' ? null : $major;
+    }
+
+    public function includesMajorForCourse(?string $courseName, ?string $major): bool
+    {
+        $course = $this->courses->first(fn ($item) => strcasecmp(trim($item->name), trim((string) $courseName)) === 0);
+        $required = $course ? $this->majorForCourse($course->id) : null;
+
+        return $required === null || strcasecmp($required, trim((string) $major)) === 0;
+    }
+
     public function allowsAcademicGroup(User $student): bool
     {
         if ($this->hasCourseSections() && ! $this->courses->contains('name', $student->course)) return false;
-        return $this->includesYearLevel($student->year_level) && $this->includesSectionForCourse($student->course, $student->section, $student->year_level);
+        return $this->includesMajorForCourse($student->course, $student->major)
+            && $this->includesYearLevel($student->year_level)
+            && $this->includesSectionForCourse($student->course, $student->section, $student->year_level);
     }
     protected static function booted(): void
     {

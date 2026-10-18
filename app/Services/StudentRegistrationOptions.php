@@ -25,9 +25,11 @@ class StudentRegistrationOptions
         $groups = [];
         foreach ($schedules ?? self::schedules() as $schedule) {
             foreach ($schedule->courses as $course) {
+                $major = $schedule->majorForCourse($course->id);
                 foreach ($schedule->year_levels as $year) {
                     foreach ($schedule->sectionsForCourse($course->id, $year) as $section) {
                         $group = ['course' => $course->name, 'yearLevel' => (string) $year, 'section' => (string) $section];
+                        if ($major !== null) $group['major'] = $major;
                         $groups[json_encode(array_values($group))] = $group;
                     }
                 }
@@ -39,9 +41,13 @@ class StudentRegistrationOptions
 
     public static function normalize(array $details): array
     {
+        $details = AcademicCatalog::normalizeIfCatalogCourse($details, 'details.');
         $groups = self::groups();
         $courses = array_filter($groups, fn ($group) => strcasecmp($group['course'], $details['course']) === 0);
         $matches = array_values(array_filter($courses, function ($group) use ($details) {
+            if (($group['major'] ?? null) !== null && strcasecmp($group['major'], trim((string) ($details['major'] ?? ''))) !== 0) {
+                return false;
+            }
             if (isset($details['yearLevel'], $details['section'])) {
                 return strcasecmp($group['yearLevel'], $details['yearLevel']) === 0
                     && strcasecmp($group['section'], $details['section']) === 0

@@ -6,6 +6,7 @@ use App\Models\Certificate;
 use App\Models\Registration;
 use App\Models\Schedule;
 use App\Models\User;
+use App\Services\AcademicCatalog;
 use App\Services\AutomaticCertificate;
 use App\Services\CertificateTemplate;
 use Illuminate\Http\Request;
@@ -23,7 +24,11 @@ class PageController extends Controller
             return redirect($request->user()->hasOfficeAccess() ? '/admin' : '/student#dashboard');
         }
 
-        return view('login-create-forgotpassword', ['cfoBackend' => ['user' => null, 'csrf_token' => csrf_token()]]);
+        return view('login-create-forgotpassword', ['cfoBackend' => [
+            'user' => null,
+            'csrf_token' => csrf_token(),
+            'academic_catalog' => AcademicCatalog::frontend(),
+        ]]);
     }
 
     public function forcePassword(Request $request)
@@ -42,6 +47,7 @@ class PageController extends Controller
         return response()->view($request->user()->hasOfficeAccess() ? 'admin' : 'student.index', ['cfoBackend' => [
             'user' => $request->user(),
             'csrf_token' => csrf_token(),
+            'academic_catalog' => AcademicCatalog::frontend(),
             ...($request->user()->hasOfficeAccess() ? ['notice' => $request->session()->get('schedule_notice')] : []),
             'live_transport' => config('cfo.live_transport'),
         ]])->header('Cache-Control', 'no-store');
@@ -75,6 +81,7 @@ class PageController extends Controller
 
         return response()->view('admin', ['cfoBackend' => [
             'user' => $request->user(), 'csrf_token' => csrf_token(), 'edit_schedule' => $schedule,
+            'academic_catalog' => AcademicCatalog::frontend(),
             'live_transport' => config('cfo.live_transport'),
         ]])->header('Cache-Control', 'no-store');
     }

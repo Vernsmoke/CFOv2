@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Services\AcademicCatalog;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -49,6 +50,8 @@ class SaveRecollectionScheduleRequest extends FormRequest
             'venue' => 'required|string|max:190', 'slot_limit' => 'nullable|integer|min:1|max:100000',
             'course_ids' => 'required|array|min:1',
             'course_ids.*' => ['required', 'integer', 'distinct', Rule::exists('academic_options', 'id')->where('type', 'course')],
+            'course_majors' => 'sometimes|array',
+            'course_majors.*' => 'nullable|string|max:190',
             'year_level' => $this->exists('year_levels') ? ['exclude'] : ['required', 'string', 'max:190', Rule::in($yearLevels)],
             'section' => $this->exists('sections') || $mappedSections ? ['exclude'] : ['required', 'string', 'max:190', Rule::in($sections)],
             'year_levels' => 'sometimes|required|array|min:1',
@@ -63,7 +66,7 @@ class SaveRecollectionScheduleRequest extends FormRequest
             'course_sections_by_year.*.*' => 'required|array|min:1',
             'course_sections_by_year.*.*.*' => 'required|string|max:190',
             'course_groups' => $this->route('schedule') === null ? ['sometimes', 'required', 'array', 'min:1'] : ['exclude'],
-            'course_groups.*' => $this->route('schedule') === null ? ['required', 'array:course_id,year_level,sections'] : ['exclude'],
+            'course_groups.*' => $this->route('schedule') === null ? ['required', 'array:course_id,year_level,sections,major'] : ['exclude'],
             'course_groups.*.course_id' => ['required', 'integer', Rule::exists('academic_options', 'id')->where('type', 'course')],
             'course_groups.*.year_level' => ['required', 'string', 'max:190', Rule::in($yearLevels)],
             'course_groups.*.sections' => 'required|array|min:1',
@@ -79,6 +82,27 @@ class SaveRecollectionScheduleRequest extends FormRequest
             if ($this->route('schedule') === null && $this->input('save_action') === 'publish'
                 && $this->input('status') === 'Draft') {
                 $validator->errors()->add('status', 'Choose Open for Registration or Closed before publishing. Draft schedules cannot be published.');
+            }
+            if ($this->exists('course_majors') && ! $validator->errors()->hasAny(['course_ids', 'course_ids.*', 'course_majors', 'course_majors.*'])) {
+                $selectedIds = array_map('strval', $this->input('course_ids', []));
+                $names = DB::table('academic_options')->whereIn('id', $selectedIds)->pluck('name', 'id');
+                $catalog = collect(AcademicCatalog::courses())->keyBy(fn (array $course) => mb_strtolower(trim($course['name'])));
+                foreach ($selectedIds as $courseId) {
+                    $course = $catalog->get(mb_strtolower(trim((string) ($names[$courseId] ?? ''))));
+                    if (! $course) continue;
+                    $majors = $course['majors'] ?? [];
+                    $major = trim((string) $this->input('course_majors.'.$courseId, ''));
+                    if ($majors !== [] && ! collect($majors)->contains(fn (string $item) => strcasecmp($item, $major) === 0)) {
+                        $validator->errors()->add('course_majors.'.$courseId, 'Select a major offered by the chosen course.');
+                    } elseif ($majors === [] && $major !== '') {
+                        $validator->errors()->add('course_majors.'.$courseId, 'This course does not require a major.');
+                    }
+                }
+                foreach (array_keys($this->input('course_majors', [])) as $courseId) {
+                    if (! in_array((string) $courseId, $selectedIds, true)) {
+                        $validator->errors()->add('course_majors.'.$courseId, 'A major can only be assigned to a selected course.');
+                    }
+                }
             }
             if ($this->route('schedule') !== null || ! $this->exists('course_groups') || $validator->errors()->isNotEmpty()) {
                 return;

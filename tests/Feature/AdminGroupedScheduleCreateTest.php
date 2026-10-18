@@ -94,6 +94,39 @@ class AdminGroupedScheduleCreateTest extends TestCase
         $this->assertDatabaseHas('activity_logs', ['action' => 'schedule.saved', 'record_id' => $schedule->id]);
     }
 
+    public function test_catalog_major_is_validated_saved_and_limits_student_eligibility(): void
+    {
+        $business = AcademicOption::create([
+            'type' => 'course',
+            'name' => 'Bachelor of Science in Business Administration',
+        ]);
+        $mapping = [$business->id => ['3' => ['A']]];
+        $input = $this->input([
+            'course_majors' => [(string) $business->id => 'Marketing Management'],
+        ], $mapping);
+
+        $response = $this->postJson('/api/admin/schedules', $input)
+            ->assertOk()
+            ->assertJsonPath('course_majors.'.(string) $business->id, 'Marketing Management');
+
+        $schedule = Schedule::with('courses')->findOrFail($response->json('id'));
+        $this->assertSame('Marketing Management', $schedule->majorForCourse($business->id));
+        $this->assertTrue($schedule->allowsAcademicGroup(User::factory()->create([
+            'role' => 'Student', 'status' => 'Approved', 'course' => $business->name,
+            'major' => 'Marketing Management', 'year_level' => '3', 'section' => 'A',
+        ])));
+        $this->assertFalse($schedule->allowsAcademicGroup(User::factory()->create([
+            'role' => 'Student', 'status' => 'Approved', 'course' => $business->name,
+            'major' => 'Financial Management', 'year_level' => '3', 'section' => 'A',
+        ])));
+
+        $this->postJson('/api/admin/schedules', [...$input,
+            'venue' => 'Second Hall',
+            'date' => today()->addDays(4)->toDateString(),
+            'course_majors' => [(string) $business->id => 'Invalid Major'],
+        ])->assertUnprocessable()->assertJsonValidationErrors('course_majors.'.$business->id);
+    }
+
     public function test_generated_titles_fit_the_database_and_follow_date_changes_without_client_titles(): void
     {
         $mapping = [$this->it->id => ['2' => ['A', 'B']], $this->nursing->id => ['3' => ['C']]];

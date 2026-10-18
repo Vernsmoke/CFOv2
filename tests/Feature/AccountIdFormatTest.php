@@ -13,7 +13,7 @@ class AccountIdFormatTest extends TestCase
 
     private function account(string $role, mixed $id, string $email = 'format@gmail.com'): array
     {
-        return ['role' => $role, 'student_id' => $id, 'first_name' => 'Format', 'last_name' => $role,
+        return [...$this->studentAcademicSelection(), 'role' => $role, 'student_id' => $id, 'first_name' => 'Format', 'last_name' => $role,
             'email' => $email, 'password' => 'CfoTest!234', 'password_confirmation' => 'CfoTest!234'];
     }
 

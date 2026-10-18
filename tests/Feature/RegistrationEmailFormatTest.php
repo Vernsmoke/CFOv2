@@ -12,7 +12,7 @@ class RegistrationEmailFormatTest extends TestCase
 
     private function account(string $role, string $email): array
     {
-        return ['role' => $role, 'student_id' => $role === 'Admin' ? '24-10724' : '24-10723',
+        return [...$this->studentAcademicSelection(), 'role' => $role, 'student_id' => $role === 'Admin' ? '24-10724' : '24-10723',
             'first_name' => 'Gmail', 'last_name' => $role, 'email' => $email,
             'password' => 'CfoTest!234', 'password_confirmation' => 'CfoTest!234'];
     }

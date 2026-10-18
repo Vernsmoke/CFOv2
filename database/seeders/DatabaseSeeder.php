@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(AcademicCatalogSeeder::class);
+
         if (config('cfo.demo_accounts.enabled')) {
             $this->call(DemoAccountSeeder::class);
 

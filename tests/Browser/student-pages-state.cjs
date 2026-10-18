@@ -172,10 +172,12 @@ function announcementChecks() {
 async function profileChecks() {
   const t = setup(), {C} = t;
   const user = {name: 'Juan Cruz', first_name: 'Juan', middle_name: '', last_name: 'Cruz', email: 'juan@gmail.com', login_email: 'juan@cfo.office.com',
-    course: 'BSIT', year_level: '2', section: 'A', student_id: 'ST-1', status: 'Approved'};
+    department: 'College of Business Education', course: 'Bachelor of Science in Business Administration', major: 'Marketing Management',
+    year_level: '2', section: 'A', student_id: 'ST-1', status: 'Approved'};
   t.window.CFO_BACKEND.user = user;
   const html = C.pageHtml('profile', {}, user);
-  assert.match(html, /BSIT · 2 · A/); assert.match(html, /masked:juan@gmail.com/); assert.match(html, /Student ID: ST-1/);
+  assert.match(html, /College of Business Education/); assert.match(html, /Bachelor of Science in Business Administration/);
+  assert.match(html, /Marketing Management/); assert.match(html, /2 \/ A/); assert.match(html, /masked:juan@gmail.com/); assert.match(html, /Student ID: ST-1/);
   const page = t.page(['#profileEditBtn']), requests = [], reviews = [];
   let error, result = {user: {...user, name: 'Maria Cruz', first_name: 'Maria'}}, refreshes = 0, task;
   const context = {user, showNotice: t.showNotice, refresh: () => { refreshes++; }, request: async (...args) => {

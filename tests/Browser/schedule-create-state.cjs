@@ -19,6 +19,11 @@ const configuredState = {...state, course_year_sections: [
     ...['A', 'B'].map((section, index) => ({id: index + 1, course_id: 11, year_level: '3', section})),
     ...['A', 'B', 'C'].map((section, index) => ({id: index + 3, course_id: 12, year_level: '3', section})),
 ]};
+const catalogState = {
+    ...configuredState,
+    academic_options: [...configuredState.academic_options, {id: 50, type: 'course', name: 'Bachelor of Science in Business Administration'}],
+    academic_catalog: {departments: [{name: 'College of Business Education', courses: [{name: 'Bachelor of Science in Business Administration', majors: ['Marketing Management', 'Financial Management']}]}]},
+};
 // Legacy helper inputs stay supported while Create and Edit share the course-card renderer.
 const valid = {course_ids: ['11'], year_levels: ['3'], sections: ['A'], date: '2026-10-20', start_time: '08:00', end_time: '16:00', venue: 'University Gymnasium', slot_limit: '', status: 'Open for Registration'};
 const check = (changes = {}, schedules = [], references = state) => api.evaluate({...valid, ...changes}, {...references, schedules});
@@ -45,6 +50,10 @@ assert.equal(api.evaluate(groupedValid, emptyReferences).canSave, true, 'The bas
 assert.equal(createCheck({course_groups: [{course_id: '11', year_level: '2', sections: ['Z']}]}, [], emptyReferences).canSave, true);
 assert.deepEqual(createBody({course_groups: [{course_id: '11', year_level: '2', sections: ['Z']}]}, 'publish', emptyReferences).course_sections_by_year, {'11': {'2': ['Z']}});
 assert.equal(createCheck().canSave, true);
+const majorSchedule = {...groupedValid, course_groups: [{department: 'College of Business Education', course_id: '50', major: 'Marketing Management', year_level: '3', sections: ['A']}]} ;
+assert.equal(api.evaluate(majorSchedule, catalogState).canSave, true, 'A catalog course is valid after selecting its required major');
+assert.equal(api.evaluate({...majorSchedule, course_groups: [{...majorSchedule.course_groups[0], major: ''}]}, catalogState).majorValid, false, 'A course that offers majors remains locked until a major is selected');
+assert.deepEqual(plain(api.payload(majorSchedule, catalogState).course_majors), {'50': 'Marketing Management'});
 assert.equal(createCheck({status: 'Closed'}).canSave, true);
 assert.equal(createBody({status: 'Closed'}, 'publish').status, 'Closed');
 assert.equal(createBody({status: 'Closed'}, 'publish').active, false);
@@ -121,15 +130,23 @@ assert.equal(createCheck({}, [mappedSchedule]).canSave, true, 'BSIT 3A must not 
 assert.equal(api.evaluate(twoCards, {...configuredState, schedules: [mappedSchedule]}).studentConflicts.length, 1, 'All cards participate in exact course/year/section conflict checks');
 assert.equal(api.evaluate({...twoCards, course_groups: [{course_id: '11', year_level: '2', sections: ['B']}, {course_id: '12', year_level: '3', sections: ['A']}]}, {...configuredState, schedules: [mappedSchedule]}).studentConflicts.length, 0);
 const restoredNew = plain(api.restoreDraft({...twoCards, draft_version: 2, ignored: 'unsaved'}, configuredState));
-assert.deepEqual(restoredNew.course_groups, twoCards.course_groups); assert.equal(Object.hasOwn(restoredNew, 'ignored'), false);
+assert.deepEqual(restoredNew.course_groups, [
+    {department: 'Other / Legacy Courses', course_id: '11', major: '', year_level: '2', sections: ['A', 'B']},
+    {department: 'Other / Legacy Courses', course_id: '12', major: '', year_level: '3', sections: ['B', 'C']},
+]); assert.equal(Object.hasOwn(restoredNew, 'ignored'), false);
 const restoredLegacy = plain(api.restoreDraft({...valid, course_ids: [11, 12], year_levels: ['2', '3'], course_sections: {'11': ['A', 'B', 'C'], '12': ['B', 'C']}, status: 'Closed'}, configuredState));
-assert.deepEqual(restoredLegacy.course_groups, [{course_id: '11', year_level: '2', sections: ['A', 'B', 'C']}, {course_id: '11', year_level: '3', sections: ['A', 'B']}, {course_id: '12', year_level: '2', sections: ['B', 'C']}, {course_id: '12', year_level: '3', sections: ['B', 'C']}]);
+assert.deepEqual(restoredLegacy.course_groups, [
+    {department: 'Other / Legacy Courses', course_id: '11', major: '', year_level: '2', sections: ['A', 'B', 'C']},
+    {department: 'Other / Legacy Courses', course_id: '11', major: '', year_level: '3', sections: ['A', 'B']},
+    {department: 'Other / Legacy Courses', course_id: '12', major: '', year_level: '2', sections: ['B', 'C']},
+    {department: 'Other / Legacy Courses', course_id: '12', major: '', year_level: '3', sections: ['B', 'C']},
+]);
 assert.equal(restoredLegacy.status, 'Closed', 'Closed draft values are retained instead of converted to Draft');
 assert.equal(api.restoreDraft({status: 'Open'}, state).status, 'Open for Registration');
 assert.equal(api.restoreDraft({status: 'Unknown'}, state).status, 'Open for Registration');
-for (const broken of [null, 'broken draft', {course_groups: []}]) assert.deepEqual(plain(api.restoreDraft(broken, state).course_groups), [{course_id: '', year_level: '', sections: []}]);
+for (const broken of [null, 'broken draft', {course_groups: []}]) assert.deepEqual(plain(api.restoreDraft(broken, state).course_groups), [{department: '', course_id: '', major: '', year_level: '', sections: []}]);
 const filteredDraft = plain(api.restoreDraft({...groupedValid, course_groups: [{course_id: '11', year_level: '3', sections: ['A', 'A', 'C']}, {course_id: 'deleted', year_level: '3', sections: ['A']}], slot_limit: '75'}, configuredState));
-assert.deepEqual(filteredDraft.course_groups[0], {course_id: '11', year_level: '3', sections: ['A']}); assert.equal(filteredDraft.slot_limit, '75');
+assert.deepEqual(filteredDraft.course_groups[0], {department: 'Other / Legacy Courses', course_id: '11', major: '', year_level: '3', sections: ['A']}); assert.equal(filteredDraft.slot_limit, '75');
 const copyBody = plain(api.payload(twoCards, configuredState)); copyBody.course_sections_by_year['11']['2'].push('C'); assert.deepEqual(twoCards.course_groups[0].sections, ['A', 'B']);
 assert.equal(createCheck({date: '2028-02-29'}).dateValid, true);
 for (const date of ['2026-02-29', '2026-04-31', '2026-13-01', '2026-00-20', '2026-10-00', '2026-1-20', 'not a date']) { assert.equal(createCheck({date}).dateValid, false); assert.equal(api.formatDate(date), 'Not set'); }
@@ -253,7 +270,10 @@ async function verifyCreateHandlers() {
     const mounted = mountedForm();
     assert.match(mounted.root.innerHTML, /data-sb-course-groups/); assert.match(mounted.root.innerHTML, /Add Another Course Group/);
     assert.match(mounted.root.innerHTML, /<option[^>]*>Closed<\/option>/);
-    assert.equal(mounted.cards.size, 2); assert.deepEqual(plain(mounted.instance.read().course_groups), twoCards.course_groups);
+    assert.equal(mounted.cards.size, 2); assert.deepEqual(plain(mounted.instance.read().course_groups), [
+        {department: 'Other / Legacy Courses', course_id: '11', major: '', year_level: '2', sections: ['A', 'B']},
+        {department: 'Other / Legacy Courses', course_id: '12', major: '', year_level: '3', sections: ['B', 'C']},
+    ]);
     assert.match(mounted.get('[data-sb-summary]').innerHTML, /BSIT/); assert.match(mounted.get('[data-sb-summary]').innerHTML, /BSN/);
     assert.match(mounted.get('[data-sb-summary]').innerHTML, /2nd Year/); assert.match(mounted.get('[data-sb-summary]').innerHTML, /3rd Year/);
     assert.deepEqual(summaryCourseGroups(mounted), [
@@ -271,13 +291,23 @@ async function verifyCreateHandlers() {
     mounted.select(0, 'sbGroupSelectAll', '');
     mounted.change('venue', 'New venue');
     assert.equal(JSON.parse(mounted.entries.get(mounted.key)).venue, 'New venue');
-    assert.equal(JSON.parse(mounted.entries.get(mounted.key)).draft_version, 2);
+    assert.equal(JSON.parse(mounted.entries.get(mounted.key)).draft_version, 3);
     mounted.click('[data-sb-draft]'); assert.equal(mounted.saves.length, 1); assert.equal(mounted.saves[0].body.status, 'Draft'); assert.equal(mounted.saves[0].body.active, false);
     assert.deepEqual(mounted.saves[0].body.course_sections_by_year, {'11': {'2': alphabet}, '12': {'3': ['B', 'C']}});
     assert.equal(mounted.entries.has(mounted.key), true); assert.equal(mounted.navigations(), 0);
     mounted.saves[0].onSaved(); assert.equal(mounted.entries.has(mounted.key), false); assert.equal(mounted.navigations(), 1);
     const incomplete = mountedForm(null); assert.equal(incomplete.cards.size, 1); incomplete.click('[data-sb-draft]'); assert.equal(incomplete.saves.length, 0); assert.equal(incomplete.error.hidden, false);
     assert.match(incomplete.cards.get('0').html, /data-sb-remove-group="0" disabled/);
+    const catalogMounted = mountedForm(null, false, catalogState);
+    assert.equal(cardControl(catalogMounted, 0, 'sbGroupCourse').disabled, true, 'Course starts locked until a department is selected');
+    assert.equal(cardControl(catalogMounted, 0, 'sbGroupMajor').disabled, true, 'Major starts locked until a course is selected');
+    catalogMounted.select(0, 'sbGroupDepartment', 'College of Business Education');
+    assert.equal(cardControl(catalogMounted, 0, 'sbGroupCourse').disabled, false); assert.match(catalogMounted.cards.get('0').html, /Bachelor of Science in Business Administration/);
+    catalogMounted.select(0, 'sbGroupCourse', '50');
+    assert.equal(cardControl(catalogMounted, 0, 'sbGroupMajor').disabled, false, 'Major unlocks for a course that offers majors');
+    assert.ok(catalogMounted.cards.get('0').entries.filter(input => input.dataset.sbGroupYear !== undefined).every(input => input.disabled), 'Year stays locked until the required major is selected');
+    catalogMounted.select(0, 'sbGroupMajor', 'Marketing Management');
+    assert.ok(catalogMounted.cards.get('0').entries.filter(input => input.dataset.sbGroupYear !== undefined).every(input => !input.disabled), 'Year unlocks after the academic path is complete');
     incomplete.click('[data-sb-remove-group]', {sbRemoveGroup: '0'}, {disabled: true}); assert.equal(incomplete.confirmDialog.open, false); assert.equal(incomplete.instance.read().course_groups.length, 1, 'At least one card remains');
     assertCardRanges(incomplete, 0);
     assert.ok(incomplete.cards.get('0').entries.filter(input => input.dataset.sbGroupSection !== undefined).every(input => input.disabled), 'A–Z is visible but unavailable until course/year are chosen');
@@ -308,18 +338,18 @@ async function verifyCreateHandlers() {
     assert.equal(duplicateCard.cards.get('1').entries.find(input => input.dataset.sbGroupYear !== undefined && input.value === '3').disabled, true, 'A repeated course/year pair is unavailable');
     assert.equal(duplicateCard.cards.get('1').entries.find(input => input.dataset.sbGroupYear !== undefined && input.value === '2').disabled, false, 'The same course can select another year');
     const adding = mountedForm(groupedValid); adding.click('[data-sb-add-group]');
-    assert.deepEqual(plain(adding.instance.read().course_groups[1]), {course_id: '', year_level: '', sections: []});
+    assert.deepEqual(plain(adding.instance.read().course_groups[1]), {department: '', course_id: '', major: '', year_level: '', sections: []});
     adding.select(1, 'sbGroupCourse', '12'); adding.select(1, 'sbGroupYear', '3'); adding.select(1, 'sbGroupSection', 'C');
-    assert.deepEqual(plain(adding.instance.read().course_groups[1]), {course_id: '12', year_level: '3', sections: ['C']});
-    adding.select(0, 'sbGroupYear', '2'); assert.deepEqual(plain(adding.instance.read().course_groups[1]), {course_id: '12', year_level: '3', sections: ['C']}, 'Each year control changes only its card');
+    assert.deepEqual(plain(adding.instance.read().course_groups[1]), {department: 'Other / Legacy Courses', course_id: '12', major: '', year_level: '3', sections: ['C']});
+    adding.select(0, 'sbGroupYear', '2'); assert.deepEqual(plain(adding.instance.read().course_groups[1]), {department: 'Other / Legacy Courses', course_id: '12', major: '', year_level: '3', sections: ['C']}, 'Each year control changes only its card');
     const publishingDraft = mountedForm({...twoCards, status: 'Draft'}); await publishingDraft.submit('publish'); assert.equal(publishingDraft.saves.length, 0); assert.match(publishingDraft.error.textContent, /Draft|draft|status|publish/);
     const publishingClosed = mountedForm({...twoCards, status: 'Closed'}); await publishingClosed.submit('publish'); assert.equal(publishingClosed.saves[0].body.status, 'Closed'); publishingClosed.saves[0].onSaved(); assert.equal(publishingClosed.navigations(), 1);
     const another = mountedForm({...twoCards, status: 'Draft'}); await another.submit('another'); assert.equal(another.saves[0].body.status, 'Draft'); assert.equal(another.instance.read().course_groups.length, 2);
-    another.saves[0].onSaved(); assert.deepEqual(plain(another.instance.read().course_groups), [{course_id: '', year_level: '', sections: []}]); assert.equal(another.instance.read().date, ''); assert.equal(another.form.dataset.dirty, 'false'); assert.equal(another.navigations(), 0);
+    another.saves[0].onSaved(); assert.deepEqual(plain(another.instance.read().course_groups), [{department: '', course_id: '', major: '', year_level: '', sections: []}]); assert.equal(another.instance.read().date, ''); assert.equal(another.form.dataset.dirty, 'false'); assert.equal(another.navigations(), 0);
     const reset = mountedForm(); reset.click('[data-sb-reset]'); assert.equal(reset.confirmDialog.open, true); assert.equal(reset.instance.read().course_groups.length, 2);
     reset.click('[data-sb-close-create-confirm]'); assert.equal(reset.confirmDialog.open, false); assert.equal(reset.instance.read().course_groups.length, 2);
     reset.click('[data-sb-reset]'); reset.confirmDialog.close(); assert.equal(reset.instance.read().course_groups.length, 2, 'Native Escape/backdrop dismissal retains the unfinished entry');
-    reset.click('[data-sb-reset]'); reset.click('[data-sb-create-confirm-action]'); assert.deepEqual(plain(reset.instance.read().course_groups), [{course_id: '', year_level: '', sections: []}]); assert.equal(reset.instance.read().date, '');
+    reset.click('[data-sb-reset]'); reset.click('[data-sb-create-confirm-action]'); assert.deepEqual(plain(reset.instance.read().course_groups), [{department: '', course_id: '', major: '', year_level: '', sections: []}]); assert.equal(reset.instance.read().date, '');
     const back = mountedForm(); back.change('venue', 'Unsaved venue'); back.click('[data-sb-create-back]'); assert.equal(back.confirmDialog.open, true); assert.equal(back.navigations(), 0); back.click('[data-sb-create-confirm-action]'); assert.equal(back.navigations(), 1);
     const serverRejected = mountedForm(); await serverRejected.submit('publish'); serverRejected.saves[0].onError({message: 'Rejected', errors: {venue: ['This venue is already reserved.']}}); assert.equal(serverRejected.error.hidden, false); assert.match(serverRejected.error.textContent, /venue is already reserved/); assert.equal(serverRejected.entries.has(serverRejected.key), true);
     const noStorage = mountedForm(twoCards, true); await noStorage.submit('publish'); assert.equal(noStorage.saves.length, 1);
@@ -332,7 +362,7 @@ async function verifyCreateHandlers() {
     addCourse.courseForm.elements.name.value = newCourse.name; await addCourse.courseForm.listeners.submit({preventDefault() {}, target: addCourse.courseForm});
     assert.equal(addCourse.courseDialog.open, false); assert.deepEqual(plain(requests[0]), {url: '/api/admin/academic-options', method: 'POST', body: {type: 'course', name: newCourse.name}});
     assert.equal(addCourse.instance.read().course_groups[2].course_id, '99', 'The real Add Course endpoint refreshes the chosen card');
-    assert.deepEqual(plain(addCourse.instance.read().course_groups.slice(0, 2)), twoCards.course_groups, 'Adding a database course retains other cards');
+    assert.deepEqual(plain(addCourse.instance.read().course_groups.slice(0, 2)), twoCards.course_groups.map(group => ({department: 'Other / Legacy Courses', major: '', ...group})), 'Adding a database course retains other cards');
 }
 
 async function verifyCourseManagement() {
@@ -372,7 +402,10 @@ async function verifyCourseManagement() {
     assert.match(manager.innerHTML, /configured sections/); assert.equal(ui.instance.read().course_groups[2].course_id, '99');
     rejectDelete = false; await click('cmConfirm', 99);
     assert.equal(ui.courseDialog.open, true, 'Management keeps the dialog open');
-    assert.deepEqual(plain(ui.instance.read().course_groups), [...twoCards.course_groups, {course_id: '', year_level: '', sections: []}]);
+    assert.deepEqual(plain(ui.instance.read().course_groups), [
+        ...twoCards.course_groups.map(group => ({department: 'Other / Legacy Courses', major: '', ...group})),
+        {department: 'Other / Legacy Courses', course_id: '', major: '', year_level: '', sections: []},
+    ]);
     assert.equal(ui.instance.read().venue, draft.venue); assert.equal(ui.instance.read().date, draft.date);
     assert.doesNotMatch(ui.cards.get('0').html, /Unused Course/); assert.doesNotMatch(ui.cards.get('1').html, /Unused Course/);
     assert.equal(JSON.parse(ui.entries.get(ui.key)).course_groups[2].course_id, '', 'The local draft drops the deleted selection too');
@@ -386,7 +419,7 @@ const editSchedule = {...existing, id: 90, title: 'A manually edited schedule na
 const editReferences = {...configuredState, schedules: [editSchedule], course_year_sections: [...configuredState.course_year_sections,
     {course_id: 11, year_level: '4', section: 'Z'}, {course_id: 12, year_level: '4', section: 'C'}]};
 const restoredEditing = plain(api.restoreEdit(editSchedule));
-assert.deepEqual(restoredEditing.course_groups, [{course_id: '11', year_level: '3', sections: ['A']}], 'Edit prefills the same card shape as Create');
+assert.deepEqual(restoredEditing.course_groups, [{department: '', course_id: '11', major: '', year_level: '3', sections: ['A']}], 'Edit prefills the same card shape as Create');
 const editing = {...restoredEditing, year_blocks: [{year_level: '3', course_ids: ['11'], course_sections: {'11': ['A']}}]};
 delete editing.course_groups;
 assert.deepEqual(editing.year_blocks, [{year_level: '3', course_ids: ['11'], course_sections: {'11': ['A']}}]);
@@ -433,7 +466,7 @@ for (const course of unlimitedCourses) for (const year of unlimitedYears) assert
 assert.equal(unlimitedBody.slot_limit, 25, 'Unlimited group selection leaves capacity unchanged');
 const nestedSchedule = {...editSchedule, year_levels: ['3', '4'], courses: [{id: 11, name: 'BSIT', pivot: {sections: {'3': ['A'], '4': ['Z']}}}, {id: 12, name: 'BSN', pivot: {sections: {'4': ['C']}}}],
     course_sections_by_year: {'11': {'3': ['A'], '4': ['Z']}, '12': {'4': ['C']}}, course_sections: {'11': ['A', 'Z'], '12': ['C']}, sections: ['A', 'Z', 'C']};
-assert.deepEqual(plain(api.restoreEdit(nestedSchedule).course_groups), [{course_id: '11', year_level: '3', sections: ['A']}, {course_id: '11', year_level: '4', sections: ['Z']}, {course_id: '12', year_level: '4', sections: ['C']}]);
+assert.deepEqual(plain(api.restoreEdit(nestedSchedule).course_groups), [{department: '', course_id: '11', major: '', year_level: '3', sections: ['A']}, {department: '', course_id: '11', major: '', year_level: '4', sections: ['Z']}, {department: '', course_id: '12', major: '', year_level: '4', sections: ['C']}]);
 assert.deepEqual(plain(api.scheduleSections(nestedSchedule, 12, '3')), []);
 assert.deepEqual(plain(api.scheduleSections({...nestedSchedule, course_sections_by_year: undefined}, 11, '4')), ['Z']);
 assert.equal(check({course_ids: ['12'], course_sections: {'12': ['C']}}, [nestedSchedule], configuredState).studentConflicts.length, 0, 'Create conflicts respect exact nested year scopes');
@@ -456,7 +489,7 @@ assert.equal(api.evaluateEdit(secondBlock, {...editReferences, schedules: [editS
 const previousConflict = {...editSchedule, id: 92};
 assert.equal(api.evaluateEdit(withSection, {...editReferences, schedules: [editSchedule, previousConflict]}, editSchedule).canSave, true, 'Pure additions validate newly added groups without treating an old group as a new conflict');
 const legacyEdit = {...editSchedule, courses: [{id: 11, name: 'BSIT'}, {id: 12, name: 'BSN'}], course_sections: {}, year_levels: ['3', '4'], sections: ['A', 'B'], registrations_recorded_attendance_count: 0};
-assert.deepEqual(plain(api.restoreEdit(legacyEdit).course_groups), ['3', '4'].flatMap(year_level => ['11', '12'].map(course_id => ({course_id, year_level, sections: ['A', 'B']}))));
+assert.deepEqual(plain(api.restoreEdit(legacyEdit).course_groups), ['3', '4'].flatMap(year_level => ['11', '12'].map(course_id => ({department: '', course_id, major: '', year_level, sections: ['A', 'B']}))));
 assert.equal(api.evaluateEdit(api.restoreEdit(legacyEdit), {...editReferences, schedules: [legacyEdit]}, legacyEdit).canSave, true, 'Existing legacy groups are retained even if later course configuration differs');
 assert.equal(api.evaluateEdit(withSection, editReferences, {...editSchedule, assigned_academic_groups: [{course_id: 11, year_level: '4', section: 'Z', count: 1}]}).canSave, true, 'Pure additions do not exclude students whose profiles changed after assignment');
 const changedProfileSchedule = {...editSchedule, assigned_academic_groups: [{course_id: 11, year_level: '4', section: 'Z', count: 1}]};
@@ -523,7 +556,7 @@ async function verifyEditSharedHandlers() {
     assert.match(editMounted.root.innerHTML, /Date, time and venue are locked because attendance has been recorded/);
     for (const name of ['date', 'start_time', 'end_time', 'venue']) assert.equal(editMounted.inputs[name].disabled, true, name + ' remains locked');
     assert.equal(editMounted.inputs.slot_limit.min, '2'); assert.match(editMounted.root.innerHTML, /Cannot be lower than the 2 students already assigned/);
-    assert.deepEqual(plain(editMounted.instance.read().course_groups), restoredEditing.course_groups, 'Disabled checked assigned groups are included in the update');
+    assert.deepEqual(plain(editMounted.instance.read().course_groups), restoredEditing.course_groups.map(group => ({...group, department: 'Other / Legacy Courses'})), 'Disabled checked assigned groups are included in the update');
     assert.equal(cardControl(editMounted, 0, 'sbGroupCourse').disabled, true);
     assert.ok(editMounted.cards.get('0').entries.filter(input => input.dataset.sbGroupYear !== undefined).every(input => input.disabled));
     assert.equal(cardControl(editMounted, 0, 'sbGroupSection', 'A').disabled, true); assert.equal(cardControl(editMounted, 0, 'sbRemoveGroup').disabled, true);
@@ -542,7 +575,10 @@ async function verifyEditSharedHandlers() {
     assert.deepEqual(editMounted.storageCalls, []); assert.deepEqual(JSON.parse(editMounted.entries.get(editMounted.key)), twoCards, 'Saving Edit leaves the independent Create draft untouched');
 
     const editNewYear = mountedEdit(); cardAddition(editNewYear, 11, '4', 'Z');
-    assert.deepEqual(plain(editNewYear.instance.read().course_groups), [...restoredEditing.course_groups, {course_id: '11', year_level: '4', sections: ['Z']}]);
+    assert.deepEqual(plain(editNewYear.instance.read().course_groups), [
+        ...restoredEditing.course_groups.map(group => ({...group, department: 'Other / Legacy Courses'})),
+        {department: 'Other / Legacy Courses', course_id: '11', major: '', year_level: '4', sections: ['Z']},
+    ]);
     assert.equal(cardControl(editNewYear, 1, 'sbGroupYear', '3').disabled, true, 'Repeated course/year pair cannot be chosen');
     assert.match(editNewYear.get('[data-sb-added-summary]').textContent, /BSIT 4Z/);
     cardAddition(editNewYear, 12, '3', 'C');
@@ -557,13 +593,13 @@ async function verifyEditSharedHandlers() {
     editNewYear.select(0, 'sbGroupSelectAll', ''); editNewYear.select(0, 'sbGroupSelectAll', '');
     assert.deepEqual(plain(editNewYear.instance.read().course_groups[0].sections), ['A'], 'Select All deselection preserves assigned sections');
     const nestedMounted = mountedEdit(nestedSchedule);
-    assert.deepEqual(plain(nestedMounted.instance.read().course_groups), plain(api.restoreEdit(nestedSchedule).course_groups), 'Each saved nested pair has its own prefilled card'); assert.equal(nestedMounted.cards.size, 3, 'No phantom Cartesian groups');
+    assert.deepEqual(plain(nestedMounted.instance.read().course_groups), plain(api.restoreEdit(nestedSchedule).course_groups.map(group => ({...group, department: 'Other / Legacy Courses'}))), 'Each saved nested pair has its own prefilled card'); assert.equal(nestedMounted.cards.size, 3, 'No phantom Cartesian groups');
     assert.deepEqual(summaryCourseGroups(nestedMounted), [
         {label: 'BSIT \u00b7 3rd Year', chips: ['3A']}, {label: 'BSIT \u00b7 4th Year', chips: ['4Z']},
         {label: 'BSN \u00b7 4th Year', chips: ['4C']},
     ], 'The Edit preview keeps saved nested sections under their exact course/year headings');
     const legacyMounted = mountedEdit(legacyEdit);
-    assert.deepEqual(plain(legacyMounted.instance.read().course_groups), plain(api.restoreEdit(legacyEdit).course_groups), 'Old flat and legacy selections are preserved');
+    assert.deepEqual(plain(legacyMounted.instance.read().course_groups), plain(api.restoreEdit(legacyEdit).course_groups.map(group => ({...group, department: 'Other / Legacy Courses'}))), 'Old flat and legacy selections are preserved');
     const savedCustom = {...editSchedule, registrations_count: 0, registrations_total_count: 0, registrations_recorded_attendance_count: 0, assigned_academic_groups: [], sections: ['Legacy'], course_sections: {'11': ['Legacy']}, courses: [{id: 11, name: 'BSIT', pivot: {sections: ['Legacy']}}]};
     const customMounted = mountedEdit(savedCustom);
     assert.ok(cardControl(customMounted, 0, 'sbGroupSection', 'Legacy').checked, 'An old saved section remains available if the current configuration no longer includes it');
@@ -578,7 +614,7 @@ async function verifyEditSharedHandlers() {
     legacyYearMounted.click('[data-sb-add-group]'); legacyYearMounted.select(1, 'sbGroupCourse', '12');
     assertCardRanges(legacyYearMounted, 1);
     assert.equal(cardControl(legacyYearMounted, 1, 'sbGroupYear', '5'), undefined, 'A saved legacy year is not offered for a different course');
-    assert.deepEqual(plain(legacyYearMounted.instance.read().course_groups[0]), {course_id: '11', year_level: '5', sections: ['Legacy']});
+    assert.deepEqual(plain(legacyYearMounted.instance.read().course_groups[0]), {department: 'Other / Legacy Courses', course_id: '11', major: '', year_level: '5', sections: ['Legacy']});
     const lockedLegacy = mountedEdit({...savedCustom, registrations_count: 1, registrations_total_count: 1, assigned_academic_groups: [{course_id: 11, year_level: '3', section: 'Legacy', count: 1}]});
     assert.equal(cardControl(lockedLegacy, 0, 'sbGroupSection', 'Legacy').disabled, true);
     lockedLegacy.select(0, 'sbGroupSelectAll', ''); assert.deepEqual(plain(lockedLegacy.instance.read().course_groups[0].sections), ['A', 'B', 'Legacy'], 'Select All adds only configured sections while retaining a checked assigned legacy section');
@@ -598,7 +634,7 @@ async function verifyEditSharedHandlers() {
     assert.deepEqual(unlimitedMounted.saves[0].body.course_ids, [11, 12, 13, 14, 15, 16]); assert.equal(unlimitedMounted.saves[0].body.year_levels.length, 4); assert.equal(unlimitedMounted.saves[0].body.slot_limit, 25);
     const failedEdit = mountedEdit(); await failedEdit.submit('changes'); assert.equal(failedEdit.saves.length, 1);
     failedEdit.saves[0].onError({message: 'Rejected', errors: {course_sections_by_year: ['BSIT 4C is not configured.']}}); assert.equal(failedEdit.error.hidden, false); assert.equal(failedEdit.error.textContent, 'BSIT 4C is not configured.');
-    assert.deepEqual(plain(failedEdit.instance.read().course_groups), restoredEditing.course_groups);
+    assert.deepEqual(plain(failedEdit.instance.read().course_groups), restoredEditing.course_groups.map(group => ({...group, department: 'Other / Legacy Courses'})));
     const draftMounted = mountedEdit({...editSchedule, status: 'Draft'}); assert.match(draftMounted.root.innerHTML, /data-sb-draft/); assert.match(draftMounted.root.innerHTML, /Publish Schedule/); assert.doesNotMatch(draftMounted.root.innerHTML, /Save &amp; Create Another/);
     await draftMounted.submit('publish'); assert.equal(draftMounted.saves[0].body.status, 'Open');
     const closedMounted = mountedEdit({...editSchedule, status: 'Closed'}); assert.match(closedMounted.root.innerHTML, /data-sb-save-changes/); assert.doesNotMatch(closedMounted.root.innerHTML, /Publish Schedule|Save &amp; Create Another/);
@@ -614,13 +650,16 @@ async function verifyEditSharedHandlers() {
     addingCourse.click('[data-sb-add-group]'); addingCourse.click('[data-sb-add-course]', {sbAddCourse: '4'}); addingCourse.courseForm.elements.name.value = newCourse.name;
     await addingCourse.courseForm.listeners.submit({preventDefault() {}, target: addingCourse.courseForm}); assert.equal(addingCourse.courseDialog.open, false);
     assert.deepEqual(plain(requests[0]), {url: '/api/admin/academic-options', method: 'POST', body: {type: 'course', name: newCourse.name}}); assert.equal(addingCourse.instance.read().course_groups[4].course_id, '99', 'Add Course works after any number of other cards');
-    addingCourse.select(4, 'sbGroupYear', '3'); addingCourse.select(4, 'sbGroupSection', 'A'); assert.deepEqual(plain(addingCourse.instance.read().course_groups[0]), restoredEditing.course_groups[0], 'Adding a database course retains assigned group');
+    addingCourse.select(4, 'sbGroupYear', '3'); addingCourse.select(4, 'sbGroupSection', 'A'); assert.deepEqual(plain(addingCourse.instance.read().course_groups[0]), {...restoredEditing.course_groups[0], department: 'Other / Legacy Courses'}, 'Adding a database course retains assigned group');
     for (const assigned of [true, false]) {
         const schedule = assigned ? editSchedule : {...editSchedule, registrations_count: 0, registrations_total_count: 0, registrations_recorded_attendance_count: 0, assigned_academic_groups: []};
         const fromExisting = mountedEdit(schedule, unlimitedReferences, async url => url === '/api/admin/academic-options' ? {message: 'Course added.'} : {academic_options: [...unlimitedReferences.academic_options, newCourse], course_year_sections: unlimitedReferences.course_year_sections});
         fromExisting.click('[data-sb-add-course]', {sbAddCourse: '0'}); fromExisting.courseForm.elements.name.value = newCourse.name;
         await fromExisting.courseForm.listeners.submit({preventDefault() {}, target: fromExisting.courseForm});
-        assert.deepEqual(plain(fromExisting.instance.read().course_groups), [...restoredEditing.course_groups, {course_id: '99', year_level: '3', sections: []}], 'Add Course from an existing card adds a new card and retains the saved group, including unassigned groups');
+        assert.deepEqual(plain(fromExisting.instance.read().course_groups), [
+            ...restoredEditing.course_groups.map(group => ({...group, department: 'Other / Legacy Courses'})),
+            {department: 'Other / Legacy Courses', course_id: '99', major: '', year_level: '3', sections: []},
+        ], 'Add Course from an existing card adds a new card and retains the saved group, including unassigned groups');
     }
     const sectionRequests = [], newSection = {id: 99, course_id: 11, year_level: '3', section: 'D'};
     const addingSection = mountedEdit(editSchedule, editReferences, async (url, method, body) => { sectionRequests.push({url, method, body}); return url === '/api/admin/course-year-sections' ? {message: 'Section added.'} : {academic_options: editReferences.academic_options, course_year_sections: [...editReferences.course_year_sections, newSection]}; });

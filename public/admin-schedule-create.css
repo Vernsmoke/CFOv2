@@ -153,12 +153,32 @@
         flex: 1 1 220px;
     }
 
+    .schedule-builder.sb-grouped .sb-academic-path {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .schedule-builder.sb-grouped .sb-academic-path .sb-field {
+        min-width: 0;
+    }
+
+    .schedule-builder.sb-grouped .sb-academic-path select {
+        width: 100%;
+        margin-top: 6px;
+    }
+
     .schedule-builder.sb-grouped .sb-course-choice {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
         gap: 8px;
         margin-top: 6px;
+    }
+
+    .schedule-builder.sb-grouped .sb-course-choice .sb-hint {
+        flex: 1 1 280px;
+        margin: 0;
     }
 
     .schedule-builder.sb-grouped .sb-course-choice select {
@@ -1560,12 +1580,14 @@
 }
 @media screen and (max-width: 1050px) {
     body.admin-background #main-content .schedule-builder .sb-content { grid-template-columns: 1fr; }
+    body.admin-background #main-content .schedule-builder .sb-academic-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     body.admin-background #main-content .schedule-builder .sb-course-group-grid { grid-template-columns: 1fr 1fr; }
     body.admin-background #main-content .schedule-builder .sb-course-group-combinations { grid-column: 1 / -1; }
     body.admin-background #main-content .schedule-builder .sb-right { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     body.admin-background #main-content .schedule-builder .sb-right .sb-card { margin-bottom: 0; }
 }
 @media screen and (max-width: 700px) {
+    body.admin-background #main-content .schedule-builder .sb-academic-path { grid-template-columns: 1fr; }
     body.admin-background #main-content .schedule-builder .sb-banner { align-items: flex-start; flex-direction: column; }
     body.admin-background #main-content .schedule-builder .sb-content,
     body.admin-background #main-content .schedule-builder .sb-right { display: block; }

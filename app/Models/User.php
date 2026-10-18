@@ -32,7 +32,7 @@ class User extends Authenticatable
         'email',
         'password',
         'student_id', 'system_username', 'original_email', 'login_email', 'first_name', 'middle_name', 'last_name',
-        'role', 'status', 'rejection_reason', 'course', 'year_level', 'section', 'password_change_required', 'password_change_expires_at',
+        'role', 'status', 'rejection_reason', 'department', 'course', 'major', 'year_level', 'section', 'password_change_required', 'password_change_expires_at',
     ];
 
     /**
