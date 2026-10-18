@@ -32,6 +32,8 @@
     <link rel="stylesheet" media="screen" href="{{ asset('cfo-search-inputs.css') }}?v={{ filemtime(public_path('cfo-search-inputs.css')) }}">
 <link rel="stylesheet" media="screen" href="{{ asset('admin-filter-dropdowns.css') }}?v={{ filemtime(public_path('admin-filter-dropdowns.css')) }}">
 <script src="{{ asset('admin-filter-dropdowns.js') }}?v={{ filemtime(public_path('admin-filter-dropdowns.js')) }}" defer></script>
+<link rel="stylesheet" href="{{ asset('academic-filters.css') }}?v={{ filemtime(public_path('academic-filters.css')) }}">
+<script src="{{ asset('academic-filters.js') }}?v={{ filemtime(public_path('academic-filters.js')) }}" defer></script>
     <link rel="stylesheet" media="screen" href="{{ asset('admin-action-bars.css') }}?v={{ filemtime(public_path('admin-action-bars.css')) }}">
     <script src="{{ asset('admin-action-bars.js') }}?v={{ filemtime(public_path('admin-action-bars.js')) }}" defer></script>
   <script src="{{ asset('admin-nav-badges.js') }}?v={{ filemtime(public_path('admin-nav-badges.js')) }}" defer></script>

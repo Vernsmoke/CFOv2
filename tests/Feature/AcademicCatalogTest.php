@@ -12,6 +12,15 @@ class AcademicCatalogTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_admin_target_choices_use_only_distinct_student_account_combinations(): void
+    {
+        $admin = User::factory()->create(['role' => 'Admin', 'status' => 'Approved', 'course' => 'Staff course']);
+        $profile = ['department' => 'College of Criminology', 'course' => 'Bachelor of Science in Criminology', 'major' => null, 'year_level' => '1', 'section' => 'A'];
+        User::factory()->count(2)->create(['role' => 'Student', ...$profile]);
+        $this->actingAs($admin)->getJson('/api/admin/state?resources=schedules,academic_options')
+            ->assertOk()->assertJsonCount(1, 'academic_population')->assertJsonPath('academic_population.0', $profile);
+    }
+
     private function registration(array $academic = []): array
     {
         return [...$this->studentAcademicSelection($academic),

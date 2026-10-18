@@ -45,6 +45,8 @@ class AdminController extends Controller
             'server_date' => today()->toDateString(),
             'archive_timezone' => config('app.timezone'),
             'users' => $has('users') ? $users->get() : null,
+            'academic_population' => $has('users', 'schedules', 'academic_options', 'registrations')
+                ? User::where('role', User::ROLE_STUDENT)->select('department', 'course', 'major', 'year_level', 'section')->distinct()->get() : null,
             'registrations' => $has('registrations', 'attendance', 'users', 'schedules') ? Registration::currentYear()->with(['user', 'schedule.courses', 'certificate'])->latest()->get() : null,
             'history' => $request->boolean('include_history') ? Registration::historical()->with(['user', 'schedule.courses', 'certificate', 'certificateRecord'])->orderByDesc('year')->latest()->get() : null,
             'schedules' => $has('schedules', 'registrations', 'schedule_changes') ? Schedule::withScheduleLinks()->orderBy('date')->get()->each(fn ($schedule) => $schedule->setAttribute('has_linked_records', $schedule->has_linked_records)) : null,

@@ -247,8 +247,17 @@
                 ...courseNames(schedule), yearSection(schedule), ...courseGroupLabels(schedule), ...yearSections(schedule), ...tableCourseGroups(schedule).map(group => group.courseName + ' ' + courseYearLabel(group.year)), ...selections(schedule, 'year_levels', 'year_level'),
                 ...selections(schedule, 'sections', 'section'), statusOf(schedule)].join(' ').toLocaleLowerCase();
             const course = text(filters.course), year = text(filters.year_level ?? filters.year), section = text(filters.section);
-            const matchingCourses = (schedule.courses || []).filter(item => !course || course === 'All'
-                || text(typeof item === 'string' ? item : item.name) === course || text(item.id) === course);
+            const academic = filters.academic;
+            const matchingCourses = (schedule.courses || []).filter(item => {
+                const name = text(typeof item === 'string' ? item : item.name);
+                if (course && course !== 'All' && name !== course && text(item.id) !== course) return false;
+                if (!academic || !global.CfoAcademicFilters) return true;
+                const profile = global.CfoAcademicFilters.profile({course:name, major:schedule.course_majors?.[item.id]});
+                // A schedule without a major restriction includes every major in its course.
+                const scope = !profile.major ? {...academic, major:[]} : academic;
+                return global.CfoAcademicFilters.matches(scope, profile)
+                    && (profile.major || !academic.major?.length || academic.major.some(value => { try { return JSON.parse(value)[0] === name; } catch { return false; } }));
+            });
             const yearFilter = year && year !== 'All', sectionFilter = section && section !== 'All';
             const sectionMatches = hasCourseSections(schedule) && (yearFilter || sectionFilter)
                 ? academicGroups(schedule).some(group => matchingCourses.some(item => text(item.id) === group.courseId)
@@ -259,6 +268,7 @@
             return (!query || searchable.includes(query))
                 && (!filters.status || filters.status === 'All' || statusOf(schedule) === filters.status)
                 && (!course || course === 'All' || matchingCourses.length > 0)
+                && (!academic?.department?.length || matchingCourses.length > 0)
                 && (!year || year === 'All' || selections(schedule, 'year_levels', 'year_level').includes(year))
                 && sectionMatches;
         });
@@ -371,6 +381,7 @@
 
         isModalOpen() { return Boolean(this.modal); }
         destroy() {
+            this.academicControl?.destroy();
             this.destroyed = true;
             this.abort.abort();
             this.closeMenu(); this.closeModal(true);
@@ -399,6 +410,17 @@
                 <div class="ms-page-feedback" role="status" aria-live="polite"></div>
             </div>`;
             this.refreshFilterOptions();
+            if (global.CfoAcademicFilters) {
+                const host = document.createElement('div');
+                this.root.querySelector('.ms-filter-panel').prepend(host);
+                this.root.querySelector('[data-ms-filter="course"]').closest('.ms-field').hidden = true;
+                this.academicControl = global.CfoAcademicFilters.mount(host, {
+                    courses: this.rows().flatMap(courseNames),
+                    profiles: () => this.state.academic_population || [],
+                    onChange: value => { this.ui.academic = value; this.ui.page = 1; this.refreshFilterOptions(); this.draw(); }
+                });
+                this.ui.academic = this.academicControl.value();
+            }
         }
 
         filterField(label, key, values) {
@@ -407,6 +429,13 @@
         refreshFilterOptions() {
             const courses = unique([...optionRows(this.state, 'course').map(course => course.name), ...this.rows().flatMap(courseNames)]).sort(collator.compare);
             const values = {course: courses, year_level: optionNames(this.state, 'year_level'), section: optionNames(this.state, 'section')};
+            if (Array.isArray(this.state.academic_population) && global.CfoAcademicFilters) {
+                const population=this.state.academic_population.filter(row=>global.CfoAcademicFilters.matches(this.ui.academic || {},global.CfoAcademicFilters.profile(row)));
+                values.year_level=unique(population.map(row=>text(row.year_level)).filter(Boolean)).sort();
+                if(!values.year_level.includes(this.ui.year_level))this.ui.year_level='';
+                values.section=unique(population.filter(row=>!this.ui.year_level||text(row.year_level)===this.ui.year_level).map(row=>text(row.section)).filter(Boolean)).sort();
+                if(!values.section.includes(this.ui.section))this.ui.section='';
+            }
             Object.entries(values).forEach(([name, names]) => {
                 const select = this.root.querySelector(`[data-ms-filter="${name}"]`);
                 if (!select) return;
@@ -428,7 +457,7 @@
             }, {signal});
             this.root.addEventListener('change', event => {
                 const filter = event.target.dataset.msFilter;
-                if (filter && filter !== 'q') { this.ui[filter] = event.target.value; this.ui.page = 1; this.draw(); }
+                if (filter && filter !== 'q') { this.ui[filter] = event.target.value; this.ui.page = 1; this.refreshFilterOptions(); this.draw(); }
                 if (event.target.dataset.msPerPage != null) { this.ui.perPage = Number(event.target.value); this.ui.page = 1; this.draw(); }
             }, {signal});
             document.addEventListener('keydown', event => this.keydown(event), {signal});
@@ -483,7 +512,7 @@
             else if (action === 'edit') this.openEdit(id);
             else if (action === 'close') this.closeModal();
             else if (action === 'clear-search') { this.ui.q = ''; this.root.querySelector('[data-ms-filter="q"]').value = ''; this.ui.page = 1; this.draw(); }
-            else if (action === 'clear-filters') { ['status', 'course', 'year_level', 'section'].forEach(key => { this.ui[key] = ''; this.root.querySelector(`[data-ms-filter="${key}"]`).value = ''; }); this.ui.page = 1; this.draw(); }
+            else if (action === 'clear-filters') { ['status', 'course', 'year_level', 'section'].forEach(key => { this.ui[key] = ''; this.root.querySelector(`[data-ms-filter="${key}"]`).value = ''; }); this.academicControl?.reset(); this.ui.page = 1; this.draw(); }
             else if (action === 'sort') { const key = target.dataset.msSort; this.ui.direction = this.ui.sort === key && this.ui.direction === 'asc' ? 'desc' : 'asc'; this.ui.sort = key; this.ui.page = 1; this.draw(); this.root.querySelector(`[data-ms-sort="${key}"]`)?.focus({preventScroll: true}); }
             else if (action === 'page-prev' || action === 'page-next') { this.ui.page += action === 'page-prev' ? -1 : 1; this.draw(); this.root.querySelector(`[data-ms-action="${action}"]`)?.focus({preventScroll: true}); }
             else if (action === 'view-table' || action === 'view-calendar') { this.ui.view = action.slice(5); this.draw(); }

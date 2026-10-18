@@ -29,6 +29,27 @@ class RecollectionRegistrationController extends Controller
     {
         $query = $this->baseQuery();
         $query->whereHas('user', function (Builder $student) use ($filters) {
+            if ($departments = $filters['departments'] ?? []) {
+                $catalog = \App\Services\AcademicCatalog::courses();
+                $names = array_column(array_filter($catalog, fn ($course) => in_array($course['department'], $departments, true)), 'name');
+                $student->where(function (Builder $scope) use ($departments, $names, $catalog) {
+                    $scope->whereIn('course', $names)->orWhere(function (Builder $legacy) use ($departments, $catalog) {
+                        $legacy->whereNotIn('course', array_column($catalog, 'name'));
+                        if (! in_array('Other / Legacy Courses', $departments, true)) $legacy->whereIn('department', $departments);
+                    });
+                });
+                if ($courses = $filters['courses'] ?? []) {
+                    $student->whereIn('course', $courses);
+                    if ($majors = $filters['majors'] ?? []) {
+                        $student->where(function (Builder $scope) use ($majors) {
+                            foreach ($majors as $major) {
+                                [$course, $name] = json_decode($major, true);
+                                $scope->orWhere(fn (Builder $pair) => $pair->where('course', $course)->where('major', $name));
+                            }
+                        });
+                    }
+                }
+            }
             if ($filters['course'] ?? null) {
                 $student->where('course', $filters['course']);
             }
@@ -78,6 +99,7 @@ class RecollectionRegistrationController extends Controller
         }
         $students = User::where('role', 'Student')->whereHas('registrations', fn ($q) => $q->currentYear()->whereNull('recollection_schedule_id'));
         $courses = (clone $students)->whereNotNull('course')->where('course', '!=', '')->distinct()->orderBy('course')->pluck('course');
+        $academicPopulation = (clone $students)->select('department', 'course', 'major', 'year_level', 'section')->distinct()->get();
         $yearSections = (clone $students)->select('year_level', 'section')->distinct()->get()->toBase()
             ->map(fn ($student) => ($student->year_level ?? '').($student->section ?? ''))->filter()->unique()->sort()->values();
         // Preserve a deep-linked filter even after its last matching student moves to Attendance.
@@ -93,7 +115,7 @@ class RecollectionRegistrationController extends Controller
             return redirect()->route('admin.registrations.index', [...$filters, 'page' => $registrations->lastPage()]);
         }
 
-        return response()->view('admin.registrations.index', compact('filters', 'stats', 'courses', 'yearSections', 'registrations', 'liveVersions'))
+        return response()->view('admin.registrations.index', compact('filters', 'stats', 'courses', 'yearSections', 'registrations', 'liveVersions', 'academicPopulation'))
             ->header('Cache-Control', 'private, no-store');
     }
 

@@ -8,6 +8,14 @@ const source = fs.readFileSync(modulePath, 'utf8');
 const courseManagerSource = fs.readFileSync(path.join(__dirname, '../../public/admin-course-manage.js'), 'utf8');
 const context = vm.createContext({window: {}}); vm.runInContext(courseManagerSource, context); vm.runInContext(source, context, {filename: modulePath});
 const api = context.window.CfoScheduleCreate;
+const accountOnly = {academic_options:[{id:1,type:'course',name:'Criminology'},{id:2,type:'course',name:'Nursing'}], academic_population:[{course:'Criminology',major:'',year_level:'1',section:'A'}]};
+assert.equal(api.createOptions(accountOnly,'course').map(row=>row.name).join(','),'Criminology');
+assert.equal(api.createOptions(accountOnly,'year_level').map(row=>row.name).join(','),'1');
+assert.equal(api.createSectionOptions(accountOnly,'1','1').join(','),'A');
+assert.equal(api.createSectionOptions(accountOnly,'1','2').length,0);
+assert.equal(api.createOptions({...accountOnly,academic_population:[]},'course').length,0);
+const majorPopulation={...accountOnly,academic_population:[{course:'Criminology',major:'One',year_level:'1',section:'A'},{course:'Criminology',major:'Two',year_level:'1',section:'B'}]};
+assert.equal(api.createSectionOptions(majorPopulation,'1','1','One').join(','),'A');
 const plain = value => JSON.parse(JSON.stringify(value));
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const state = {academic_options: [
@@ -16,6 +24,7 @@ const state = {academic_options: [
     {id: 31, type: 'section', name: 'A'}, {id: 32, type: 'section', name: 'B'},
 ], course_year_sections: [], schedules: []};
 const configuredState = {...state, course_year_sections: [
+    // Reference sections remain independent from account-driven choices.
     ...['A', 'B'].map((section, index) => ({id: index + 1, course_id: 11, year_level: '3', section})),
     ...['A', 'B', 'C'].map((section, index) => ({id: index + 3, course_id: 12, year_level: '3', section})),
 ]};

@@ -102,10 +102,12 @@
     const gridState = new Map();
     let activeGrid = null;
     function dataGrid(config) {
+      const academicFilter = window.CfoAcademicFilters && (config.filters || []).find(filter => filter.key === 'course');
+      if(academicFilter) config={...config,filters:config.filters.filter(filter=>filter.key!=='course')};
       const state = gridState.get(config.key) || {q:'', filters:{...config.initialFilters}, page:1, size:10, selected:new Set()};
       gridState.set(config.key, state);
       if(config.filterQuery !== undefined && state.filterQuery !== config.filterQuery) {
-        state.filters={...config.initialFilters}; state.filterQuery=config.filterQuery; state.page=1; state.selected.clear();
+        state.filters={...config.initialFilters}; state.academic=undefined; state.filterQuery=config.filterQuery; state.page=1; state.selected.clear();
       }
       if(config.initialSearch !== undefined) state.q = config.initialSearch;
       const filterRows = config.countFilterOptions ? config.rows() : [];
@@ -127,18 +129,38 @@
         ? `<div class="attendance-search-toolbar">${searchField}<details class="attendance-filter-menu"><summary>${icon('filter')} Filter ${icon('down')}</summary><div class="attendance-filter-popover">${fields}</div></details><button type="button" class="btn" data-reset>${icon('refresh')} Clear Filters</button>${config.filterToolbar || ''}</div>`
         : `<div class="filters">${searchField}${fields}${config.hideClearFilters?'':'<button class="btn" data-reset>Clear filters</button>'}</div>`;
       const root = document.createElement('section'); root.className = config.historyControls ? 'panel history-grid' : 'panel'; root.id = 'data-grid';
-      root.innerHTML = `${filterControls}
+      root.innerHTML = `${academicFilter?'<div data-academic-filters></div>':''}${filterControls}
         <div class="table-toolbar"><div><h2>${escapeHTML(config.title)}</h2><span class="muted small" data-count role="status"></span></div><div class="actions">${config.toolbarBefore || ''}${config.toolbar || ''}</div></div>
         <div class="table-wrap" role="region" aria-label="${escapeHTML(config.title)} table; scroll horizontally for more columns" tabindex="0"><table class="data-table ${config.wide?'wide':''}"><thead><tr>${config.selectable?'<th><input type="checkbox" data-select-all aria-label="Select all rows on this page"></th>':''}${config.columns.map((column,index)=>`<th scope="col" ${column.sort!==false&&(column.get||column.sort)?'aria-sort="none"':''}>${column.sort!==false&&(column.get||column.sort)?`<button type="button" class="grid-sort" data-sort="${index}" aria-label="Sort by ${escapeHTML(column.label)}">${config.historyControls?escapeHTML(column.label).replaceAll('/','/<wbr>'):escapeHTML(column.label)} <span aria-hidden="true">↕</span></button>`:escapeHTML(column.label)}</th>`).join('')}${config.rowActions?'<th scope="col">Actions</th>':''}</tr></thead><tbody></tbody></table></div>
         <div class="table-footer"><span data-range></span><div class="pagination">${config.compactFilters?'<span>Show</span>':''}<label class="sr-only" for="page-size">Rows per page</label><select id="page-size">${[5,10,25,50].map(n=>`<option ${n===state.size?'selected':''}>${n}</option>`).join('')}</select>${config.compactFilters?'<span>entries</span>':''}<button class="btn compact" data-prev aria-label="Previous page">${icon('back')}</button><span data-page></span><button class="btn compact" data-next aria-label="Next page">${icon('arrow')}</button></div></div>`;
       $('#grid-host').replaceChildren(root);
       if(config.historyControls)$('[data-filter="scheduleDate"]',root).setAttribute('aria-label','Filter by recollection schedule date');
       const idOf = config.id || (row => row.id);
+      let academicControl;
+      if(academicFilter) {
+        academicControl=window.CfoAcademicFilters.mount(root.querySelector('[data-academic-filters]'),{
+          value:state.academic || {course:state.filters.course}, courses:academicFilter.values,
+          profiles:()=>config.rows().map(row=>window.CfoAcademicFilters.profile(row,academicFilter.get(row))),
+          onChange:value=>{state.academic=value;state.page=1;state.selected.clear();draw();}
+        });
+        state.academic=academicControl.value();
+      }
       function filtered() {
-        const rows=config.rows().filter(row => (config.searchMatches || window.CfoSearch.matches)(config.search(row),state.q) && (config.filters || []).every(filter=>!state.filters[filter.key] || (filter.matches ? filter.matches(row,state.filters[filter.key]) : String(filter.get(row)) === state.filters[filter.key])));
+        const rows=config.rows().filter(row => (!academicFilter || window.CfoAcademicFilters.matches(state.academic,window.CfoAcademicFilters.profile(row,academicFilter.get(row)))) && (config.searchMatches || window.CfoSearch.matches)(config.search(row),state.q) && (config.filters || []).every(filter=>!state.filters[filter.key] || (filter.matches ? filter.matches(row,state.filters[filter.key]) : String(filter.get(row)) === state.filters[filter.key])));
         return window.CfoSearch.sortRows(rows,config.columns,state.sortIndex,state.sortDirection);
       }
       function draw() {
+        if(academicFilter) {
+          let candidates=config.rows().filter(row=>window.CfoAcademicFilters.matches(state.academic,window.CfoAcademicFilters.profile(row,academicFilter.get(row))));
+          for(const key of ['year_level','section']) {
+            const filter=config.filters.find(item=>item.key===key), control=root.querySelector(`[data-filter="${key}"]`);
+            if(!filter||!control)continue;
+            const values=[...new Set(candidates.map(row=>String(filter.get(row)||'')).filter(Boolean))].sort();
+            if(!values.includes(state.filters[key]))state.filters[key]='';
+            control.innerHTML=options(values,state.filters[key],filter.all||'All');
+            if(state.filters[key])candidates=candidates.filter(row=>String(filter.get(row))===state.filters[key]);
+          }
+        }
         const rows = filtered(), pages = Math.max(1, Math.ceil(rows.length/state.size)); state.page = Math.min(state.page,pages);
         const start = (state.page-1)*state.size, visible = rows.slice(start,start+state.size);
         $('tbody',root).innerHTML = visible.map((row,index)=>`<tr data-row-id="${escapeHTML(idOf(row))}">${config.selectable?`<td><input type="checkbox" data-select="${escapeHTML(idOf(row))}" aria-label="Select ${escapeHTML(row.name || idOf(row))}" ${state.selected.has(String(idOf(row)))?'checked':''}></td>`:''}${config.columns.map(column=>`<td${column.nowrap?' class="nowrap"':''}>${column.rowNumber ? start+index+1 : column.html ? column.html(row) : escapeHTML(column.get(row))}</td>`).join('')}${config.rowActions?`<td><div class="actions">${config.rowActions(row)}</div></td>`:''}</tr>`).join('') || `<tr><td class="table-empty" colspan="${config.columns.length+(config.selectable?1:0)+(config.rowActions?1:0)}">No records match your search and filters.</td></tr>`;
@@ -168,7 +190,7 @@
       if(config.historyControls){
         $('[data-clear-search]',root).onclick=()=>{cancelSearchDraw();state.q='';state.page=1;state.selected.clear();$('[data-search]',root).value='';$('[data-clear-search]',root).hidden=true;draw();$('[data-search]',root).focus();};
         $('[data-clear-date]',root).onclick=()=>{cancelSearchDraw();state.filters.scheduleDate='';state.page=1;state.selected.clear();$('[data-filter="scheduleDate"]',root).value='';draw();$('[data-filter="scheduleDate"]',root).focus();};
-      }else if(!config.hideClearFilters)$('[data-reset]',root).onclick=()=>{state.q='';state.filters={};state.page=1;state.selected.clear();$('[data-search]',root).value='';$$('[data-filter]',root).forEach(control=>control.value='');draw();};
+      }else if(!config.hideClearFilters)$('[data-reset]',root).onclick=()=>{state.q='';state.filters={};state.page=1;state.selected.clear();academicControl?.reset();$('[data-search]',root).value='';$$('[data-filter]',root).forEach(control=>control.value='');draw();};
       $('[data-prev]',root).onclick=()=>{state.page--;draw();}; $('[data-next]',root).onclick=()=>{state.page++;draw();};
       $('#page-size',root).onchange=event=>{state.size=Number(event.target.value);state.page=1;draw();};
       $$('[data-sort]',root).forEach(control=>control.onclick=()=>{const index=Number(control.dataset.sort);state.sortDirection=state.sortIndex===index&&state.sortDirection==='asc'?'desc':'asc';state.sortIndex=index;state.page=1;draw();});

@@ -11,6 +11,8 @@
 </section>
 <section class="panel listing" aria-label="Registration list">
     <form method="get" action="{{ route('admin.registrations.index') }}" id="registration-filters">
+        <div id="registration-academic-filters" data-initial="{{ json_encode($filters) }}" data-courses="{{ json_encode($courses) }}" data-population="{{ json_encode($academicPopulation) }}"></div>
+        <div id="registration-academic-values"></div>
         <div class="search-row"><label class="search-input"><span class="sr-only">Search registrations</span>@include('partials.admin-icon', ['name' => 'search'])<input type="search" name="search" maxlength="200" value="{{ $filters['search'] ?? '' }}" placeholder="Search name, ID number, course, year & section..."></label><button class="button filter-toggle" type="button" data-toggle-registration-filters aria-expanded="false" aria-controls="registration-filter-panel" hidden>@include('partials.admin-icon', ['name' => 'settings'])<span data-filter-toggle-label>Show Filters</span></button><button class="button primary" type="submit">Search</button></div>
         <div class="filter-grid" id="registration-filter-panel">
             <label>Course<select name="course"><option value="">All Courses</option>@foreach($courses as $course)<option @selected(($filters['course'] ?? '') === $course)>{{ $course }}</option>@endforeach</select></label>

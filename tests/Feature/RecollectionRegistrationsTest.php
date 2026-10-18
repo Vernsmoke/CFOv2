@@ -39,6 +39,24 @@ class RecollectionRegistrationsTest extends TestCase
         return $this->get($this->url.'?'.http_build_query($filters))->assertOk()->viewData('registrations')->pluck('id')->all();
     }
 
+    public function test_academic_filters_support_multiple_parents_and_paired_majors(): void
+    {
+        $this->actingAs($this->admin());
+        $business = 'Bachelor of Science in Business Administration';
+        $accounting = 'Bachelor of Science in Accountancy';
+        $first = $this->registration(['course' => $business, 'department' => 'College of Business Education', 'major' => 'Financial Management']);
+        $second = $this->registration(['course' => $business, 'department' => 'College of Business Education', 'major' => 'Marketing Management']);
+        $third = $this->registration(['course' => $accounting, 'department' => null, 'major' => null]);
+        $departments = ['College of Business Education', 'College of Accountancy'];
+        $this->assertEqualsCanonicalizing([$first->id, $second->id, $third->id], $this->ids(['departments' => $departments]));
+        $filters = ['departments' => $departments, 'courses' => [$business, $accounting], 'majors' => [json_encode([$business, 'Financial Management'])], 'multiple' => 1];
+        $this->assertSame([$first->id], $this->ids($filters));
+        $this->assertEqualsCanonicalizing([$first->id, $second->id], $this->ids(['departments' => [$departments[0]], 'courses' => [$business]]));
+        $this->assertCount(3, $this->ids(['majors' => $filters['majors']]));
+        $this->get($this->url.'/export?'.http_build_query($filters))->assertOk();
+        $this->getJson($this->url.'?'.http_build_query(['majors' => ['not-json']]))->assertUnprocessable();
+    }
+
     public function test_admin_only_access_to_list_details_and_export(): void
     {
         $r = $this->registration();

@@ -70,7 +70,7 @@
         dateTo?.setCustomValidity(dateFrom?.value && dateTo?.value && dateTo.value < dateFrom.value
             ? 'The end date must be on or after the start date.' : '');
     }
-    form?.querySelectorAll('select, input[type="date"]').forEach(filter => {
+    form?.querySelectorAll('select:not([data-af-select]), input[type="date"]').forEach(filter => {
         filter.addEventListener('change', () => {
             validateDateRange();
             form.requestSubmit();
