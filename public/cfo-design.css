@@ -121,9 +121,12 @@
   html.cfo-design body.admin-background #main-content #page.my-schedules :is(input,select,textarea){background:#fff;color:var(--brand-ink)}
   html.cfo-design .my-schedules :is(.ms-search-panel,.ms-filter-panel,.ms-table-panel,.ms-calendar-panel){box-shadow:none;border-radius:14px}
   html.cfo-design .my-schedules :is(.ms-view-switch button,.ms-attention-badge,.ms-draft){color:var(--brand-ink)}
-  html.cfo-design body.admin-background #main-content #page.my-schedules .ms-badge.ms-open,
+  html.cfo-design body.admin-background #main-content #page.my-schedules .ms-badge,
   html.cfo-design body.admin-background #main-content #page.my-schedules .ms-table-panel .ms-attention-badge.ms-attention-no-registrations{padding-inline:0;background:transparent!important;border-color:transparent!important;color:var(--brand-ink)!important}
   html.cfo-design body.admin-background #main-content #page.my-schedules .ms-badge.ms-open>span[aria-hidden="true"]{color:#078669}
+  html.cfo-design body.admin-background #main-content #page.my-schedules .ms-badge:is(.ms-draft,.ms-closed)>span[aria-hidden="true"]{color:#c58a00}
+  html.cfo-design body.admin-background #main-content #page.my-schedules .ms-badge.ms-completed>span[aria-hidden="true"]{color:var(--brand-blue)}
+  html.cfo-design body.admin-background #main-content #page.my-schedules .ms-badge.ms-cancelled>span[aria-hidden="true"]{color:var(--brand-danger)}
   html.cfo-design body.admin-background #main-content #page.my-schedules .ms-table-panel .ms-attention-badge.ms-attention-no-registrations>span[aria-hidden="true"]{color:#c58a00;font-weight:800}
   html.cfo-design body.admin-background #main-content #page.my-schedules tbody tr.ms-attention-no-registrations td:first-child{border-left:0}
   html.cfo-design .my-schedules .ms-view-switch .ms-active{background:var(--brand-blue);color:#fff}
