@@ -249,14 +249,10 @@ input[type=checkbox] { width: 17px; height: 17px; accent-color: #3d80e0; cursor:
     .registrations-page .stat-card {
         min-width: 0; gap: 12px; padding: 14px; border-radius: 12px;
         background: #fff; border-color: var(--registration-container-border);
-        border-left-width: 3px; box-shadow: var(--registration-container-shadow);
+        border-left-width: 1px; box-shadow: var(--registration-container-shadow);
     }
     .registrations-page .stat-card > div { min-width: 0; }
     .registrations-page .stat-card > .icon { width: 32px; height: 32px; }
-    .registrations-page .stat-card.total { border-left-color: #2f80ed; }
-    .registrations-page .stat-card.verified { border-left-color: #14b87a; }
-    .registrations-page .stat-card.pending { border-left-color: #f5a020; }
-    .registrations-page .stat-card.rejected { border-left-color: #ef5e75; }
     .registrations-page #main-content > .listing { min-width: 0; overflow: hidden; border-color: var(--registration-container-border); border-radius: 12px; box-shadow: var(--registration-container-shadow); }
     .registrations-page #registration-filters { padding: 14px 16px; }
     .registrations-page .search-row, .registrations-page .filter-grid, .registrations-page .filter-actions { gap: 10px; }
